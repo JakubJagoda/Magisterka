@@ -11,6 +11,7 @@ export default class Renderer extends EventListener<UserEvents> {
     constructor() {
         super();
         this.stage = new Stage('main');
+        this.stage.enableMouseOver();
         createjs.Ticker.on('tick', () => {
             this.stage.update();
         });
@@ -18,7 +19,7 @@ export default class Renderer extends EventListener<UserEvents> {
 
     askPlayerForName():Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            const name = prompt('Please type yur name');
+            const name = prompt('Please type your name');
             if (!name) {
                 reject();
             } else {
@@ -27,11 +28,11 @@ export default class Renderer extends EventListener<UserEvents> {
         });
     }
 
-    askPlayerForBet(minimalBet:number):Promise<number> {
+    askPlayerForBet(minimalBet:number, currentMoney:number):Promise<number> {
         return new Promise<number>((resolve, reject) => {
             let bet:number;
             do {
-                bet = Number(prompt('Place your bet', minimalBet.toString()));
+                bet = Number(prompt(`Place your bet (you have ${currentMoney}$ currently)`, minimalBet.toString()));
             } while (bet < minimalBet);
 
             resolve(bet);
@@ -55,6 +56,29 @@ export default class Renderer extends EventListener<UserEvents> {
         this.stage.addChild(newContainer);
     }
 
+    private static createJSButton(size: {width: number; height: number}, text: string, bgColor: string):createjs.Container {
+        const button = new createjs.Container();
+
+        const buttonRect = new createjs.Graphics().beginFill(bgColor).drawRect(0, 0, size.width, size.height);
+        const buttonBg = new createjs.Shape(buttonRect);
+
+        const buttonText = new createjs.Text(text);
+        buttonText.color = '#000';
+
+        button.addChild(buttonBg);
+        button.addChild(buttonText);
+
+        const bounds = buttonText.getBounds();
+        buttonText.set({
+            x: (size.width - bounds.width)/2,
+            y: (size.height - bounds.height)/2
+        });
+
+        button.cursor = 'pointer';
+
+        return button;
+    }
+
     private renderMainMenu():Container {
         const container = new Container();
 
@@ -62,13 +86,7 @@ export default class Renderer extends EventListener<UserEvents> {
         gameTitle.color = '#000';
         container.addChild(gameTitle);
 
-        const startButton = new createjs.Container();
-        const startButtonRect = new createjs.Graphics().beginFill('red').drawRect(0, 0, 50, 30);
-        const startButtonBg = new createjs.Shape(startButtonRect);
-        const startText = new createjs.Text('Start');
-        startText.color = '#000';
-        startButton.addChild(startButtonBg);
-        startButton.addChild(startText);
+        const startButton = Renderer.createJSButton({width: 50, height: 30}, 'Start', 'red');
         container.addChild(startButton);
         startButton.set({
             x: 100,
@@ -85,26 +103,27 @@ export default class Renderer extends EventListener<UserEvents> {
     private renderQuestion({question, bet} : {question:Question, bet:number}):Container {
         const container = new Container();
 
-        const wordText = new createjs.Text(question.getWord());
+        const wordText = new createjs.Text(`Word: ${question.getWord()}`);
         wordText.set({
             x: 20,
             y: 0
         });
-        const definitionText = new createjs.Text(question.getDefinition());
+        const definitionText = new createjs.Text(`Definition: ${question.getDefinition()}`);
         definitionText.set({
             x: 20,
-            y: 40
+            y: 20
         });
         container.addChild(wordText);
         container.addChild(definitionText);
 
-        const trueButton = new createjs.Container();
-        const trueButtonRect = new createjs.Graphics().beginFill('green').drawRect(0, 0, 50, 30);
-        const trueButtonBg = new createjs.Shape(trueButtonRect);
-        const trueText = new createjs.Text('True');
-        trueText.color = '#000';
-        trueButton.addChild(trueButtonBg);
-        trueButton.addChild(trueText);
+        const betText = new createjs.Text(`Your bet: ${bet}$`);
+        betText.set({
+            x: 20,
+            y: 40
+        });
+        container.addChild(betText);
+
+        const trueButton = Renderer.createJSButton({width: 50, height: 30}, 'True', 'green');
         container.addChild(trueButton);
         trueButton.set({
             x: 100,
@@ -115,13 +134,7 @@ export default class Renderer extends EventListener<UserEvents> {
             this.dispatch(UserEvents.QUESTION_PANEL__TRUE_CLICKED);
         });
 
-        const falseButton = new createjs.Container();
-        const falseButtonRect = new createjs.Graphics().beginFill('red').drawRect(0, 0, 50, 30);
-        const falseButtonBg = new createjs.Shape(falseButtonRect);
-        const falseText = new createjs.Text('False');
-        falseText.color = '#000';
-        falseButton.addChild(falseButtonBg);
-        falseButton.addChild(falseText);
+        const falseButton = Renderer.createJSButton({width: 50, height: 30}, 'False', 'red');
         container.addChild(falseButton);
         falseButton.set({
             x: 200,
@@ -133,5 +146,14 @@ export default class Renderer extends EventListener<UserEvents> {
         });
         
         return container;
+    }
+
+    informPlayerIfTheAnswerWasCorrect(wasCorrect:boolean) {
+        const text = wasCorrect ? 'Correct!' : 'Sorry, wrong!';
+        alert(text);
+    }
+
+    displayLoseMessage() {
+        alert(`You lost!`);
     }
 }

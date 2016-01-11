@@ -17,14 +17,25 @@ export default class Controller {
 
     async startNewGame() {
         const name = await this.askPlayerForName();
-        this.game = new Game(this, name);
+        this.game = new Game(name);
         this.game.start();
         this.nextQuestion();
     }
 
     async nextQuestion() {
+        const canPlayerContinuePlaying = this.game.canPlayerContinuePlaying();
+        if (!canPlayerContinuePlaying) {
+            return this.endGame();
+        }
+
         const question: Question = this.game.getNextQuestion();
-        const bet = await this.askPlayerForBet(this.game.getCurrentMinimalBet());
+
+        let bet;
+        do {
+            bet = await this.askPlayerForBet(this.game.getCurrentMinimalBet(), this.game.getPlayerMoney());
+        } while(!this.game.isBetValid(bet));
+
+        this.game.setCurrentBet(bet);
         this.renderer.renderView(GameViews.QUESTION_PANEL, { question, bet });
     }
 
@@ -32,8 +43,8 @@ export default class Controller {
         return this.renderer.askPlayerForName();
     }
 
-    askPlayerForBet(minimalBet:number):Promise<number> {
-        return this.renderer.askPlayerForBet(minimalBet);
+    askPlayerForBet(minimalBet:number, currentMoney:number):Promise<number> {
+        return this.renderer.askPlayerForBet(minimalBet, currentMoney);
     }
 
     private installEvents():void {
@@ -43,7 +54,13 @@ export default class Controller {
     }
 
     private handleQuestionAnswered(answer:boolean) {
-        this.game.questionAnswered(answer);
+        const wasAnswerCorrect = this.game.questionAnswered(answer);
+        this.renderer.informPlayerIfTheAnswerWasCorrect(wasAnswerCorrect);
         this.nextQuestion();
+    }
+
+    private endGame() {
+        this.renderer.displayLoseMessage();
+        this.openMainMenu();
     }
 }

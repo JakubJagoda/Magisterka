@@ -12,6 +12,7 @@ export default class Game {
     private roundNumber = 0;
     private currentRound:Round;
     private playerMoney = Game.INITIAL_MONEY;
+    private currentBet = 0;
 
     constructor(private playerName:string) {
 
@@ -22,6 +23,10 @@ export default class Game {
         this.playerMoney = Game.INITIAL_MONEY;
         this.currentRound = new Round(Game.INITIAL_MINIMAL_BET);
         this.getNextQuestion();
+    }
+
+    canPlayerContinuePlaying():boolean {
+        return this.playerMoney > 0;
     }
 
     getNextQuestion():Question {
@@ -45,17 +50,36 @@ export default class Game {
         return this.playerName;
     }
 
-    questionAnswered(answer:boolean) {
-        const question = this.currentRound.getCurrentQuestion();
+    getPlayerMoney():number {
+        return this.playerMoney;
+    }
 
-        if (question.getIsDefinitionCorrect() === answer) {
-            this.playerMoney += answer ? 20 : 10;
+    getCurrentBet():number {
+        return this.currentBet;
+    }
+
+    setCurrentBet(currentBet:number) {
+        this.currentBet = currentBet;
+    }
+
+    questionAnswered(answer:boolean):boolean {
+        const question = this.currentRound.getCurrentQuestion();
+        const wasAnswerCorrect = question.getIsDefinitionCorrect() === answer;
+
+        if (wasAnswerCorrect) {
+            this.playerMoney += answer ? this.currentBet*3 : this.currentBet*2;
         } else {
-            this.playerMoney -= 10;
+            this.playerMoney -= this.currentBet;
         }
+
+        return wasAnswerCorrect;
     }
 
     getCurrentMinimalBet() {
         return Game.getMinimalBetForRound(this.roundNumber);
+    }
+
+    isBetValid(bet:number) {
+        return bet <= this.playerMoney && bet >= this.getCurrentMinimalBet();
     }
 }
