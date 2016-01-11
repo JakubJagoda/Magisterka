@@ -1,0 +1,28 @@
+{
+  "name": "magisterka",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "build": "webpack",
+    "serve": "webpack-dev-server --content-base app/"
+  },
+  "author": "Jakub Jagoda",
+  "license": "ISC",
+  "dependencies": {
+    "babel-polyfill": "^6.3.14",
+    "bluebird": "^3.1.1",
+    "jquery": "^2.1.4"
+  },
+  "devDependencies": {
+    "babel-core": "^6.3.26",
+    "babel-loader": "^6.2.0",
+    "babel-plugin-transform-runtime": "^6.3.13",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-runtime": "^6.3.19",
+    "json-loader": "xavimb/json-loader#patch-string",
+    "script-loader": "^0.6.1",
+    "ts-loader": "^0.7.2",
+    "typescript": "^1.7.5",
+    "webpack": "^1.12.9"
+  }
+}
