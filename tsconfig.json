@@ -2,13 +2,14 @@
   "compilerOptions": {
     "module": "es6",
     "target": "es6",
-    "sourceMap": true
+    "sourceMap": true,
+    "jsx": "react"
   },
   "exclude": [
     "node_modules"
   ],
   "files": [
-    "typings/tsd.d.ts",
+    "typings/index.d.ts",
     "app/app.d.ts",
     "app/modules/questions/questions.d.ts"
   ]

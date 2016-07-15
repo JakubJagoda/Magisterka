@@ -2,7 +2,7 @@ var webpack = require("webpack");
 
 module.exports = {
     entry: [
-        './app/app.ts',
+        './app/app.tsx',
         'babel-polyfill'
     ],
     output: {
@@ -10,14 +10,17 @@ module.exports = {
         filename: 'app.js'
     },
     resolve: {
-        modulesDirectories: ['node_modules', 'bower_components/EaselJS/lib'],
+        modulesDirectories: ['node_modules'],
         extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js']
     },
     module: {
         loaders: [
-            {test: /\.ts$/, loader: 'babel?presets[]=es2015&plugins[]=transform-runtime!ts'},
+            {test: /\.tsx?$/, loader: 'babel?presets[]=es2015&plugins[]=transform-runtime!ts'},
             {test: /\.json$/, loader: 'json'}
         ]
     },
-    devtool: 'inline-source-map'
+    devtool: 'inline-source-map',
+    devServer: {
+        contentBase: './app',
+    }
 };
