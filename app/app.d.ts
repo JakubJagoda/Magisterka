@@ -8,3 +8,21 @@ declare const enum UserEvents {
     QUESTION_PANEL__TRUE_CLICKED,
     QUESTION_PANEL__FALSE_CLICKED
 }
+
+declare interface IAction extends Redux.Action {
+    data?: any;
+}
+
+declare interface IAppState {
+    gameDetails: {
+        bet: number;
+        roundNumber: number;
+        questionNumber: number;
+    },
+    currentQuestion: {
+        id: number;
+        word: string;
+        definition: string;
+        isDefinitionCorrect: boolean;
+    }
+}

@@ -1,14 +1,14 @@
 import * as React from "react";
-import MenuItem from '../menuItem/menuItem';
+import {Link} from 'react-router';
 
 export default class Menu extends React.Component<{},{}> {
     render() {
         return (
             <div className="menu">
-                <MenuItem className="menu__item" text="New game" clickHandler={() => alert("1")}/>
-                <MenuItem className="menu__item" text="Instructions" clickHandler={() => alert("2")}/>
-                <MenuItem className="menu__item" text="Exit" clickHandler={() => alert("3")}/>
+                <Link to="/game"><button className="menu__item">New Game</button></Link>
+                <Link to="/instructions"><button className="menu__item">Instructions</button></Link>
+                <Link to="/exit"><button className="menu__item">Exit</button></Link>
             </div>
-        )
+        );
     }
 }
