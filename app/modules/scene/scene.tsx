@@ -1,25 +1,42 @@
 import * as React from 'react';
-import * as ReactRedux from 'react-redux';
 import QuestionPanel from '../questionPanel/questionPanel';
+import {ISceneState} from "./scene.d";
 
-class Scene extends React.Component<{},{}> {
+class Scene extends React.Component<{},ISceneState> {
+    constructor() {
+        super();
+
+        this.state = {
+            playerNameModalVisible: false
+        }
+    }
+
     render() {
         return (
             <div className="scene">
+                {this.renderNameModal()}
                 <QuestionPanel definition="" word=""></QuestionPanel>
             </div>
         );
     }
 
-    static mapStateToProps(state:IAppState) {
-        return {
-            word: state.currentQuestion.word,
-            definition: state.currentQuestion.definition
-        };
+    componentDidMount() {
+        this.setState({
+            playerNameModalVisible: true
+        });
+    }
+
+    private renderNameModal() {
+        if (this.state.playerNameModalVisible) {
+            return (
+                <div className="modal">
+                    <input type="text" name="playerName" placeholder="Type name..." />
+                </div>
+            )
+        } else {
+            return null;
+        }
     }
 }
 
-const WrappedScene = ReactRedux.connect(Scene.mapStateToProps);
-const ConnectedScene = WrappedScene(Scene);
-
-export default ConnectedScene;
+export default Scene;
