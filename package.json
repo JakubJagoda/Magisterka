@@ -3,34 +3,42 @@
   "version": "0.0.0",
   "description": "",
   "scripts": {
-    "build": "webpack",
-    "serve": "webpack-dev-server --content-base app/"
+    "dev": "webpack-dev-server"
   },
   "author": "Jakub Jagoda",
   "license": "ISC",
   "dependencies": {
     "babel-polyfill": "6.9.1",
     "bluebird": "3.4.1",
+    "flux": "^2.1.1",
     "jquery": "3.1.0",
+    "normalize.css": "^4.2.0",
     "react": "^15.2.1",
+    "react-addons-css-transition-group": "^15.3.1",
     "react-dom": "^15.2.1",
+    "react-motion": "^0.4.4",
     "react-redux": "^4.4.5",
     "react-router": "^2.6.0",
     "redux": "^3.5.2"
   },
   "devDependencies": {
+    "autoprefixer": "^6.4.1",
     "babel-core": "6.10.4",
     "babel-loader": "6.2.4",
     "babel-plugin-transform-runtime": "6.9.0",
     "babel-preset-es2015": "6.9.0",
     "babel-runtime": "6.9.2",
+    "css-loader": "^0.25.0",
+    "file-loader": "^0.9.0",
+    "html-webpack-plugin": "^2.22.0",
     "json-loader": "xavimb/json-loader#patch-string",
+    "node-sass": "^3.9.0",
+    "postcss-loader": "^0.11.1",
+    "sass-loader": "^4.0.1",
     "script-loader": "0.7.0",
+    "style-loader": "^0.13.1",
     "ts-loader": "0.8.2",
-    "typescript": "1.8.10",
-    "webpack": "1.13.1"
-  },
-  "scripts": {
-    "dev": "webpack-dev-server"
+    "typescript": "^2.1.0-dev.20160907",
+    "webpack": "^1.13.1"
   }
 }

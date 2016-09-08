@@ -1,15 +1,15 @@
-import Dispatcher from './dispatcher';
+import dispatcher from './dispatcher';
 import EventListener from './../eventListener/eventListener';
 import {IDispatcherPayload} from "./dispatcher";
 
-abstract class Store extends EventListener {
+abstract class Store extends EventListener<string> {
     protected changeEvent = 'CHANGE';
     protected changed:boolean;
     protected className:string;
 
     private dispatchToken:string;
 
-    private dispatcher:Dispatcher;
+    private dispatcher: typeof dispatcher;
 
     public addListener(callback:(eventType?:string) => void) {
         return this.on(this.changeEvent, callback);
@@ -19,7 +19,7 @@ abstract class Store extends EventListener {
         return this.off(this.changeEvent, callback);
     }
 
-    public getDispatcher():Dispatcher {
+    public getDispatcher() {
         return this.dispatcher;
     }
 
@@ -52,11 +52,15 @@ abstract class Store extends EventListener {
     protected abstract onDispatch(payload:IDispatcherPayload):void;
 
     constructor() {
+        super();
+
         this.changed = false;
         this.className = this.constructor.name;
-        this.dispatcher = new Dispatcher();
+        this.dispatcher = dispatcher;
         this.dispatchToken = this.dispatcher.register(payload => {
             this.invokeOnDispatch(payload);
         });
     }
 }
+
+export default Store;

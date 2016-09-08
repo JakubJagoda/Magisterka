@@ -3,7 +3,8 @@
     "module": "es6",
     "target": "es6",
     "sourceMap": true,
-    "jsx": "react"
+    "jsx": "react",
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
     "node_modules"

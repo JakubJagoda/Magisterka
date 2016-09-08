@@ -1,4 +1,4 @@
-import Promise from '../../bluebird-fix';
+import Promise from '../../third-party/bluebird-fix';
 import Stage = createjs.Stage;
 import Container = createjs.Container;
 import Controller from '../controller/controller';

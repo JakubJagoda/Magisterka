@@ -1,3 +1,4 @@
 export interface ISceneState {
-    playerNameModalVisible: boolean;
+    playerNameModalVisible?: boolean;
+    playerName?: string;
 }

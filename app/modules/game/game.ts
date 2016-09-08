@@ -1,6 +1,6 @@
 import Round from '../round/round';
 import Controller from '../controller/controller';
-import Promise from '../../bluebird-fix';
+import Promise from '../../third-party/bluebird-fix';
 import Question from '../questions/question';
 
 export default class Game {
