@@ -1,7 +1,7 @@
 import * as React from "react";
 import './menu-style';
 import {Link} from 'react-router';
-import $ from '../../third-party/jquery-fix';
+import Animated from '../animated/animated';
 
 enum MENU_STATES {
     ENTERING_ANIMATION
@@ -39,34 +39,47 @@ export default class Menu extends React.Component<{},IMenuComponentState> {
         );
     }
 
-    private renderEnteringAnimation():JSX.Element {
+    private renderEnteringAnimation(): JSX.Element {
         return (
-            <h1 className="menu__game-title" data-anim-delay={3000} data-anim-length={200}
-                data-anim-style-after={'{"width": "auto", "height": "auto", "transform": "scale(0.5) translateY(-50%)"}'}
-                ref={el=>this.animateTitleElement(el)}>
-                <span className="menu__game-title--caption-truth" data-anim-delay={0} data-anim-length={200}
-                      data-anim-style-after={'{"right": 0}'}
-                      ref={el=>this.animateTitleElement(el)}>TRUTH</span>
-                <span className="menu__game-title--caption-or" data-anim-delay={800} data-anim-length={200}
-                      data-anim-style-after={'{"top": 0}'}
-                      ref={el=>this.animateTitleElement(el)}>OR</span>
-                <span className="menu__game-title--caption-bunk" data-anim-delay={1600} data-anim-length={200}
-                      data-anim-style-after={'{"left": 0}'}
-                      ref={el=>this.animateTitleElement(el)}>BUNK</span>
-            </h1>
+            <Animated animations={{
+                    delay: 2500,
+                    length: 200,
+                    style: {
+                        width: 'auto',
+                        height: 'auto',
+                        transform: 'scale(0.5) translateY(-75%)'
+                    }
+                }} initialStyle={{width: '100vw', height: '100vh'}}>
+                <h1 className="menu__game-title">
+                    <Animated animations={{
+                              delay: 0,
+                              length: 200,
+                              style: {
+                                  right: 0
+                              }
+                          }} initialStyle={{right: '-100%'}}>
+                        <span className="menu__game-title--caption-truth">TRUTH</span>
+                    </Animated>
+                    <Animated animations={{
+                              delay: 800,
+                              length: 200,
+                              style: {
+                                  top: 0
+                              }
+                          }} initialStyle={{top: '100%'}}>
+                        <span className="menu__game-title--caption-or">OR</span>
+                    </Animated>
+                    <Animated animations={{
+                              delay: 1600,
+                              length: 200,
+                              style: {
+                                  left: 0
+                              }
+                          }} initialStyle={{left: '-100%'}}>
+                        <span className="menu__game-title--caption-bunk">BUNK</span>
+                    </Animated>
+                </h1>
+            </Animated>
         );
-    }
-
-    private animateTitleElement(element:HTMLElement):void {
-        const $element = $(element);
-
-        setTimeout(() => {
-            if ($element.data('anim-length')) {
-                $element.css('transition', `all ${$element.data('anim-length')}ms ease-in`);
-            }
-
-            // why this is automatically converted to an object, if it was written as a string?
-            $element.css($element.data('anim-style-after'));
-        }, $element.data('anim-delay'));
     }
 }
