@@ -3,38 +3,12 @@ import './menu-style';
 import {Link} from 'react-router';
 import Animated from '../animated/animated';
 
-enum MENU_STATES {
-    ENTERING_ANIMATION
-}
-
-interface IMenuComponentState {
-    menuState: MENU_STATES;
-}
-
-export default class Menu extends React.Component<{},IMenuComponentState> {
-    constructor() {
-        super();
-
-        this.state = {
-            menuState: MENU_STATES.ENTERING_ANIMATION
-        };
-    }
-
+export default class Menu extends React.Component<{},{}> {
     render() {
-        let menuContents: JSX.Element;
-
-        switch (this.state.menuState) {
-            case MENU_STATES.ENTERING_ANIMATION:
-                menuContents = this.renderEnteringAnimation();
-                break;
-        }
-
         return (
             <div className="menu">
-                {menuContents}
-                {/*<Link to="/game"><button className="menu__item">New Game</button></Link>*/}
-                {/*<Link to="/instructions"><button className="menu__item">Instructions</button></Link>*/}
-                {/*<Link to="/exit"><button className="menu__item">Exit</button></Link>*/}
+                {this.renderEnteringAnimation()}
+                {this.renderButtonsAnimation()}
             </div>
         );
     }
@@ -81,5 +55,30 @@ export default class Menu extends React.Component<{},IMenuComponentState> {
                 </h1>
             </Animated>
         );
+    }
+
+    private renderButtonsAnimation() {
+        return (
+            <Animated animations={{
+                delay: 3000,
+                length: 500,
+                style: {
+                    top: '50%'
+                },
+                easing: 'ease-out'
+            }} initialStyle={{top: '100%'}}>
+                <div className="menu__buttons">
+                    <Link to="/game">
+                        <button className="menu__item">New Game</button>
+                    </Link>
+                    <Link to="/instructions">
+                        <button className="menu__item">Instructions</button>
+                    </Link>
+                    <Link to="/exit">
+                        <button className="menu__item">Exit</button>
+                    </Link>
+                </div>
+            </Animated>
+        )
     }
 }
