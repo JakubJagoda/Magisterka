@@ -21,10 +21,10 @@ export default class Menu extends React.Component<{},{}> {
                     style: {
                         width: 'auto',
                         height: 'auto',
-                        transform: 'scale(0.5) translateY(-75%)'
+                        transform: 'scale(0.5) translateY(-125%)'
                     }
                 }} initialStyle={{width: '100vw', height: '100vh'}}>
-                <h1 className="menu__game-title">
+                <div className="menu__game-title">
                     <Animated animations={{
                               delay: 0,
                               length: 200,
@@ -32,7 +32,7 @@ export default class Menu extends React.Component<{},{}> {
                                   right: 0
                               }
                           }} initialStyle={{right: '-100%'}}>
-                        <span className="menu__game-title--caption-truth">TRUTH</span>
+                        <img src="static/img/logo-truth.png" />
                     </Animated>
                     <Animated animations={{
                               delay: 800,
@@ -41,7 +41,7 @@ export default class Menu extends React.Component<{},{}> {
                                   top: 0
                               }
                           }} initialStyle={{top: '100%'}}>
-                        <span className="menu__game-title--caption-or">OR</span>
+                        <img src="static/img/logo-or.png" />
                     </Animated>
                     <Animated animations={{
                               delay: 1600,
@@ -50,9 +50,9 @@ export default class Menu extends React.Component<{},{}> {
                                   left: 0
                               }
                           }} initialStyle={{left: '-100%'}}>
-                        <span className="menu__game-title--caption-bunk">BUNK</span>
+                        <img src="static/img/logo-bunk.png" />
                     </Animated>
-                </h1>
+                </div>
             </Animated>
         );
     }
