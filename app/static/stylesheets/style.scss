@@ -1,9 +1,43 @@
 @import '../fonts/budmo.css';
 @import '~normalize.css';
 
-html, body {
+html, body, .app-wrapper {
   width: 100%;
   height: 100%;
 
   overflow: hidden;
+}
+
+body {
+  background-color: #000;
+  text-transform: uppercase;
+}
+
+.lights1, .lights2 {
+  position: absolute;
+  top: 20px;
+}
+
+.lights1 {
+  left: 50%;
+  transform: perspective(920px) rotateX(-45deg) translateX(-50%);
+
+  @media screen and (max-width: 699px){
+    top: 0;
+  }
+
+  @media screen and(min-width: 700px) {
+    left: 0;
+    transform: perspective(600px) rotateY(45deg);
+  }
+}
+
+.lights2 {
+  right: 0;
+  transform: perspective(600px) rotateY(-45deg);
+  visibility: hidden;
+
+  @media screen and(min-width: 700px) {
+    visibility: visible;
+  }
 }

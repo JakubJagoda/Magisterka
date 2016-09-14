@@ -1,3 +1,5 @@
+/// <reference path="third-party/react-typist.d.ts" />
+
 declare const enum GameViews {
     MAIN_MENU,
     QUESTION_PANEL

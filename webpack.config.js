@@ -20,12 +20,14 @@ module.exports = {
             {test: /\.json$/, loader: 'json'},
             {test: /\.scss$/, loader: 'style!css!postcss!sass'},
             {test: /\.css$/, loader: 'style!css!postcss'},
-            {test: /\.(eot|svg|ttf|woff|woff2)$/, loader: 'file?name=[name].[ext]'}
+            {test: /\.(eot|svg|ttf|woff|woff2)$/, loader: 'file?name=[name].[ext]'},
+            {test: /\.(jpg|png)$/, loader: 'file?name=[name].[ext]'},
         ]
     },
     devtool: 'inline-source-map',
     devServer: {
         contentBase: './app',
+        inline: true,
     },
     postcss: function () {
         return [autoprefixer];

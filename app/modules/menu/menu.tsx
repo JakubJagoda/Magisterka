@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import './menu-style';
 import {Link} from 'react-router';
 import Animated from '../animated/animated';
@@ -21,7 +21,7 @@ export default class Menu extends React.Component<{},{}> {
                     style: {
                         width: 'auto',
                         height: 'auto',
-                        transform: 'scale(0.5) translateY(-125%)'
+                        transform: 'scale(0.75) translateY(-75%)'
                     }
                 }} initialStyle={{width: '100vw', height: '100vh'}}>
                 <div className="menu__game-title">

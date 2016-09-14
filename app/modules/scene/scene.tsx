@@ -1,9 +1,12 @@
-import * as React from 'react';
+import React from 'react';
+import './scene-style';
 import QuestionPanel from '../questionPanel/questionPanel';
 import {ISceneState} from "./scene.d";
 import dispatcher from '../flux/dispatcher';
 import {SetPlayerNameAction} from "./sceneActions";
 import gameStore from "./gameStore";
+import Typist from 'react-typist';
+import classnames from 'classnames';
 
 class Scene extends React.Component<{},ISceneState> {
     private boundGameStoreUpdateHandler;
@@ -13,7 +16,7 @@ class Scene extends React.Component<{},ISceneState> {
 
         this.state = {
             playerName: '',
-            playerNameModalVisible: false
+            playerNameFormVisible: false
         };
         this.boundGameStoreUpdateHandler = this.onGameStoreChange.bind(this);
     }
@@ -21,17 +24,20 @@ class Scene extends React.Component<{},ISceneState> {
     render() {
         return (
             <div className="scene">
-                {this.renderNameModal()}
-                <QuestionPanel definition="" word=""></QuestionPanel>
+                <div className="name-modal">
+                    <div className="name-modal__inner">
+                    <Typist className="name-modal__text" typing={1} avgTypingDelay={50} stdTypingDelay={0}
+                            cursor={{show: false}} onTypingDone={() => this.setState({playerNameFormVisible: true})}>
+                        Please type your name:
+                    </Typist>
+                    {this.renderNameForm()}
+                    </div>
+                </div>
             </div>
         );
     }
 
     componentDidMount() {
-        this.setState({
-            playerNameModalVisible: true
-        });
-
         gameStore.addListener(this.boundGameStoreUpdateHandler);
     }
 
@@ -39,20 +45,21 @@ class Scene extends React.Component<{},ISceneState> {
         gameStore.removeListener(this.boundGameStoreUpdateHandler);
     }
 
-    private renderNameModal() {
-        if (this.state.playerNameModalVisible) {
-            return (
-                <div className="modal">
-                    <input type="text" name="playerName" placeholder="Type name..." onChange={this.handleNameUpdate.bind(this)} />
-                    <button onClick={this.handleNameModalClose.bind(this)}>OK</button>
-                </div>
-            )
-        } else {
-            return (
-                <span>{this.state.playerName}</span>
-            );
-        }
-    }
+    private renderNameForm() {
+        const classes = classnames({
+            'name-modal__form': true,
+            'name-modal__form--hidden': !this.state.playerNameFormVisible
+        });
+
+        return (
+            <div className={classes}>
+                <input type="text" name="playerName" autoFocus
+                       onChange={this.handleNameUpdate.bind(this)} />
+                <button onClick={this.handleNameModalClose.bind(this)}>OK</button>
+            </div>
+        )
+
+}
 
     private handleNameUpdate(event:Event) {
         const currentName = (event.target as HTMLInputElement).value;
@@ -63,7 +70,7 @@ class Scene extends React.Component<{},ISceneState> {
 
     private handleNameModalClose() {
         this.setState({
-            playerNameModalVisible: false
+            playerNameFormVisible: false
         }, () => {
             dispatcher.handleViewAction({
                 action: new SetPlayerNameAction(this.state.playerName)
