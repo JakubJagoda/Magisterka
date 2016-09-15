@@ -21,7 +21,8 @@ class Dispatcher extends Flux.Dispatcher<IDispatcherPayload> {
         console.log(
             new Date(),
             PayloadSource[payload.source],
-            payload.action
+            payload.action,
+            (new Error()).stack
         );
     }
 

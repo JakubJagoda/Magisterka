@@ -1,0 +1,14 @@
+.round-intro {
+  text-align: center;
+
+  &__round {
+    position: relative;
+    left: 100vw;
+    margin-bottom: 20px;
+  }
+
+  &__number {
+    position: relative;
+    top: 100vh;
+  }
+}

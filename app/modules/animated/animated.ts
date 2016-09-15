@@ -12,6 +12,7 @@ interface IAnimationDescriptor {
     easing?: string;
     style: ICSSProps;
     property?: string;
+    callback?: Function;
 }
 
 interface IAnimatedProps {
@@ -55,6 +56,10 @@ export default class Animated extends React.Component<IAnimatedProps,{}> {
     }
 
     private createAnimations(element:HTMLElement) {
+        if (!element) {
+            return;
+        }
+
         const $element = $(ReactDOM.findDOMNode(element));
 
         $element.css(this.props.initialStyle);
@@ -80,6 +85,14 @@ export default class Animated extends React.Component<IAnimatedProps,{}> {
             }
 
             $element.css(animation.style);
+
+            if (!animation.callback) {
+                return;
+            } else if (animation.length) {
+                setTimeout(animation.callback, animation.length);
+            } else {
+                animation.callback();
+            }
         }, animation.delay);
     }
 

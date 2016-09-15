@@ -1,24 +1,14 @@
 import React from 'react';
 import './scene-style';
+
 import dispatcher from '../flux/dispatcher';
-import {SetPlayerNameAction} from "./sceneActions";
-import gameStore from "./gameStore";
+import {SetPlayerNameAction, BeginRoundAction} from './sceneActions';
+import {default as gameStore, SCENE_STATES, IGameState} from './gameStore';
+
 import PlayerNameForm from '../playerNameForm/playerNameForm';
-import classnames from "classnames";
+import RoundIntro from "../roundIntro/roundIntro";
 
-const enum SCENE_STATES {
-    NAME_INPUT,
-    ROUND_INTRO,
-    PLACING_BET,
-    QUESTION,
-    QUESTION_AFTERMATHS,
-    PLAYER_LOSE,
-    PLAYER_WIN
-}
-
-interface ISceneState {
-    currentState: SCENE_STATES
-}
+interface ISceneState extends IGameState {}
 
 class Scene extends React.Component<{},ISceneState> {
     private boundGameStoreUpdateHandler;
@@ -27,26 +17,40 @@ class Scene extends React.Component<{},ISceneState> {
         super();
 
         this.state = {
-            currentState: SCENE_STATES.NAME_INPUT
+            playerName: '',
+            currentGameState: SCENE_STATES.NAME_INPUT,
+            currentRound: 0
         };
         this.boundGameStoreUpdateHandler = this.onGameStoreChange.bind(this);
     }
 
     render() {
         return (
-            <div className="scene">
+            <div className='scene'>
                 {this.renderSceneComponent()}
             </div>
         );
     }
 
     private renderSceneComponent() {
-        switch(this.state.currentState) {
+        switch(this.state.currentGameState) {
             case SCENE_STATES.NAME_INPUT:
-            default:
                 return (
-                    <PlayerNameForm onNameEntered={this.handleNameEntered.bind(this)} />
+                    <PlayerNameForm onNameEntered={Scene.handleNameEntered} />
                 );
+
+            case SCENE_STATES.PLAYER_GREETING:
+                return (
+                    <PlayerNameForm playerName={this.state.playerName} onGreetingsGone={Scene.handleNameFormClosed} />
+                );
+
+            case SCENE_STATES.ROUND_INTRO:
+                return (
+                    <RoundIntro currentRound={this.state.currentRound} />
+                );
+
+            default:
+                return null;
         }
     }
 
@@ -58,11 +62,17 @@ class Scene extends React.Component<{},ISceneState> {
         gameStore.removeListener(this.boundGameStoreUpdateHandler);
     }
 
-    private handleNameEntered(playerName: string) {
-        alert(playerName);
-        // dispatcher.handleViewAction({
-        //     action: new SetPlayerNameAction(playerName)
-        // });
+    private static handleNameEntered(playerName: string) {
+        dispatcher.handleViewAction({
+            action: new SetPlayerNameAction(playerName)
+        });
+    }
+
+    private static handleNameFormClosed() {
+        const INITIAL_ROUND_NUMBER = 0;
+        dispatcher.handleViewAction({
+            action: new BeginRoundAction(INITIAL_ROUND_NUMBER)
+        });
     }
 
     private onGameStoreChange() {
