@@ -5,6 +5,7 @@ import './roundIntro-style';
 
 interface IRoundIntroProps {
     currentRound: number;
+    onIntroFaded: () => void;
 }
 
 export default class RoundIntro extends React.Component<IRoundIntroProps,{}> {
@@ -18,7 +19,8 @@ export default class RoundIntro extends React.Component<IRoundIntroProps,{}> {
                         transform: 'scale(0.5)',
                         opacity: 0
                     },
-                    easing: 'linear'
+                    easing: 'linear',
+                    callback: this.props.onIntroFaded
                 }
             ]}>
             <div className="round-intro">

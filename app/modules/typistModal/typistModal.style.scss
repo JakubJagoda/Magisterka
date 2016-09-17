@@ -1,0 +1,36 @@
+.typist-modal-container {
+  width: 494px;
+  height: 299px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 5px #99a0ff;
+  padding: 20px;
+
+  text-align: center;
+  color: white;
+  font-size: 24px;
+  background-color: rgba(0,0,0,0.7);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.typist-modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: opacity 0.5s ease-in;
+  opacity: 1;
+  margin-top: 10px;
+  text-align: center;
+
+  &--hidden {
+    opacity: 0;
+  }
+
+  &--hidden > * {
+    cursor: default;
+  }
+}
