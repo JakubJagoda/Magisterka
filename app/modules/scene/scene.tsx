@@ -1,5 +1,5 @@
 import React from 'react';
-import './scene-style';
+import './scene.style';
 
 import dispatcher from '../flux/dispatcher';
 import {SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction} from './sceneActions';

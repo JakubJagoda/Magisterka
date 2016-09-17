@@ -1,7 +1,8 @@
 import React from 'react';
 import classnames from "classnames";
-import Typist from 'react-typist';
-import './playerNameForm-style.scss';
+
+import './playerNameForm.style';
+
 import Animated from "../animated/animated";
 import TypistModal from "../typistModal/typistModal";
 

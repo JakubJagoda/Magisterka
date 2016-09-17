@@ -1,7 +1,7 @@
 import React from 'react';
 import Animated from "../animated/animated";
 
-import './roundIntro-style';
+import './roundIntro.style';
 
 interface IRoundIntroProps {
     currentRound: number;
