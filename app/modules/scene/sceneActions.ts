@@ -19,3 +19,8 @@ export class PlaceBetAction implements IDispatcherAction {
     constructor(public bet: number) {
     }
 }
+
+export class AnswerQuestionAction implements IDispatcherAction {
+    constructor(public answer: boolean) {
+    }
+}

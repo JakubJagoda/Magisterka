@@ -2,12 +2,16 @@ import React from 'react';
 import './scene.style';
 
 import dispatcher from '../flux/dispatcher';
-import {SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction} from './sceneActions';
+import {
+    SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction,
+    AnswerQuestionAction
+} from './sceneActions';
 import {default as gameStore, SCENE_STATES, IGameState} from './gameStore';
 
 import PlayerNameForm from '../playerNameForm/playerNameForm';
 import RoundIntro from "../roundIntro/roundIntro";
 import PlaceBetForm from "../placeBetForm/placeBetForm";
+import QuestionPanel from "../questionPanel/questionPanel";
 
 interface ISceneState extends IGameState {}
 
@@ -52,6 +56,14 @@ class Scene extends React.Component<{},ISceneState> {
                                   onBetEntered={Scene.handleBetEntered} />
                 );
 
+            case SCENE_STATES.QUESTION:
+                return (
+                    <QuestionPanel word={this.state.currentQuestion.getWord()} definition={this.state.currentQuestion.getDefinition()}
+                                   currentBet={this.state.currentBet} playerMoney={this.state.playerMoney}
+                                   onTruthSelected={Scene.handleQuestionAnswered.bind(null, true)}
+                                   onBunkSelected={Scene.handleQuestionAnswered.bind(null, false)} />
+                );
+
             default:
                 return null;
         }
@@ -87,6 +99,12 @@ class Scene extends React.Component<{},ISceneState> {
     private static handleBetEntered(bet: number) {
         dispatcher.handleViewAction({
             action: new PlaceBetAction(bet)
+        });
+    }
+
+    private static handleQuestionAnswered(answer: boolean) {
+        dispatcher.handleViewAction({
+            action: new AnswerQuestionAction(answer)
         });
     }
 
