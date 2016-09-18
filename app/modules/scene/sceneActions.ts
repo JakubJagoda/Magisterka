@@ -24,3 +24,8 @@ export class AnswerQuestionAction implements IDispatcherAction {
     constructor(public answer: boolean) {
     }
 }
+
+export class QuestionResultShown implements IDispatcherAction {
+    constructor() {
+    }
+}

@@ -6,6 +6,24 @@
   align-items: center;
   justify-content: space-between;
 
+  &__animated-status {
+    color: white;
+    font-size: 24px;
+  }
+
+  &__animated-status-money {
+    font-weight: bold;
+    font-size: 34px;
+
+    &--plus {
+      color: rgb(17, 174, 37);
+    }
+
+    &--minus {
+      color: rgb(210, 52, 20);
+    }
+  }
+
   .question-panel-question {
     width: 494px;
     height: 150px;
@@ -33,6 +51,7 @@
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 
     &__text {
       flex-basis: 100%;
@@ -52,6 +71,12 @@
         background: rgb(210, 52, 20);
         background: linear-gradient(0deg, rgb(210, 52, 20) 30%, rgb(255, 63, 24) 70%);
       }
+    }
+
+    &__result-text {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
     }
   }
 

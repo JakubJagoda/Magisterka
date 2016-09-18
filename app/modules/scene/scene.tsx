@@ -4,7 +4,7 @@ import './scene.style';
 import dispatcher from '../flux/dispatcher';
 import {
     SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction,
-    AnswerQuestionAction
+    AnswerQuestionAction, QuestionResultShown
 } from './sceneActions';
 import {default as gameStore, SCENE_STATES, IGameState} from './gameStore';
 
@@ -64,6 +64,15 @@ class Scene extends React.Component<{},ISceneState> {
                                    onBunkSelected={Scene.handleQuestionAnswered.bind(null, false)} />
                 );
 
+            case SCENE_STATES.ANSWER_RESULTS:
+                return (
+                    <QuestionPanel word={this.state.currentQuestion.getWord()} definition={this.state.currentQuestion.getDefinition()}
+                                   currentBet={this.state.currentBet} playerMoney={this.state.playerMoney}
+                                   answerToCurrentQuestion={this.state.answerToCurrentQuestion}
+                                   isAnswerToCurrentQuestionCorrect={this.state.isAnswerToCurrentQuestionCorrect}
+                                   onResultShown={Scene.handleQuestionResultShown} />
+                );
+
             default:
                 return null;
         }
@@ -105,6 +114,12 @@ class Scene extends React.Component<{},ISceneState> {
     private static handleQuestionAnswered(answer: boolean) {
         dispatcher.handleViewAction({
             action: new AnswerQuestionAction(answer)
+        });
+    }
+
+    private static handleQuestionResultShown() {
+        dispatcher.handleViewAction({
+            action: new QuestionResultShown()
         });
     }
 

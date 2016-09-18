@@ -2,7 +2,7 @@ import Store from '../flux/store';
 import {IDispatcherPayload} from "../flux/dispatcher";
 import {
     SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction,
-    AnswerQuestionAction
+    AnswerQuestionAction, QuestionResultShown
 } from "./sceneActions";
 import Question from "../questions/question";
 
@@ -12,7 +12,7 @@ export const enum SCENE_STATES {
     ROUND_INTRO,
     PLACING_BET,
     QUESTION,
-    QUESTION_AFTERMATHS,
+    ANSWER_RESULTS,
     PLAYER_LOSE,
     PLAYER_WIN
 }
@@ -24,19 +24,23 @@ export interface IGameState {
     currentRound: number;
     currentBet: number;
     currentQuestion: Question;
-    previousAnswer: boolean;
-    wasPreviousAnswerCorrect: boolean;
+    answerToCurrentQuestion: boolean;
+    isAnswerToCurrentQuestionCorrect: boolean;
 }
 
 class GameStore extends Store {
     private playerName: string = '';
     private playerMoney: number = 100;
-    private currentGameState: SCENE_STATES = SCENE_STATES.NAME_INPUT;
+    private currentGameState: SCENE_STATES = SCENE_STATES.PLACING_BET;
     private currentRound: number = 0;
     private currentBet: number = 0;
     private currentQuestion: Question = Question.getQuestion();
-    private previousAnswer = true;
-    private wasPreviousAnswerCorrect = true;
+    private answerToCurrentQuestion = true;
+    private isAnswerToCurrentQuestionCorrect = true;
+
+    private currentQuestionInRound = 0;
+    private static MAX_ROUNDS_COUNT = 10;
+    private static MAX_QUESTIONS_PER_ROUND_COUNT = 10;
 
     protected onDispatch(payload: IDispatcherPayload): Promise<void> {
         const action = payload.action;
@@ -55,18 +59,37 @@ class GameStore extends Store {
             this.currentGameState = SCENE_STATES.QUESTION;
         } else if (action instanceof AnswerQuestionAction) {
             if (this.currentQuestion.getIsDefinitionCorrect() != action.answer) {
-                this.wasPreviousAnswerCorrect = false;
+                this.isAnswerToCurrentQuestionCorrect = false;
                 this.playerMoney -= this.currentBet;
             } else if (this.currentQuestion.getIsDefinitionCorrect()) {
-                this.wasPreviousAnswerCorrect = true;
+                this.isAnswerToCurrentQuestionCorrect = true;
                 this.playerMoney += this.currentBet * 2;
             } else {
-                this.wasPreviousAnswerCorrect = true;
+                this.isAnswerToCurrentQuestionCorrect = true;
                 this.playerMoney += this.currentBet * 3;
             }
 
-            this.previousAnswer = action.answer;
-            this.currentGameState = SCENE_STATES.QUESTION_AFTERMATHS;
+            this.answerToCurrentQuestion = action.answer;
+            this.currentGameState = SCENE_STATES.ANSWER_RESULTS;
+        } else if(action instanceof QuestionResultShown) {
+            if (this.playerMoney <= 0) {
+                this.currentGameState = SCENE_STATES.PLAYER_LOSE;
+            }
+
+            this.currentQuestionInRound++;
+
+            if (this.currentQuestionInRound >= GameStore.MAX_QUESTIONS_PER_ROUND_COUNT) {
+                this.currentRound++;
+                this.currentQuestionInRound = 0;
+
+                if (this.currentRound >= GameStore.MAX_ROUNDS_COUNT) {
+                    this.currentGameState = SCENE_STATES.PLAYER_WIN;
+                } else {
+                    this.currentGameState = SCENE_STATES.ROUND_INTRO;
+                }
+            } else {
+                this.currentGameState = SCENE_STATES.PLACING_BET;
+            }
         } else {
             return;
         }
@@ -82,8 +105,8 @@ class GameStore extends Store {
             currentRound: this.currentRound,
             currentBet: this.currentBet,
             currentQuestion: this.currentQuestion,
-            previousAnswer: this.previousAnswer,
-            wasPreviousAnswerCorrect: this.wasPreviousAnswerCorrect
+            answerToCurrentQuestion: this.answerToCurrentQuestion,
+            isAnswerToCurrentQuestionCorrect: this.isAnswerToCurrentQuestionCorrect
         };
     }
 }

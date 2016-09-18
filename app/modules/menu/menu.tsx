@@ -1,5 +1,5 @@
 import React from "react";
-import './menu-style';
+import './menu.style';
 import {Link} from 'react-router';
 import Animated from '../animated/animated';
 
@@ -7,13 +7,13 @@ export default class Menu extends React.Component<{},{}> {
     render() {
         return (
             <div className="menu">
-                {this.renderEnteringAnimation()}
-                {this.renderButtonsAnimation()}
+                {Menu.renderEnteringAnimation()}
+                {Menu.renderButtonsAnimation()}
             </div>
         );
     }
 
-    private renderEnteringAnimation(): JSX.Element {
+    private static renderEnteringAnimation(): JSX.Element {
         return (
             <Animated animations={{
                     delay: 2500,
@@ -57,7 +57,7 @@ export default class Menu extends React.Component<{},{}> {
         );
     }
 
-    private renderButtonsAnimation() {
+    private static renderButtonsAnimation() {
         return (
             <Animated animations={{
                 delay: 3000,
