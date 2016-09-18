@@ -1,4 +1,5 @@
 import React from 'react';
+import Typist from 'react-typist';
 import CountTo from '../../third-party/react-count-to';
 
 import './questionPanel.style';
@@ -10,6 +11,7 @@ interface IQuestionPanelProps {
     definition: string;
     currentBet: number;
     playerMoney: number;
+    currentQuestionNo: number;
     onTruthSelected?: () => void;
     onBunkSelected?: () => void;
     answerToCurrentQuestion?: boolean;
@@ -44,7 +46,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
 
         return (
             <div className="question-panel">
-                {QuestionPanel.wrapContentsInAnimated(QuestionPanel.renderWordAndDefinition(this.props.word, this.props.definition))}
+                {QuestionPanel.wrapContentsInAnimatedFadeOut(QuestionPanel.renderQuestionDetails(this.props.currentQuestionNo, this.props.word, this.props.definition))}
                 <div className="question-panel-buttons">
                     {QuestionPanel.renderAnimatedButtons(this.props.answerToCurrentQuestion, this.props.isAnswerToCurrentQuestionCorrect)}
                 </div>
@@ -65,7 +67,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                                                       onComplete={() => setTimeout(this.props.onResultShown, 1000)} />
                 </span>
                 </Animated>
-                {QuestionPanel.wrapContentsInAnimated(QuestionPanel.renderStatus(this.props.currentBet, this.playerMoney))}
+                {QuestionPanel.wrapContentsInAnimatedFadeOut(QuestionPanel.renderStatus(this.props.currentBet, this.playerMoney))}
             </div>
         )
     }
@@ -73,26 +75,61 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
     private renderQuestion() {
         return (
             <div className="question-panel">
-                {QuestionPanel.renderWordAndDefinition(this.props.word, this.props.definition)}
-                <div className="question-panel-buttons">
-                    <span className="question-panel-buttons__text">Is this a...</span>
-                    <button className="button question-panel-buttons__button question-panel-buttons__button--truth"
-                            onClick={this.props.onTruthSelected}>TRUTH</button>
-                    <span>OR</span>
-                    <button className="button question-panel-buttons__button question-panel-buttons__button--bunk"
-                            onClick={this.props.onBunkSelected}>BUNK</button>
-                </div>
-                {QuestionPanel.renderStatus(this.props.currentBet, this.playerMoney)}
+                <Animated animations={{
+                    length: 400,
+                    style: {
+                        top: 0
+                    }
+                }} initialStyle={{
+                    position: 'absolute',
+                    top: '-100%'
+                }} finalStyle={{
+                    position: 'static'
+                }}>
+                    {QuestionPanel.renderQuestionDetails(this.props.currentQuestionNo, this.props.word, this.props.definition)}
+                </Animated>
+                <Animated animations={{
+                    delay: 2000,
+                    length: 400,
+                    style: {
+                        opacity: 1
+                    }
+                }} initialStyle={{
+                    opacity: 0,
+                }}>
+                    <div className="question-panel-buttons">
+                        <span className="question-panel-buttons__text">Is this a...</span>
+                        <button className="button question-panel-buttons__button question-panel-buttons__button--truth"
+                                onClick={this.props.onTruthSelected}>TRUTH</button>
+                        <span>OR</span>
+                        <button className="button question-panel-buttons__button question-panel-buttons__button--bunk"
+                                onClick={this.props.onBunkSelected}>BUNK</button>
+                    </div>
+                </Animated>
+                <Animated animations={{
+                    length: 400,
+                    style: {
+                        bottom: 0
+                    }
+                }} initialStyle={{
+                    position: 'absolute',
+                    bottom: '-100%'
+                }} finalStyle={{
+                    position: 'static'
+                }}>
+                    {QuestionPanel.renderStatus(this.props.currentBet, this.playerMoney)}
+                </Animated>
             </div>
         );
     }
 
-    private static renderWordAndDefinition(word: string, definition: string): JSX.Element {
+    private static renderQuestionDetails(currentQuestionNo: number, word: string, definition: string): JSX.Element {
         return (
-            <div className="question-panel-question">
+            <Typist className="question-panel-question" cursor={{show: false}}>
+                <span>Question #{String(currentQuestionNo)}</span>
                 <span>{word}</span> -
                 <span>{definition}</span>
-            </div>
+            </Typist>
         );
     }
 
@@ -106,8 +143,8 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
     }
 
     private static renderAnimatedButtons(answer: boolean, isAnswerCorrect: boolean) {
-        const isThisA = QuestionPanel.wrapContentsInAnimated(<span className="question-panel-buttons__text">Is this a...</span>);
-        const or = QuestionPanel.wrapContentsInAnimated(<span>OR</span>);
+        const isThisA = QuestionPanel.wrapContentsInAnimatedFadeOut(<span className="question-panel-buttons__text">Is this a...</span>);
+        const or = QuestionPanel.wrapContentsInAnimatedFadeOut(<span>OR</span>);
 
         let buttonTruth = <button className="button question-panel-buttons__button question-panel-buttons__button--truth">TRUTH</button>;
         let buttonBunk = <button className="button question-panel-buttons__button question-panel-buttons__button--bunk">BUNK</button>;
@@ -131,7 +168,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
         );
 
         if (answer) {
-            buttonBunk = QuestionPanel.wrapContentsInAnimated(buttonBunk);
+            buttonBunk = QuestionPanel.wrapContentsInAnimatedFadeOut(buttonBunk);
             buttonTruth = (
                 <Animated animations={[
                     {
@@ -149,7 +186,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                 </Animated>
             );
         } else {
-            buttonTruth = QuestionPanel.wrapContentsInAnimated(buttonTruth);
+            buttonTruth = QuestionPanel.wrapContentsInAnimatedFadeOut(buttonTruth);
             buttonBunk = (
                 <Animated animations={[
                     {
@@ -179,7 +216,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
         )
     }
 
-    private static wrapContentsInAnimated(contents: JSX.Element) {
+    private static wrapContentsInAnimatedFadeOut(contents: JSX.Element) {
         return (
             <Animated animations={[
                 {

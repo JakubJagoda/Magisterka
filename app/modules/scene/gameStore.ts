@@ -24,6 +24,7 @@ export interface IGameState {
     currentRound: number;
     currentBet: number;
     currentQuestion: Question;
+    currentQuestionNumberInRound: number;
     answerToCurrentQuestion: boolean;
     isAnswerToCurrentQuestionCorrect: boolean;
 }
@@ -35,14 +36,14 @@ class GameStore extends Store {
     private currentRound: number = 0;
     private currentBet: number = 0;
     private currentQuestion: Question = Question.getQuestion();
+    private currentQuestionNumberInRound = 0;
     private answerToCurrentQuestion = true;
     private isAnswerToCurrentQuestionCorrect = true;
 
-    private currentQuestionInRound = 0;
     private static MAX_ROUNDS_COUNT = 10;
     private static MAX_QUESTIONS_PER_ROUND_COUNT = 10;
 
-    protected onDispatch(payload: IDispatcherPayload): Promise<void> {
+    protected onDispatch(payload: IDispatcherPayload) {
         const action = payload.action;
 
         if (action instanceof SetPlayerNameAction) {
@@ -50,6 +51,7 @@ class GameStore extends Store {
             this.currentGameState = SCENE_STATES.PLAYER_GREETING;
         } else if (action instanceof BeginRoundAction) {
             this.currentRound = action.round;
+            this.currentQuestionNumberInRound = 0;
             this.currentGameState = SCENE_STATES.ROUND_INTRO;
         } else if (action instanceof RequestForBetAction) {
             this.currentGameState = SCENE_STATES.PLACING_BET
@@ -76,11 +78,11 @@ class GameStore extends Store {
                 this.currentGameState = SCENE_STATES.PLAYER_LOSE;
             }
 
-            this.currentQuestionInRound++;
+            this.currentQuestionNumberInRound++;
 
-            if (this.currentQuestionInRound >= GameStore.MAX_QUESTIONS_PER_ROUND_COUNT) {
+            if (this.currentQuestionNumberInRound >= GameStore.MAX_QUESTIONS_PER_ROUND_COUNT) {
                 this.currentRound++;
-                this.currentQuestionInRound = 0;
+                this.currentQuestionNumberInRound = 0;
 
                 if (this.currentRound >= GameStore.MAX_ROUNDS_COUNT) {
                     this.currentGameState = SCENE_STATES.PLAYER_WIN;
@@ -105,6 +107,7 @@ class GameStore extends Store {
             currentRound: this.currentRound,
             currentBet: this.currentBet,
             currentQuestion: this.currentQuestion,
+            currentQuestionNumberInRound: this.currentQuestionNumberInRound,
             answerToCurrentQuestion: this.answerToCurrentQuestion,
             isAnswerToCurrentQuestionCorrect: this.isAnswerToCurrentQuestionCorrect
         };

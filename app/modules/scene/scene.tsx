@@ -60,6 +60,7 @@ class Scene extends React.Component<{},ISceneState> {
                 return (
                     <QuestionPanel word={this.state.currentQuestion.getWord()} definition={this.state.currentQuestion.getDefinition()}
                                    currentBet={this.state.currentBet} playerMoney={this.state.playerMoney}
+                                   currentQuestionNo={this.state.currentQuestionNumberInRound + 1}
                                    onTruthSelected={Scene.handleQuestionAnswered.bind(null, true)}
                                    onBunkSelected={Scene.handleQuestionAnswered.bind(null, false)} />
                 );
@@ -68,6 +69,7 @@ class Scene extends React.Component<{},ISceneState> {
                 return (
                     <QuestionPanel word={this.state.currentQuestion.getWord()} definition={this.state.currentQuestion.getDefinition()}
                                    currentBet={this.state.currentBet} playerMoney={this.state.playerMoney}
+                                   currentQuestionNo={this.state.currentQuestionNumberInRound + 1}
                                    answerToCurrentQuestion={this.state.answerToCurrentQuestion}
                                    isAnswerToCurrentQuestionCorrect={this.state.isAnswerToCurrentQuestionCorrect}
                                    onResultShown={Scene.handleQuestionResultShown} />
