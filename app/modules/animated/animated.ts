@@ -18,6 +18,7 @@ interface IAnimationDescriptor {
 interface IAnimatedProps {
     animations: IAnimationDescriptor|IAnimationDescriptor[];
     initialStyle?: ICSSProps;
+    finalStyle?: ICSSProps;
 }
 
 export default class Animated extends React.Component<IAnimatedProps,{}> {
@@ -66,15 +67,15 @@ export default class Animated extends React.Component<IAnimatedProps,{}> {
 
         if (Animated.isArrayOfAnimations(this.props.animations)) {
             for (const animation of this.props.animations) {
-                Animated.applyAnimation($element, animation);
+                Animated.applyAnimation($element, animation, this.props.finalStyle);
             }
         } else {
             const animation = this.props.animations;
-            Animated.applyAnimation($element, animation);
+            Animated.applyAnimation($element, animation, this.props.finalStyle);
         }
     }
 
-    private static applyAnimation($element:JQuery, animation:IAnimationDescriptor) {
+    private static applyAnimation($element:JQuery, animation:IAnimationDescriptor, finalStyle: ICSSProps) {
         if (Animated.isDisabled) {
             animation.delay = 0;
         }
@@ -85,6 +86,10 @@ export default class Animated extends React.Component<IAnimatedProps,{}> {
             }
 
             $element.css(animation.style);
+
+            if (finalStyle) {
+                setTimeout(() => $element.css(finalStyle), animation.length);
+            }
 
             if (!animation.callback) {
                 return;
