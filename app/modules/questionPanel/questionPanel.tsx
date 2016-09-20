@@ -39,35 +39,13 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
     }
 
     private renderAnswerResult() {
-        const moneyClassNames = classnames('question-panel__animated-status-money', {
-            'question-panel__animated-status-money--plus': this.props.isAnswerToCurrentQuestionCorrect,
-            'question-panel__animated-status-money--minus': !this.props.isAnswerToCurrentQuestionCorrect
-        });
-
         return (
             <div className="question-panel">
-                {QuestionPanel.wrapContentsInAnimatedFadeOut(QuestionPanel.renderQuestionDetails(this.props.currentQuestionNo, this.props.word, this.props.definition))}
+                {QuestionPanel.wrapContentsInAnimatedFadeOut(this.renderQuestionDetails())}
                 <div className="question-panel-buttons">
-                    {QuestionPanel.renderAnimatedButtons(this.props.answerToCurrentQuestion, this.props.isAnswerToCurrentQuestionCorrect)}
+                    {this.renderAnimatedButtons()}
                 </div>
-                <Animated animations={[
-                    {
-                        delay: 2000,
-                        length: 200,
-                        style: {
-                            opacity: 1
-                        }
-                    }
-                ]} initialStyle={{
-                    opacity: 0
-                }}>
-                    <span className="question-panel__animated-status">
-                    Current account status: $<CountTo from={this.playerMoney} to={this.props.playerMoney} speed={500}
-                                                      className={moneyClassNames} initialDelay={2500} delay={50}
-                                                      onComplete={() => setTimeout(this.props.onResultShown, 1000)} />
-                </span>
-                </Animated>
-                {QuestionPanel.wrapContentsInAnimatedFadeOut(QuestionPanel.renderStatus(this.props.currentBet, this.playerMoney))}
+                {QuestionPanel.wrapContentsInAnimatedFadeOut(this.renderStatus())}
             </div>
         )
     }
@@ -86,7 +64,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                 }} finalStyle={{
                     position: 'static'
                 }}>
-                    {QuestionPanel.renderQuestionDetails(this.props.currentQuestionNo, this.props.word, this.props.definition)}
+                    {this.renderQuestionDetails()}
                 </Animated>
                 <Animated animations={{
                     delay: 2000,
@@ -117,39 +95,39 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                 }} finalStyle={{
                     position: 'static'
                 }}>
-                    {QuestionPanel.renderStatus(this.props.currentBet, this.playerMoney)}
+                    {this.renderStatus()}
                 </Animated>
             </div>
         );
     }
 
-    private static renderQuestionDetails(currentQuestionNo: number, word: string, definition: string): JSX.Element {
+    private renderQuestionDetails(): JSX.Element {
         return (
             <Typist className="question-panel-question" cursor={{show: false}}>
-                <span>Question #{String(currentQuestionNo)}</span>
-                <span>{word}</span> -
-                <span>{definition}</span>
+                <span>Question #{String(this.props.currentQuestionNo)}</span>
+                <span>{this.props.word}</span> -
+                <span>{this.props.definition}</span>
             </Typist>
         );
     }
 
-    private static renderStatus(currentBet: number, playerMoney: number): JSX.Element {
+    private renderStatus(): JSX.Element {
         return (
             <div className="question-panel-status">
-                <span>Current bet: <span className="question-panel-status__value">${currentBet}</span></span>
-                <span>Money left: <span className="question-panel-status__value">${playerMoney}</span></span>
+                <span>Current bet: <span className="question-panel-status__value">${this.props.currentBet}</span></span>
+                <span>Money left: <span className="question-panel-status__value">${this.props.playerMoney}</span></span>
             </div>
         );
     }
 
-    private static renderAnimatedButtons(answer: boolean, isAnswerCorrect: boolean) {
+    private renderAnimatedButtons() {
         const isThisA = QuestionPanel.wrapContentsInAnimatedFadeOut(<span className="question-panel-buttons__text">Is this a...</span>);
         const or = QuestionPanel.wrapContentsInAnimatedFadeOut(<span>OR</span>);
 
         let buttonTruth = <button className="button question-panel-buttons__button question-panel-buttons__button--truth">TRUTH</button>;
         let buttonBunk = <button className="button question-panel-buttons__button question-panel-buttons__button--bunk">BUNK</button>;
 
-        const textFileName = isAnswerCorrect ? 'correct' : 'wrong';
+        const textFileName = this.props.isAnswerToCurrentQuestionCorrect ? 'correct' : 'wrong';
         const textImage = (
             <Animated animations={[
                 {
@@ -167,7 +145,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
             </Animated>
         );
 
-        if (answer) {
+        if (this.props.answerToCurrentQuestion) {
             buttonBunk = QuestionPanel.wrapContentsInAnimatedFadeOut(buttonBunk);
             buttonTruth = (
                 <Animated animations={[
@@ -205,6 +183,31 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
             );
         }
 
+        const moneyClassNames = classnames('question-panel-buttons__animated-status-money', {
+            'question-panel-buttons__animated-status-money--plus': this.props.isAnswerToCurrentQuestionCorrect,
+            'question-panel-buttons__animated-status-money--minus': !this.props.isAnswerToCurrentQuestionCorrect
+        });
+        
+        const animatedCounter = (
+            <Animated animations={[
+                    {
+                        delay: 2000,
+                        length: 200,
+                        style: {
+                            opacity: 1
+                        }
+                    }
+                ]} initialStyle={{
+                    opacity: 0
+                }}>
+                    <span className="question-panel-buttons__animated-status">
+                    Current account status: $<CountTo from={this.playerMoney} to={this.props.playerMoney} speed={500}
+                                                      className={moneyClassNames} initialDelay={2500} delay={50}
+                                                      onComplete={() => setTimeout(this.props.onResultShown, 1000)} />
+                </span>
+            </Animated>
+        );
+
         return (
             <div className="question-panel-buttons">
                 {textImage}
@@ -212,6 +215,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                 {buttonTruth}
                 {or}
                 {buttonBunk}
+                {animatedCounter}
             </div>
         )
     }
