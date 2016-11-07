@@ -10,6 +10,8 @@ interface IRoundIntroProps {
 
 export default class RoundIntro extends React.Component<IRoundIntroProps,{}> {
     render() {
+        const humanizedRoundNumber = this.props.currentRound + 1;
+
         return (
             <Animated animations={[
                 {
@@ -44,7 +46,7 @@ export default class RoundIntro extends React.Component<IRoundIntroProps,{}> {
                         }
                     }
                 ]}>
-                    <div className="round-intro__number"><img src={`static/img/${this.props.currentRound}.png`}/></div>
+                    <div className="round-intro__number"><img src={`static/img/${humanizedRoundNumber}.png`}/></div>
                 </Animated>
             </div>
             </Animated>
