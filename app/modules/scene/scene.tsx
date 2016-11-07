@@ -4,7 +4,7 @@ import './scene.style';
 import dispatcher from '../flux/dispatcher';
 import {
     SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction,
-    AnswerQuestionAction, QuestionResultShown
+    AnswerQuestionAction, QuestionResultShown, FinalScoreShown
 } from './sceneActions';
 import {default as gameStore, SCENE_STATES, IGameState} from './gameStore';
 
@@ -12,6 +12,7 @@ import PlayerNameForm from '../playerNameForm/playerNameForm';
 import RoundIntro from "../roundIntro/roundIntro";
 import PlaceBetForm from "../placeBetForm/placeBetForm";
 import QuestionPanel from "../questionPanel/questionPanel";
+import GameOver from "../gameOver/gameOver";
 
 interface ISceneState extends IGameState {}
 
@@ -75,6 +76,18 @@ class Scene extends React.Component<{},ISceneState> {
                                    onResultShown={Scene.handleQuestionResultShown} />
                 );
 
+            case SCENE_STATES.PLAYER_LOSE:
+                return (
+                    <GameOver didPlayerWin={false} playerMoney={this.state.playerMoney}
+                              onScoreShown={Scene.handleFinalScoreShown}  />
+                );
+
+            case SCENE_STATES.PLAYER_WIN:
+                return (
+                    <GameOver didPlayerWin={true} playerMoney={this.state.playerMoney}
+                              onScoreShown={Scene.handleFinalScoreShown}  />
+                );
+
             default:
                 return null;
         }
@@ -122,6 +135,12 @@ class Scene extends React.Component<{},ISceneState> {
     private static handleQuestionResultShown() {
         dispatcher.handleViewAction({
             action: new QuestionResultShown()
+        });
+    }
+
+    private static handleFinalScoreShown() {
+        dispatcher.handleViewAction({
+            action: new FinalScoreShown()
         });
     }
 

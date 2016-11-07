@@ -1,8 +1,9 @@
+import {hashHistory} from 'react-router';
 import Store from '../flux/store';
 import {IDispatcherPayload} from "../flux/dispatcher";
 import {
     SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction,
-    AnswerQuestionAction, QuestionResultShown
+    AnswerQuestionAction, QuestionResultShown, FinalScoreShown
 } from "./sceneActions";
 import Question from "../questions/question";
 
@@ -30,11 +31,11 @@ export interface IGameState {
 }
 
 class GameStore extends Store {
-    private playerName: string = '';
-    private playerMoney: number = 100;
-    private currentGameState: SCENE_STATES = SCENE_STATES.PLACING_BET;
-    private currentRound: number = 0;
-    private currentBet: number = 0;
+    private playerName = '';
+    private playerMoney = 100;
+    private currentGameState: SCENE_STATES = SCENE_STATES.NAME_INPUT;
+    private currentRound = 0;
+    private currentBet = 0;
     private currentQuestion: Question = Question.getQuestion();
     private currentQuestionNumberInRound = 0;
     private answerToCurrentQuestion = true;
@@ -73,25 +74,28 @@ class GameStore extends Store {
 
             this.answerToCurrentQuestion = action.answer;
             this.currentGameState = SCENE_STATES.ANSWER_RESULTS;
-        } else if(action instanceof QuestionResultShown) {
+        } else if (action instanceof QuestionResultShown) {
             if (this.playerMoney <= 0) {
                 this.currentGameState = SCENE_STATES.PLAYER_LOSE;
-            }
-
-            this.currentQuestionNumberInRound++;
-
-            if (this.currentQuestionNumberInRound >= GameStore.MAX_QUESTIONS_PER_ROUND_COUNT) {
-                this.currentRound++;
-                this.currentQuestionNumberInRound = 0;
-
-                if (this.currentRound >= GameStore.MAX_ROUNDS_COUNT) {
-                    this.currentGameState = SCENE_STATES.PLAYER_WIN;
-                } else {
-                    this.currentGameState = SCENE_STATES.ROUND_INTRO;
-                }
             } else {
-                this.currentGameState = SCENE_STATES.PLACING_BET;
+                this.currentQuestionNumberInRound++;
+
+                if (this.currentQuestionNumberInRound >= GameStore.MAX_QUESTIONS_PER_ROUND_COUNT) {
+                    this.currentRound++;
+                    this.currentQuestionNumberInRound = 0;
+
+                    if (this.currentRound >= GameStore.MAX_ROUNDS_COUNT) {
+                        this.currentGameState = SCENE_STATES.PLAYER_WIN;
+                    } else {
+                        this.currentGameState = SCENE_STATES.ROUND_INTRO;
+                    }
+                } else {
+                    this.currentGameState = SCENE_STATES.PLACING_BET;
+                }
             }
+        } else if (action instanceof FinalScoreShown) {
+            this.resetGameStateToDefaults();
+            hashHistory.replace('/');
         } else {
             return;
         }
@@ -111,6 +115,17 @@ class GameStore extends Store {
             answerToCurrentQuestion: this.answerToCurrentQuestion,
             isAnswerToCurrentQuestionCorrect: this.isAnswerToCurrentQuestionCorrect
         };
+    }
+    
+    private resetGameStateToDefaults() {
+        this.playerName = '';
+        this.playerMoney = 100;
+        this.currentGameState = SCENE_STATES.NAME_INPUT;
+        this.currentRound = 0;
+        this.currentBet = 0;
+        this.currentQuestionNumberInRound = 0;
+        this.answerToCurrentQuestion = true;
+        this.isAnswerToCurrentQuestionCorrect = true;
     }
 }
 

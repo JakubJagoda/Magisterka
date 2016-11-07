@@ -29,3 +29,8 @@ export class QuestionResultShown implements IDispatcherAction {
     constructor() {
     }
 }
+
+export class FinalScoreShown implements IDispatcherAction {
+    constructor() {
+    }
+}

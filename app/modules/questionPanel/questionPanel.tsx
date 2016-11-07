@@ -115,7 +115,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
         return (
             <div className="question-panel-status">
                 <span>Current bet: <span className="question-panel-status__value">${this.props.currentBet}</span></span>
-                <span>Money left: <span className="question-panel-status__value">${this.props.playerMoney}</span></span>
+                <span>Money left: <span className="question-panel-status__value">${this.playerMoney}</span></span>
             </div>
         );
     }
