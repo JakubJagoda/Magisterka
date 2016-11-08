@@ -71,12 +71,10 @@ export default class Menu extends React.Component<{},{}> {
                     <Link to="/game">
                         <button className="menu__item">New Game</button>
                     </Link>
-                    <Link to="/instructions">
-                        <button className="menu__item">Instructions</button>
+                    <Link to="/highscores">
+                        <button className="menu__item">High Scores</button>
                     </Link>
-                    <Link to="/exit">
-                        <button className="menu__item">Exit</button>
-                    </Link>
+                    <button className="menu__item">Exit</button>
                 </div>
             </Animated>
         )

@@ -3,7 +3,7 @@ import Store from '../flux/store';
 import {IDispatcherPayload} from "../flux/dispatcher";
 import {
     SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction,
-    AnswerQuestionAction, QuestionResultShown, FinalScoreShown
+    AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction
 } from "./sceneActions";
 import Question from "../questions/question";
 
@@ -74,7 +74,7 @@ class GameStore extends Store {
 
             this.answerToCurrentQuestion = action.answer;
             this.currentGameState = SCENE_STATES.ANSWER_RESULTS;
-        } else if (action instanceof QuestionResultShown) {
+        } else if (action instanceof QuestionResultShownAction) {
             if (this.playerMoney <= 0) {
                 this.currentGameState = SCENE_STATES.PLAYER_LOSE;
             } else {
@@ -93,9 +93,8 @@ class GameStore extends Store {
                     this.currentGameState = SCENE_STATES.PLACING_BET;
                 }
             }
-        } else if (action instanceof FinalScoreShown) {
+        } else if (action instanceof FinalScoreShownAction) {
             this.resetGameStateToDefaults();
-            hashHistory.replace('/');
         } else {
             return;
         }

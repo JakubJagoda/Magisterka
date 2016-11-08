@@ -4,8 +4,9 @@ import './scene.style';
 import dispatcher from '../flux/dispatcher';
 import {
     SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction,
-    AnswerQuestionAction, QuestionResultShown, FinalScoreShown
+    AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction
 } from './sceneActions';
+import {SaveHighScoreAction} from '../highScores/highScoresActions';
 import {default as gameStore, SCENE_STATES, IGameState} from './gameStore';
 
 import PlayerNameForm from '../playerNameForm/playerNameForm';
@@ -13,6 +14,7 @@ import RoundIntro from "../roundIntro/roundIntro";
 import PlaceBetForm from "../placeBetForm/placeBetForm";
 import QuestionPanel from "../questionPanel/questionPanel";
 import GameOver from "../gameOver/gameOver";
+import {hashHistory} from "react-router";
 
 interface ISceneState extends IGameState {}
 
@@ -134,14 +136,21 @@ class Scene extends React.Component<{},ISceneState> {
 
     private static handleQuestionResultShown() {
         dispatcher.handleViewAction({
-            action: new QuestionResultShown()
+            action: new QuestionResultShownAction()
         });
     }
 
     private static handleFinalScoreShown() {
+        const {playerName, playerMoney, currentRound} = gameStore.getGameState();
         dispatcher.handleViewAction({
-            action: new FinalScoreShown()
+            action: new SaveHighScoreAction(playerName, currentRound, playerMoney)
         });
+
+        dispatcher.handleViewAction({
+            action: new FinalScoreShownAction()
+        });
+
+        hashHistory.replace('/highscores');
     }
 
     private onGameStoreChange() {

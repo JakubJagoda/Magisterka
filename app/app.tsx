@@ -1,11 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {Router, Route, hashHistory} from 'react-router';
+import {Router, Route, Redirect, hashHistory} from 'react-router';
 
 import Animated from './modules/animated/animated';
 
 import Menu from "./modules/menu/menu";
 import Scene from "./modules/scene/scene";
+import HighScores from "./modules/highScores/highScores";
 
 import './static/stylesheets/style';
 import $ from './third-party/jquery-fix';
@@ -54,6 +55,8 @@ const topLevelApp = (
             <Route path="/" component={Menu}/>
             <Route path="/menu" component={Menu}/>
             <Route path="/game" component={Scene}/>
+            <Route path="/highscores" component={HighScores}/>
+            <Redirect from="*" to="/" />
         </Router>
     </div>
 );

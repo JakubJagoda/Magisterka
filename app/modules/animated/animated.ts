@@ -13,6 +13,7 @@ interface IAnimationDescriptor {
     style: ICSSProps;
     property?: string;
     callback?: Function;
+    isDisabled?: boolean;
 }
 
 interface IAnimatedProps {
@@ -54,6 +55,7 @@ export default class Animated extends React.Component<IAnimatedProps,{}> {
         animation.easing = animation.easing || 'ease-in';
         animation.delay = animation.delay || 0;
         animation.property = animation.property || 'all';
+        animation.isDisabled = animation.isDisabled || false;
     }
 
     private createAnimations(element:HTMLElement) {
@@ -76,8 +78,9 @@ export default class Animated extends React.Component<IAnimatedProps,{}> {
     }
 
     private static applyAnimation($element:JQuery, animation:IAnimationDescriptor, finalStyle: ICSSProps) {
-        if (Animated.isDisabled) {
+        if (Animated.isDisabled || animation.isDisabled) {
             animation.delay = 0;
+            animation.length = 0;
         }
 
         setTimeout(() => {

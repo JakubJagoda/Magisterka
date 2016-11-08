@@ -25,12 +25,12 @@ export class AnswerQuestionAction implements IDispatcherAction {
     }
 }
 
-export class QuestionResultShown implements IDispatcherAction {
+export class QuestionResultShownAction implements IDispatcherAction {
     constructor() {
     }
 }
 
-export class FinalScoreShown implements IDispatcherAction {
+export class FinalScoreShownAction implements IDispatcherAction {
     constructor() {
     }
 }
