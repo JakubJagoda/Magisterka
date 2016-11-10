@@ -54,7 +54,9 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps,IPl
                     <input type="number" autoFocus className="place-bet-form__input" min={PlaceBetForm.MINIMAL_BET}
                            max={this.props.maxBet} step="10" defaultValue={String(this.state.bet)}
                            onChange={this.handleBetUpdate.bind(this)} ref={input => this.input = input} />
-                    <span className="place-bet-form__current-cash-status">Current cash: ${this.props.currentPlayerMoney}</span>
+                    <div className="place-bet-form__current-cash-status">
+                        Current cash: <span className="place-bet-form__current-cash-amount">${this.props.currentPlayerMoney}</span>
+                    </div>
                     <button className="button place-bet-form__button" type="submit">OK</button>
                 </form>
             </TypistModal>

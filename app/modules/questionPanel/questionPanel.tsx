@@ -201,7 +201,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                     opacity: 0
                 }}>
                     <span className="question-panel-buttons__animated-status">
-                    Current account status: $<CountTo from={this.playerMoney} to={this.props.playerMoney} speed={500}
+                    Current cash: $<CountTo from={this.playerMoney} to={this.props.playerMoney} speed={500}
                                                       className={moneyClassNames} initialDelay={2500} delay={50}
                                                       onComplete={() => setTimeout(this.props.onResultShown, 1000)} />
                 </span>
