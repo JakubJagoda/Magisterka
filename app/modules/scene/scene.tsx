@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import './scene.style';
 
 import dispatcher from '../flux/dispatcher';
@@ -19,7 +19,7 @@ import {hashHistory} from "react-router";
 interface ISceneState extends IGameState {}
 
 class Scene extends React.Component<{},ISceneState> {
-    private boundGameStoreUpdateHandler;
+    private boundGameStoreUpdateHandler: () => void;
 
     constructor() {
         super();

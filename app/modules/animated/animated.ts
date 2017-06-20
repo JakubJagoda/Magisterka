@@ -1,6 +1,6 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import $ from '../../third-party/jquery-fix';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import * as $ from 'jquery';
 
 interface ICSSProps {
     [prop:string]: string|number;

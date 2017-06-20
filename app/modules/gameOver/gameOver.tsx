@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import Animated from "../animated/animated";
 import CountTo from "../../third-party/react-count-to";
 

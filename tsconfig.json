@@ -4,13 +4,10 @@
     "target": "es6",
     "sourceMap": true,
     "jsx": "react",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node"
   },
-  "exclude": [
-    "node_modules"
-  ],
   "files": [
-    "typings/index.d.ts",
     "app/app.d.ts",
     "app/modules/questions/questions.d.ts"
   ]

@@ -1,7 +1,7 @@
 /* modified version of React-Count-To from https://github.com/MicheleBertoli/react-count-to
    credits for original library go to Michele Bertoli */
 
-import React from 'react';
+import * as React from 'react';
 
 interface ICountToProps {
     from?: number,

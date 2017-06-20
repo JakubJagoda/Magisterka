@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 interface IStadiumLightsProps {
     radius: number;
@@ -14,11 +14,11 @@ interface IStadiumLightsProps {
 
 export default class StadiumLights extends React.Component<IStadiumLightsProps,{}> {
     private canvasContext: CanvasRenderingContext2D;
-    
+
     render() {
         return <canvas className={this.props.className} style={this.props.style} ref={this.renderHook.bind(this)} />
     }
-    
+
     private renderHook(ref: HTMLCanvasElement) {
         this.canvasContext = ref.getContext('2d');
         ref.setAttribute('width', String(this.getWidth()));
@@ -38,7 +38,7 @@ export default class StadiumLights extends React.Component<IStadiumLightsProps,{
     private getDimensionSize(start: number, elementCountInDimension: number) {
         return start + elementCountInDimension*(2*this.props.radius + this.props.margin) - this.props.margin;
     }
-    
+
     private renderStadiumLight() {
         const shift = 2*this.props.radius + this.props.margin;
 

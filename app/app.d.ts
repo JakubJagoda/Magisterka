@@ -10,3 +10,9 @@ declare const enum UserEvents {
     QUESTION_PANEL__TRUE_CLICKED,
     QUESTION_PANEL__FALSE_CLICKED
 }
+
+declare var require: {
+    <T>(path: string): T;
+    (paths: string[], callback: (...modules: any[]) => void): void;
+    ensure: (paths: string[], callback: (require: <T>(path: string) => T) => void) => void;
+};

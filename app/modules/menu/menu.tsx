@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import './menu.style';
 import {Link} from 'react-router';
 import Animated from '../animated/animated';

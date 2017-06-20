@@ -1,5 +1,5 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 import {Router, Route, Redirect, hashHistory} from 'react-router';
 
 import Animated from './modules/animated/animated';
@@ -7,9 +7,9 @@ import Animated from './modules/animated/animated';
 import Menu from "./modules/menu/menu";
 import Scene from "./modules/scene/scene";
 import HighScores from "./modules/highScores/highScores";
+import RegisterForm from "./modules/registerForm/registerForm";
 
 import './static/stylesheets/style';
-import $ from './third-party/jquery-fix';
 
 import StadiumLights from './modules/stadiumLights/stadiumLights';
 
@@ -56,6 +56,7 @@ const topLevelApp = (
             <Route path="/menu" component={Menu}/>
             <Route path="/game" component={Scene}/>
             <Route path="/highscores" component={HighScores}/>
+            <Route path="/register" component={RegisterForm}/>
             <Redirect from="*" to="/" />
         </Router>
     </div>

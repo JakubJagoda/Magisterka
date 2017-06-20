@@ -1,10 +1,10 @@
-import React from 'react';
+import * as React from 'react';
+import * as classnames from "classnames";
 import Typist from 'react-typist';
 import CountTo from '../../third-party/react-count-to';
 
 import './questionPanel.style';
 import Animated from "../animated/animated";
-import classnames from "classnames";
 
 interface IQuestionPanelProps {
     word: string;
@@ -187,7 +187,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
             'question-panel-buttons__animated-status-money--plus': this.props.isAnswerToCurrentQuestionCorrect,
             'question-panel-buttons__animated-status-money--minus': !this.props.isAnswerToCurrentQuestionCorrect
         });
-        
+
         const animatedCounter = (
             <Animated animations={[
                     {

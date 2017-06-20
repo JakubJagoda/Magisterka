@@ -1,5 +1,4 @@
-import React from 'react';
-import classnames from "classnames";
+import * as React from 'react';
 import TypistModal from "../typistModal/typistModal";
 
 import './placeBetForm.style';

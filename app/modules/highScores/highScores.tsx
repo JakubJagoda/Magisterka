@@ -1,5 +1,5 @@
 import {hashHistory} from 'react-router';
-import React from 'react';
+import * as React from 'react';
 import "./highScores.style";
 import {default as highScoresState} from './highScoresStore';
 import Animated from "../animated/animated";

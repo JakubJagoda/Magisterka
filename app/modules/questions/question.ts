@@ -1,4 +1,5 @@
-import questions from 'json!./questions.json';
+import {IPlainQuestion} from "./questions";
+const questions = require<IPlainQuestion[]>('./questions.json');
 
 export default class Question {
     private word: string;
