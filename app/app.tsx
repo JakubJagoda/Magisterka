@@ -4,10 +4,11 @@ import {Router, Route, Redirect, hashHistory} from 'react-router';
 
 import Animated from './modules/animated/animated';
 
-import Menu from "./modules/menu/menu";
-import Scene from "./modules/scene/scene";
-import HighScores from "./modules/highScores/highScores";
-import RegisterForm from "./modules/registerForm/registerForm";
+import Menu from './modules/menu/menu';
+import Scene from './modules/scene/scene';
+import HighScores from './modules/highScores/highScores';
+import RegisterForm from './modules/registerForm/registerForm';
+import * as RegisterDevice from './modules/registerDevice/registerDevice';
 
 import './static/stylesheets/style';
 
@@ -69,3 +70,4 @@ ReactDOM.render(
 
 document.body.appendChild(wrapper);
 
+RegisterDevice.registerDevice();

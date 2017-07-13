@@ -1,3 +1,5 @@
+$spinkit-spinner-color: #fff;
+@import "../../../node_modules/spinkit/scss/spinners/2-double-bounce";
 @import "../../static/stylesheets/button";
 
 .menu {
@@ -29,6 +31,7 @@
   }
 
   &__buttons {
+    color: white;
     position: absolute;
     display: flex;
     flex-direction: column;

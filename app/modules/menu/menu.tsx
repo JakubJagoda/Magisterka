@@ -2,13 +2,48 @@ import * as React from "react";
 import './menu.style';
 import {Link} from 'react-router';
 import Animated from '../animated/animated';
+import userStore from '../user/userStore';
 
-export default class Menu extends React.Component<{},{}> {
+interface IMenuState {
+    loading: boolean;
+}
+
+export default class Menu extends React.Component<{loading?: boolean},IMenuState> {
+    private onUserStoreChangeBound = this.onUserStoreChange.bind(this);
+
+    constructor(...props) {
+        super(...props);
+
+        this.state = {
+            loading: true
+        };
+
+        userStore.addListener(this.onUserStoreChangeBound);
+    }
+
+    componentWillUnmount() {
+        userStore.removeListener(this.onUserStoreChangeBound);
+    }
+
+    private onUserStoreChange() {
+        const {deviceID} = userStore.getUserData();
+
+        if (deviceID) {
+            this.setState(Object.assign(this.state, {
+                loading: false
+            }));
+        } else {
+            this.setState(Object.assign(this.state, {
+                loading: true
+            }));
+        }
+    }
+
     render() {
         return (
             <div className="menu">
                 {Menu.renderEnteringAnimation()}
-                {Menu.renderButtonsAnimation()}
+                {this.renderButtonsAnimation()}
             </div>
         );
     }
@@ -57,26 +92,54 @@ export default class Menu extends React.Component<{},{}> {
         );
     }
 
-    private static renderButtonsAnimation() {
-        return (
-            <Animated animations={{
-                delay: 3000,
-                length: 500,
-                style: {
-                    top: '50%'
-                },
-                easing: 'ease-out'
-            }} initialStyle={{top: '100%'}}>
-                <div className="menu__buttons">
-                    <Link to="/game">
-                        <button className="menu__item">New Game</button>
-                    </Link>
-                    <Link to="/highscores">
-                        <button className="menu__item">High Scores</button>
-                    </Link>
-                    <button className="menu__item">Exit</button>
-                </div>
-            </Animated>
-        )
+    private renderButtonsAnimation(): JSX.Element {
+        let element;
+
+        if (this.state.loading) {
+            element = (
+                <Animated key={Math.random()} animations={{
+                    delay: 3000,
+                    length: 500,
+                    style: {
+                        top: '50%'
+                    },
+                    easing: 'ease-out',
+                    name: 'loading'
+                }} initialStyle={{top: '100%'}}>
+                    <div className="menu__buttons">
+                        <div className="sk-double-bounce">
+                            <span className="sk-child sk-double-bounce1"></span>
+                            <span className="sk-child sk-double-bounce2"></span>
+                        </div>
+                        <span>Waiting for Hubert Urbański...</span>
+                    </div>
+                </Animated>
+            )
+        } else {
+            element = (<Animated key={Math.random()} animations={{
+                    delay: 10,
+                    length: 500,
+                    style: {
+                        top: '50%'
+                    },
+                    easing: 'ease-out',
+                    after: 'loading'
+                }} initialStyle={{top: '100%'}}>
+                    <div className="menu__buttons">
+                        <Link to="/game">
+                            <button className="menu__item">New Game</button>
+                        </Link>
+                        <Link to="/highscores">
+                            <button className="menu__item">High Scores</button>
+                        </Link>
+                        <Link to="/register">
+                            <button className="menu__item">Register</button>
+                        </Link>
+                        <button className="menu__item">Exit</button>
+                    </div>
+                </Animated>);
+        }
+
+        return element;
     }
 }
