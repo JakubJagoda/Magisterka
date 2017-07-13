@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import $ from 'jquery';
+import * as $ from 'jquery';
 
 interface ICSSProps {
     [prop:string]: string|number;
@@ -14,8 +14,6 @@ interface IAnimationDescriptor {
     property?: string;
     callback?: Function;
     isDisabled?: boolean;
-    after?: string;
-    name?: string;
 }
 
 interface IAnimatedProps {
@@ -31,8 +29,6 @@ export default class Animated extends React.Component<IAnimatedProps,{}> {
     };
 
     private static isDisabled = false;
-    private static done: string[] = [];
-    private static after = new Map<string, Array<() => void>>();
     private animationsRan = false;
 
     static disableAnimations() {
@@ -90,40 +86,7 @@ export default class Animated extends React.Component<IAnimatedProps,{}> {
             animation.length = 0;
         }
 
-        if (animation.name && !Animated.after.has(animation.name)) {
-            Animated.after.set(animation.name, []);
-        }
-
-        let callback;
-        if (animation.callback) {
-            callback = () => {
-                if (animation.name) {
-                    Animated.done.push(animation.name);
-                }
-
-                if (animation.name && Animated.after.has(animation.name)) {
-                    for (const delayedAnimation of Animated.after.get(animation.name)) {
-                        delayedAnimation();
-                    }
-                }
-
-                animation.callback();
-            }
-        } else {
-            callback = () => {
-                if (animation.name) {
-                    Animated.done.push(animation.name);
-                }
-
-                if (animation.name && Animated.after.has(animation.name)) {
-                    for (const delayedAnimation of Animated.after.get(animation.name)) {
-                        delayedAnimation();
-                    }
-                }
-            }
-        }
-
-        const animationFn = () => {
+        setTimeout(() => {
             if (animation.length) {
                 $element.css('transition', `${animation.property} ${animation.length}ms ${animation.easing}`);
             }
@@ -134,22 +97,14 @@ export default class Animated extends React.Component<IAnimatedProps,{}> {
                 setTimeout(() => $element.css(finalStyle), animation.length);
             }
 
-            if (animation.length) {
-                setTimeout(callback, animation.length);
+            if (!animation.callback) {
+                return;
+            } else if (animation.length) {
+                setTimeout(animation.callback, animation.length);
             } else {
-                callback();
+                animation.callback();
             }
-        };
-
-        if (animation.after && Animated.done.indexOf(animation.after) !== -1) {
-            setTimeout(animationFn, animation.delay);
-        } else if (animation.after) {
-            Animated.after.get(animation.after).push(() => {
-                setTimeout(animationFn, animation.delay);
-            });
-        } else {
-            setTimeout(animationFn, animation.delay);
-        }
+        }, animation.delay);
     }
 
     private static isArrayOfAnimations(animations: IAnimationDescriptor|IAnimationDescriptor[]): animations is IAnimationDescriptor[] {
