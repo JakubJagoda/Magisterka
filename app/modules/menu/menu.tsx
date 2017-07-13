@@ -15,7 +15,7 @@ export default class Menu extends React.Component<{loading?: boolean},IMenuState
         super(...props);
 
         this.state = {
-            loading: true
+            loading: !userStore.getUserData().deviceID
         };
 
         userStore.addListener(this.onUserStoreChangeBound);
@@ -28,15 +28,9 @@ export default class Menu extends React.Component<{loading?: boolean},IMenuState
     private onUserStoreChange() {
         const {deviceID} = userStore.getUserData();
 
-        if (deviceID) {
-            this.setState(Object.assign(this.state, {
-                loading: false
-            }));
-        } else {
-            this.setState(Object.assign(this.state, {
-                loading: true
-            }));
-        }
+        this.setState(Object.assign(this.state, {
+            loading: !deviceID
+        }));
     }
 
     render() {
@@ -93,53 +87,42 @@ export default class Menu extends React.Component<{loading?: boolean},IMenuState
     }
 
     private renderButtonsAnimation(): JSX.Element {
-        let element;
+        let inner;
 
         if (this.state.loading) {
-            element = (
-                <Animated key={Math.random()} animations={{
-                    delay: 3000,
-                    length: 500,
-                    style: {
-                        top: '50%'
-                    },
-                    easing: 'ease-out',
-                    name: 'loading'
-                }} initialStyle={{top: '100%'}}>
-                    <div className="menu__buttons">
-                        <div className="sk-double-bounce">
-                            <span className="sk-child sk-double-bounce1"></span>
-                            <span className="sk-child sk-double-bounce2"></span>
-                        </div>
-                        <span>Waiting for Hubert Urbański...</span>
+            inner = (
+                <div className="menu__buttons">
+                    <div className="sk-double-bounce">
+                        <span className="sk-child sk-double-bounce1"></span>
+                        <span className="sk-child sk-double-bounce2"></span>
                     </div>
-                </Animated>
+                    <span>Waiting for Hubert Urbański...</span>
+                </div>
             )
         } else {
-            element = (<Animated key={Math.random()} animations={{
-                    delay: 10,
-                    length: 500,
-                    style: {
-                        top: '50%'
-                    },
-                    easing: 'ease-out',
-                    after: 'loading'
-                }} initialStyle={{top: '100%'}}>
-                    <div className="menu__buttons">
-                        <Link to="/game">
-                            <button className="menu__item">New Game</button>
-                        </Link>
-                        <Link to="/highscores">
-                            <button className="menu__item">High Scores</button>
-                        </Link>
-                        <Link to="/register">
-                            <button className="menu__item">Register</button>
-                        </Link>
-                        <button className="menu__item">Exit</button>
-                    </div>
-                </Animated>);
+            inner = (<div className="menu__buttons">
+                <Link to="/game">
+                    <button className="menu__item">New Game</button>
+                </Link>
+                <Link to="/highscores">
+                    <button className="menu__item">High Scores</button>
+                </Link>
+                <Link to="/register">
+                    <button className="menu__item">Register</button>
+                </Link>
+                <button className="menu__item">Exit</button>
+            </div>);
         }
 
-        return element;
+        return (<Animated animations={{
+            delay: 3000,
+            length: 500,
+            style: {
+                top: '50%'
+            },
+            easing: 'ease-out',
+        }} initialStyle={{top: '100%'}}>
+            {inner}
+        </Animated>);
     }
 }
