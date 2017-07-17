@@ -106,14 +106,15 @@ export default class Menu extends React.Component<IMenuProps,IMenuState> {
             )
         } else {
             inner = (<div className="menu__buttons">
+                <div className="menu__signed-in">Signed in as <strong>{userStore.getUserData().userName}</strong></div>
                 <Link to="/game">
                     <button className="menu__item">New Game</button>
                 </Link>
-                <Link to="/highscores">
-                    <button className="menu__item">High Scores</button>
-                </Link>
                 <Link to="/register">
                     <button className="menu__item">Register</button>
+                </Link>
+                <Link to="/signin">
+                    <button className="menu__item">Sign in</button>
                 </Link>
                 <button className="menu__item">Exit</button>
             </div>);

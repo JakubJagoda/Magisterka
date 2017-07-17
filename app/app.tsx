@@ -13,6 +13,7 @@ import * as RegisterDevice from './modules/registerDevice/registerDevice';
 import './static/stylesheets/style';
 
 import StadiumLights from './modules/stadiumLights/stadiumLights';
+import SignInForm from './modules/signInForm/signInForm';
 
 if (parent) {
     //window['__REACT_DEVTOOLS_GLOBAL_HOOK__'] = parent['__REACT_DEVTOOLS_GLOBAL_HOOK__'];
@@ -58,6 +59,7 @@ const topLevelApp = (
             <Route path="/game" component={Scene}/>
             <Route path="/highscores" component={HighScores}/>
             <Route path="/register" component={RegisterForm}/>
+            <Route path="/signin" component={SignInForm} />
             <Redirect from="*" to="/" />
         </Router>
     </div>
