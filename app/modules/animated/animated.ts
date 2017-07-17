@@ -20,6 +20,7 @@ interface IAnimatedProps {
     animations: IAnimationDescriptor|IAnimationDescriptor[];
     initialStyle?: ICSSProps;
     finalStyle?: ICSSProps;
+    skipIf?: boolean | (() => boolean);
 }
 
 export default class Animated extends React.Component<IAnimatedProps,{}> {
@@ -72,16 +73,24 @@ export default class Animated extends React.Component<IAnimatedProps,{}> {
 
         if (Animated.isArrayOfAnimations(this.props.animations)) {
             for (const animation of this.props.animations) {
-                Animated.applyAnimation($element, animation, this.props.finalStyle);
+                Animated.applyAnimation($element, animation, this.props);
             }
         } else {
             const animation = this.props.animations;
-            Animated.applyAnimation($element, animation, this.props.finalStyle);
+            Animated.applyAnimation($element, animation, this.props);
         }
     }
 
-    private static applyAnimation($element:JQuery, animation:IAnimationDescriptor, finalStyle: ICSSProps) {
+    private static applyAnimation($element:JQuery, animation:IAnimationDescriptor, { finalStyle, skipIf } : {finalStyle?: ICSSProps, skipIf?: boolean | (() => boolean)}) {
         if (Animated.isDisabled || animation.isDisabled) {
+            animation.delay = 0;
+            animation.length = 0;
+        }
+
+        if (typeof skipIf === 'function' && skipIf()) {
+            animation.delay = 0;
+            animation.length = 0;
+        } else if (typeof skipIf === 'boolean' && skipIf) {
             animation.delay = 0;
             animation.length = 0;
         }
