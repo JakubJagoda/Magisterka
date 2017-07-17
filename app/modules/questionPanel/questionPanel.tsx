@@ -77,10 +77,10 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                 }}>
                     <div className="question-panel-buttons">
                         <span className="question-panel-buttons__text">Is this a...</span>
-                        <button className="button question-panel-buttons__button question-panel-buttons__button--truth"
+                        <button className="button button--ok question-panel-buttons__button"
                                 onClick={this.props.onTruthSelected}>TRUTH</button>
                         <span>OR</span>
-                        <button className="button question-panel-buttons__button question-panel-buttons__button--bunk"
+                        <button className="button button--warn question-panel-buttons__button"
                                 onClick={this.props.onBunkSelected}>BUNK</button>
                     </div>
                 </Animated>
@@ -231,7 +231,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                     },
                     easing: 'linear',
                 }
-            ]}>
+            ]} key={Math.random()}>
                 {contents}
             </Animated>
         );

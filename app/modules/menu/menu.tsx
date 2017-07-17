@@ -3,12 +3,17 @@ import './menu.style';
 import {Link} from 'react-router';
 import Animated from '../animated/animated';
 import userStore from '../user/userStore';
+import RouterContext from 'react-router/lib/RouterContext';
 
 interface IMenuState {
     loading: boolean;
 }
 
-export default class Menu extends React.Component<{loading?: boolean},IMenuState> {
+interface IMenuProps extends RouterContext.RouterContextProps {
+    loading?: boolean;
+}
+
+export default class Menu extends React.Component<IMenuProps,IMenuState> {
     private onUserStoreChangeBound = this.onUserStoreChange.bind(this);
 
     constructor(...props) {
@@ -36,13 +41,13 @@ export default class Menu extends React.Component<{loading?: boolean},IMenuState
     render() {
         return (
             <div className="menu">
-                {Menu.renderEnteringAnimation()}
+                {this.renderEnteringAnimation()}
                 {this.renderButtonsAnimation()}
             </div>
         );
     }
 
-    private static renderEnteringAnimation(): JSX.Element {
+    private renderEnteringAnimation(): JSX.Element {
         return (
             <Animated animations={{
                     delay: 2500,
@@ -52,7 +57,7 @@ export default class Menu extends React.Component<{loading?: boolean},IMenuState
                         height: 'auto',
                         transform: 'scale(0.75) translateY(-75%)'
                     }
-                }} initialStyle={{width: '100vw', height: '100vh'}}>
+                }} initialStyle={{width: '100vw', height: '100vh'}} skipIf={Boolean(this.props.location.query.skipAnimation)}>
                 <div className="menu__game-title">
                     <Animated animations={{
                               delay: 0,
@@ -60,7 +65,7 @@ export default class Menu extends React.Component<{loading?: boolean},IMenuState
                               style: {
                                   right: 0
                               }
-                          }} initialStyle={{right: '-100%'}}>
+                          }} initialStyle={{right: '-100%'}} skipIf={Boolean(this.props.location.query.skipAnimation)}>
                         <img src="static/img/logo-truth.png" />
                     </Animated>
                     <Animated animations={{
@@ -69,7 +74,7 @@ export default class Menu extends React.Component<{loading?: boolean},IMenuState
                               style: {
                                   top: 0
                               }
-                          }} initialStyle={{top: '100%'}}>
+                          }} initialStyle={{top: '100%'}} skipIf={Boolean(this.props.location.query.skipAnimation)}>
                         <img src="static/img/logo-or.png" />
                     </Animated>
                     <Animated animations={{
@@ -78,7 +83,7 @@ export default class Menu extends React.Component<{loading?: boolean},IMenuState
                               style: {
                                   left: 0
                               }
-                          }} initialStyle={{left: '-100%'}}>
+                          }} initialStyle={{left: '-100%'}} skipIf={Boolean(this.props.location.query.skipAnimation)}>
                         <img src="static/img/logo-bunk.png" />
                     </Animated>
                 </div>
@@ -121,7 +126,7 @@ export default class Menu extends React.Component<{loading?: boolean},IMenuState
                 top: '50%'
             },
             easing: 'ease-out',
-        }} initialStyle={{top: '100%'}}>
+        }} initialStyle={{top: '100%'}} skipIf={Boolean(this.props.location.query.skipAnimation)}>
             {inner}
         </Animated>);
     }

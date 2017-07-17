@@ -92,6 +92,6 @@ export default class HighScores extends React.Component<{},{}> {
     }
 
     private static goBack() {
-        hashHistory.replace('/');
+        hashHistory.replace('/?skipAnimation=true');
     }
 }
