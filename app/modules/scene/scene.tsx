@@ -4,10 +4,11 @@ import './scene.style';
 import dispatcher from '../flux/dispatcher';
 import {
     SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction,
-    AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction
+    AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction, QuestionsLoadedAction
 } from './sceneActions';
 import {SaveHighScoreAction} from '../highScores/highScoresActions';
 import {default as gameStore, SCENE_STATES, IGameState} from './gameStore';
+import * as Questions from '../questions/questions'
 
 import PlayerNameForm from '../playerNameForm/playerNameForm';
 import RoundIntro from "../roundIntro/roundIntro";
@@ -26,6 +27,12 @@ class Scene extends React.Component<{},ISceneState> {
 
         this.state = gameStore.getGameState();
         this.boundGameStoreUpdateHandler = this.onGameStoreChange.bind(this);
+
+        Questions.getQuestions().then((questions) => {
+            dispatcher.handleServerAction({
+                action: new QuestionsLoadedAction(questions)
+            });
+        });
     }
 
     render() {
@@ -88,6 +95,11 @@ class Scene extends React.Component<{},ISceneState> {
                 return (
                     <GameOver didPlayerWin={true} playerMoney={this.state.playerMoney}
                               onScoreShown={Scene.handleFinalScoreShown}  />
+                );
+
+            case SCENE_STATES.WAITING_FOR_QUESTIONS:
+                return (
+                    <div>Loading questions... If it takes too long, there might be a server issue</div>
                 );
 
             default:

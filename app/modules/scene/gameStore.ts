@@ -3,9 +3,11 @@ import Store from '../flux/store';
 import {IDispatcherPayload} from "../flux/dispatcher";
 import {
     SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction,
-    AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction
+    AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction, QuestionsLoadedAction
 } from "./sceneActions";
-import Question from "../questions/question";
+import * as Questions from "../questions/questions";
+
+type Question = Questions.Question;
 
 export const enum SCENE_STATES {
     NAME_INPUT,
@@ -15,7 +17,8 @@ export const enum SCENE_STATES {
     QUESTION,
     ANSWER_RESULTS,
     PLAYER_LOSE,
-    PLAYER_WIN
+    PLAYER_WIN,
+    WAITING_FOR_QUESTIONS
 }
 
 export interface IGameState {
@@ -33,10 +36,11 @@ export interface IGameState {
 class GameStore extends Store {
     private playerName = '';
     private playerMoney = 100;
-    private currentGameState: SCENE_STATES = SCENE_STATES.NAME_INPUT;
+    private currentGameState: SCENE_STATES = SCENE_STATES.WAITING_FOR_QUESTIONS;
     private currentRound = 0;
     private currentBet = 0;
-    private currentQuestion: Question = Question.getQuestion();
+    private questions: Question[] = null;
+    private currentQuestion: Question = null;
     private currentQuestionNumberInRound = 0;
     private answerToCurrentQuestion = true;
     private isAnswerToCurrentQuestionCorrect = true;
@@ -47,7 +51,11 @@ class GameStore extends Store {
     protected onDispatch(payload: IDispatcherPayload) {
         const action = payload.action;
 
-        if (action instanceof SetPlayerNameAction) {
+        if (action instanceof QuestionsLoadedAction) {
+            this.currentGameState = SCENE_STATES.NAME_INPUT;
+            this.questions = action.questions;
+            this.currentQuestion = this.questions[Math.floor(Math.random() * this.questions.length)];
+        } else if (action instanceof SetPlayerNameAction) {
             this.playerName = action.name;
             this.currentGameState = SCENE_STATES.PLAYER_GREETING;
         } else if (action instanceof BeginRoundAction) {
@@ -58,7 +66,7 @@ class GameStore extends Store {
             this.currentGameState = SCENE_STATES.PLACING_BET
         } else if (action instanceof PlaceBetAction) {
             this.currentBet = action.bet;
-            this.currentQuestion = Question.getQuestion(this.currentRound);
+            this.currentQuestion = this.questions[Math.floor(Math.random() * this.questions.length)];
             this.currentGameState = SCENE_STATES.QUESTION;
         } else if (action instanceof AnswerQuestionAction) {
             if (this.currentQuestion.getIsDefinitionCorrect() != action.answer) {
@@ -115,7 +123,7 @@ class GameStore extends Store {
             isAnswerToCurrentQuestionCorrect: this.isAnswerToCurrentQuestionCorrect
         };
     }
-    
+
     private resetGameStateToDefaults() {
         this.playerName = '';
         this.playerMoney = 100;

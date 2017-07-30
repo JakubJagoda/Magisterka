@@ -103,7 +103,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
 
     private renderQuestionDetails(): JSX.Element {
         return (
-            <Typist className="question-panel-question" cursor={{show: false}}>
+            <Typist avgTypingDelay={20} className="question-panel-question" cursor={{show: false}}>
                 <span>Question #{String(this.props.currentQuestionNo)}</span>
                 <span>{this.props.word}</span> -
                 <span>{this.props.definition}</span>
@@ -124,8 +124,8 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
         const isThisA = QuestionPanel.wrapContentsInAnimatedFadeOut(<span className="question-panel-buttons__text">Is this a...</span>);
         const or = QuestionPanel.wrapContentsInAnimatedFadeOut(<span>OR</span>);
 
-        let buttonTruth = <button className="button question-panel-buttons__button question-panel-buttons__button--truth">TRUTH</button>;
-        let buttonBunk = <button className="button question-panel-buttons__button question-panel-buttons__button--bunk">BUNK</button>;
+        let buttonTruth = <button className="button button--ok question-panel-buttons__button">TRUTH</button>;
+        let buttonBunk = <button className="button button--warn question-panel-buttons__button">BUNK</button>;
 
         const textFileName = this.props.isAnswerToCurrentQuestionCorrect ? 'correct' : 'wrong';
         const textImage = (

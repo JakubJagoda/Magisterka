@@ -44,7 +44,6 @@
     }
 
     &__button {
-      @extend .button;
       flex-basis: calc(50% - 30px);
     }
 

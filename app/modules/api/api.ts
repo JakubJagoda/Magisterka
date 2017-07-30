@@ -1,3 +1,6 @@
+import * as QueryString from 'query-string';
+import {ISendAnswersPayloadEntry} from "../questions/questions";
+
 const API_URL = 'http://localhost:8000/api.php?o=';
 const VERSION = '1.0.4';
 
@@ -41,6 +44,22 @@ export async function registerDevice(name: string) {
     });
 }
 
+export async function getData(playerID: string, limit: number) {
+    return postToApi('getdata', {
+        player_id: playerID,
+        version: VERSION,
+        limit
+    });
+}
+
+export async function sendAnswers(playerID: string, answers: ISendAnswersPayloadEntry[]) {
+    return postToApi('sendanswers', {
+        player_id: playerID,
+        data: answers,
+        version: VERSION
+    });
+}
+
 function postToApi(operation: OperationTypes, data: {[key: string]: any}) {
     const formData = new FormData();
 
@@ -49,6 +68,14 @@ function postToApi(operation: OperationTypes, data: {[key: string]: any}) {
     return fetch(`${API_URL}${operation}`, {
         method: 'POST',
         body: formData
+    }).then(readResponse);
+}
+
+function getFromApi(operation: OperationTypes, params: {[key: string]: any}) {
+    const queryParams = QueryString.stringify(params);
+
+    return fetch(`${API_URL}${operation}?${queryParams}`, {
+        method: 'GET',
     }).then(readResponse);
 }
 
