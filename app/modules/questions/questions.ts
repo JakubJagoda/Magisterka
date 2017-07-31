@@ -4,8 +4,6 @@ import {IPlainQuestion, Question} from './question';
 
 export {Question};
 
-const LOCAL_STORAGE_KEY = 'tgame.questions';
-
 interface IGetDataResponseEntry {
     content: string;
     content_id: string;
@@ -14,6 +12,7 @@ interface IGetDataResponseEntry {
         phrase: 'Yes' | 'No' | 'Unsure' | 'Skip',
         phrase_id: string;
     }>;
+    difficulty: string;
 }
 
 interface IAnswer {
@@ -40,6 +39,9 @@ interface ISendAnswersPhrasesPayloadEntry {
     phrases: Array<number>;
 }
 
+const LOCAL_STORAGE_KEY = 'tgame.questions';
+let questionsStorage = new Map<number, Question[]>();
+
 function convertResponseToQuestions(response:IGetDataResponseEntry[]):IPlainQuestion[] {
     return response.map(responseEntry => {
         const {word, definition} = transformContentStringToDefinition(responseEntry.content);
@@ -48,7 +50,8 @@ function convertResponseToQuestions(response:IGetDataResponseEntry[]):IPlainQues
             contentID: Number(responseEntry.content_id),
             isDefinitionCorrect: responseEntry.correct_phrase_id === '1',
             word,
-            definition
+            definition,
+            difficulty: Number(responseEntry.difficulty)
         };
     });
 }
@@ -65,7 +68,17 @@ function convertAnswerToPayload(answer:IAnswer):ISendAnswersPayloadEntry {
     };
 }
 
-export async function getQuestions():Promise<Question[]> {
+export function getQuestion(level: number):Question {
+    const questions = questionsStorage.get(level);
+
+    if (!questions) {
+        return new Question(); // well, this should never end here
+    }
+
+    return questions[Math.floor(Math.random() * questions.length)];
+}
+
+async function fetchQuestions():Promise<Question[]> {
     const questionsInStorage = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) as IPlainQuestion[];
     if (questionsInStorage) {
         return questionsInStorage.map(plainQuestion => Question.fromPlainQuestion(plainQuestion));
@@ -76,6 +89,24 @@ export async function getQuestions():Promise<Question[]> {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(mappedResponse));
         return mappedResponse.map(plainQuestion => Question.fromPlainQuestion(plainQuestion));
     });
+}
+
+function mapQuestionsToQuestionStorage(questions: Question[]):Map<number, Question[]> {
+    return questions.reduce((reduced, question) => {
+        const difficulty = question.getDifficulty();
+
+        if (!reduced.has(difficulty)) {
+            reduced.set(difficulty, []);
+        }
+
+        reduced.set(difficulty, [...reduced.get(difficulty), question]);
+        return reduced;
+    }, new Map<number, Question[]>());
+}
+
+export async function loadInitialQuestionSet():Promise<void> {
+    const questions = await fetchQuestions();
+    questionsStorage = mapQuestionsToQuestionStorage(questions);
 }
 
 export async function postAnswers(playerID: string, answers: IAnswer[]):Promise<any> {

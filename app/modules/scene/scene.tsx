@@ -28,9 +28,9 @@ class Scene extends React.Component<{},ISceneState> {
         this.state = gameStore.getGameState();
         this.boundGameStoreUpdateHandler = this.onGameStoreChange.bind(this);
 
-        Questions.getQuestions().then((questions) => {
+        Questions.loadInitialQuestionSet().then(() => {
             dispatcher.handleServerAction({
-                action: new QuestionsLoadedAction(questions)
+                action: new QuestionsLoadedAction()
             });
         });
     }

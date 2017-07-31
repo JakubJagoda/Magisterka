@@ -3,18 +3,21 @@ export interface IPlainQuestion {
     isDefinitionCorrect: boolean;
     word: string;
     definition: string;
+    difficulty: number;
 }
 
 export class Question {
     private word: string;
     private definition: string;
     private isDefinitionCorrect: boolean;
+    private difficulty: number;
 
     public static fromPlainQuestion(plainQuestion:IPlainQuestion):Question {
         const question = new Question();
         question.word = plainQuestion.word;
         question.definition = plainQuestion.definition;
         question.isDefinitionCorrect = plainQuestion.isDefinitionCorrect;
+        question.difficulty = plainQuestion.difficulty;
 
         return question;
     }
@@ -29,5 +32,9 @@ export class Question {
 
     getIsDefinitionCorrect():boolean {
         return this.isDefinitionCorrect;
+    }
+
+    getDifficulty():number {
+        return this.difficulty;
     }
 }

@@ -37,5 +37,5 @@ export class FinalScoreShownAction implements IDispatcherAction {
 }
 
 export class QuestionsLoadedAction implements IDispatcherAction {
-    constructor(public questions: Question[]){}
+    constructor(){}
 }

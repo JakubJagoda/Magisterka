@@ -39,13 +39,12 @@ class GameStore extends Store {
     private currentGameState: SCENE_STATES = SCENE_STATES.WAITING_FOR_QUESTIONS;
     private currentRound = 0;
     private currentBet = 0;
-    private questions: Question[] = null;
     private currentQuestion: Question = null;
     private currentQuestionNumberInRound = 0;
     private answerToCurrentQuestion = true;
     private isAnswerToCurrentQuestionCorrect = true;
 
-    private static MAX_ROUNDS_COUNT = 10;
+    private static MAX_ROUNDS_COUNT = 4;
     private static MAX_QUESTIONS_PER_ROUND_COUNT = 10;
 
     protected onDispatch(payload: IDispatcherPayload) {
@@ -53,8 +52,7 @@ class GameStore extends Store {
 
         if (action instanceof QuestionsLoadedAction) {
             this.currentGameState = SCENE_STATES.NAME_INPUT;
-            this.questions = action.questions;
-            this.currentQuestion = this.questions[Math.floor(Math.random() * this.questions.length)];
+            this.currentQuestion = Questions.getQuestion(this.currentRound);
         } else if (action instanceof SetPlayerNameAction) {
             this.playerName = action.name;
             this.currentGameState = SCENE_STATES.PLAYER_GREETING;
@@ -66,7 +64,7 @@ class GameStore extends Store {
             this.currentGameState = SCENE_STATES.PLACING_BET
         } else if (action instanceof PlaceBetAction) {
             this.currentBet = action.bet;
-            this.currentQuestion = this.questions[Math.floor(Math.random() * this.questions.length)];
+            this.currentQuestion = Questions.getQuestion(this.currentRound);
             this.currentGameState = SCENE_STATES.QUESTION;
         } else if (action instanceof AnswerQuestionAction) {
             if (this.currentQuestion.getIsDefinitionCorrect() != action.answer) {
