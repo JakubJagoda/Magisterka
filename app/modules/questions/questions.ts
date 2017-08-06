@@ -19,31 +19,11 @@ interface IGetDataResponseEntry {
     difficulty: string;
 }
 
-interface IAnswer {
-    correctPhraseID: number;
-    contentID: number;
-    dateTime: Date;
-    phrases: Array<number>;
-    answerPhraseID: number;
-    time: Date;
-    reported: boolean;
-}
-
-export interface ISendAnswersPayloadEntry {
-    correct_phrase_id: number;
-    content_id: number;
-    date_time: number;
-    phrases: Array<number>;
-    answer_phrase_id: number;
-    time: number;
-    reported: boolean;
-}
-
-interface ISendAnswersPhrasesPayloadEntry {
-    phrases: Array<number>;
-}
-
 const LOCAL_STORAGE_KEY = 'tgame.questions';
+const PHRASE_ID_TO_CORRECT = {
+    '1': true,
+    '2': false
+};
 let questionsStorage = new Map<number, IInternalPlainQuestion[]>();
 
 function convertResponseToPlainQuestions(response:IGetDataResponseEntry[]):IPlainQuestion[] {
@@ -52,24 +32,12 @@ function convertResponseToPlainQuestions(response:IGetDataResponseEntry[]):IPlai
 
         return {
             contentID: Number(responseEntry.content_id),
-            isDefinitionCorrect: responseEntry.correct_phrase_id === '1',
+            isDefinitionCorrect: PHRASE_ID_TO_CORRECT[responseEntry.correct_phrase_id],
             word,
             definition,
             difficulty: Number(responseEntry.difficulty)
         };
     });
-}
-
-function convertAnswerToPayload(answer:IAnswer):ISendAnswersPayloadEntry {
-    return {
-        correct_phrase_id: answer.correctPhraseID,
-        content_id: answer.contentID,
-        date_time: answer.dateTime.getTime(),
-        phrases: answer.phrases,
-        answer_phrase_id: answer.answerPhraseID,
-        time: answer.time.getTime(),
-        reported: answer.reported
-    };
 }
 
 export function getQuestion(level: number):Question {
@@ -127,11 +95,6 @@ function mapQuestionsToQuestionStorage(questions: IInternalPlainQuestion[]):Map<
 export async function loadInitialQuestionSet():Promise<void> {
     const questions = await fetchQuestions();
     questionsStorage = mapQuestionsToQuestionStorage(questions);
-}
-
-export async function postAnswers(playerID: string, answers: IAnswer[]):Promise<any> {
-    const payload = answers.map(convertAnswerToPayload);
-    return Api.sendAnswers(playerID, payload);
 }
 
 function transformContentStringToDefinition(content: string) {

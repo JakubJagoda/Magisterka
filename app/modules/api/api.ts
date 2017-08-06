@@ -55,7 +55,7 @@ export async function getData(playerID: string, limit: number) {
 export async function sendAnswers(playerID: string, answers: ISendAnswersPayloadEntry[]) {
     return postToApi('sendanswers', {
         player_id: playerID,
-        data: answers,
+        data: JSON.stringify(answers),
         version: VERSION
     });
 }

@@ -6,6 +6,7 @@ import {
     AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction, QuestionsLoadedAction
 } from "./sceneActions";
 import * as Questions from "../questions/questions";
+import * as Answers from '../questions/answers';
 
 type Question = Questions.Question;
 
@@ -79,6 +80,15 @@ class GameStore extends Store {
             }
 
             this.answerToCurrentQuestion = action.answer;
+
+            Answers.saveAnswer({
+                answer: action.answer,
+                correctAnswer: this.currentQuestion.getIsDefinitionCorrect(),
+                contentID: this.currentQuestion.getContentID(),
+                reported: false,
+                time: 0
+            });
+
             this.currentGameState = SCENE_STATES.ANSWER_RESULTS;
         } else if (action instanceof QuestionResultShownAction) {
             if (this.playerMoney <= 0) {
