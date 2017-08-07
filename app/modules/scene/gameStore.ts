@@ -1,14 +1,12 @@
-import {hashHistory} from 'react-router';
 import Store from '../flux/store';
 import {IDispatcherPayload} from "../flux/dispatcher";
 import {
     SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction,
-    AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction, QuestionsLoadedAction
+    AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction, QuestionsLoadedAction, QuestionShownAction
 } from "./sceneActions";
-import * as Questions from "../questions/questions";
-import * as Answers from '../questions/answers';
+import * as Puzzles from "../puzzles/puzzles";
 
-type Question = Questions.Question;
+type Question = Puzzles.Question;
 
 export const enum SCENE_STATES {
     NAME_INPUT,
@@ -44,6 +42,7 @@ class GameStore extends Store {
     private currentQuestionNumberInRound = 0;
     private answerToCurrentQuestion = true;
     private isAnswerToCurrentQuestionCorrect = true;
+    private questionShownTime: Date = null;
 
     private static MAX_ROUNDS_COUNT = 4;
     private static MAX_QUESTIONS_PER_ROUND_COUNT = 10;
@@ -53,7 +52,7 @@ class GameStore extends Store {
 
         if (action instanceof QuestionsLoadedAction) {
             this.currentGameState = SCENE_STATES.NAME_INPUT;
-            this.currentQuestion = Questions.getQuestion(this.currentRound);
+            this.currentQuestion = Puzzles.getQuestion(this.currentRound);
         } else if (action instanceof SetPlayerNameAction) {
             this.playerName = action.name;
             this.currentGameState = SCENE_STATES.PLAYER_GREETING;
@@ -65,8 +64,10 @@ class GameStore extends Store {
             this.currentGameState = SCENE_STATES.PLACING_BET
         } else if (action instanceof PlaceBetAction) {
             this.currentBet = action.bet;
-            this.currentQuestion = Questions.getQuestion(this.currentRound);
+            this.currentQuestion = Puzzles.getQuestion(this.currentRound);
             this.currentGameState = SCENE_STATES.QUESTION;
+        } else if (action instanceof QuestionShownAction) {
+            this.questionShownTime = new Date();
         } else if (action instanceof AnswerQuestionAction) {
             if (this.currentQuestion.getIsDefinitionCorrect() != action.answer) {
                 this.isAnswerToCurrentQuestionCorrect = false;
@@ -81,13 +82,16 @@ class GameStore extends Store {
 
             this.answerToCurrentQuestion = action.answer;
 
-            Answers.saveAnswer({
-                answer: action.answer,
+            const answer = Puzzles.Answer.fromPlainAnswer({
+                selectedAnswer: action.answer,
                 correctAnswer: this.currentQuestion.getIsDefinitionCorrect(),
                 contentID: this.currentQuestion.getContentID(),
                 reported: false,
-                time: 0
+                timeForAnswerInMs: (new Date()).getTime() - this.questionShownTime.getTime(),
+                dateTime: new Date()
             });
+
+            Puzzles.saveAnswer(answer);
 
             this.currentGameState = SCENE_STATES.ANSWER_RESULTS;
         } else if (action instanceof QuestionResultShownAction) {

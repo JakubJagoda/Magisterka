@@ -1,5 +1,4 @@
 import {IDispatcherAction} from "../flux/dispatcher";
-import {Question} from '../questions/question';
 
 export class SetPlayerNameAction implements IDispatcherAction {
     constructor(public name: string) {
@@ -37,5 +36,9 @@ export class FinalScoreShownAction implements IDispatcherAction {
 }
 
 export class QuestionsLoadedAction implements IDispatcherAction {
+    constructor(){}
+}
+
+export class QuestionShownAction implements IDispatcherAction {
     constructor(){}
 }

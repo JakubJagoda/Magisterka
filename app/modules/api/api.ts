@@ -1,5 +1,5 @@
 import * as QueryString from 'query-string';
-import {ISendAnswersPayloadEntry} from "../questions/questions";
+import {ISendAnswersPayloadEntry} from "../puzzles/answers";
 
 const API_URL = 'http://localhost:8000/api.php?o=';
 const VERSION = '1.0.4';
@@ -83,7 +83,8 @@ async function readResponse(response:Response) {
     const responseText = await response.text();
 
     if (response.status !== 200 || responseText.startsWith('Error: ')) {
-        //yeah, don't ask me, someone decided it's a good idea to return 200 as errors
+        //yeah, don't ask me, someone decided it's a good idea to return 200 for errors and distinguish them by the text "Error: "
+        console.error(responseText);
         return Promise.reject(new Error(responseText));
     }
 

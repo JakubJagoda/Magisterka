@@ -8,7 +8,6 @@
     "moduleResolution": "node"
   },
   "files": [
-    "app/app.d.ts",
-    "app/modules/questions/questions.d.ts"
+    "app/app.d.ts"
   ]
 }

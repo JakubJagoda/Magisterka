@@ -4,11 +4,11 @@ import './scene.style';
 import dispatcher from '../flux/dispatcher';
 import {
     SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction,
-    AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction, QuestionsLoadedAction
+    AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction, QuestionsLoadedAction, QuestionShownAction
 } from './sceneActions';
 import {SaveHighScoreAction} from '../highScores/highScoresActions';
 import {default as gameStore, SCENE_STATES, IGameState} from './gameStore';
-import * as Questions from '../questions/questions'
+import * as Puzzles from '../puzzles/puzzles'
 
 import PlayerNameForm from '../playerNameForm/playerNameForm';
 import RoundIntro from "../roundIntro/roundIntro";
@@ -28,7 +28,7 @@ class Scene extends React.Component<{},ISceneState> {
         this.state = gameStore.getGameState();
         this.boundGameStoreUpdateHandler = this.onGameStoreChange.bind(this);
 
-        Questions.loadInitialQuestionSet().then(() => {
+        Puzzles.loadInitialQuestionSet().then(() => {
             dispatcher.handleServerAction({
                 action: new QuestionsLoadedAction()
             });
@@ -72,7 +72,8 @@ class Scene extends React.Component<{},ISceneState> {
                                    currentBet={this.state.currentBet} playerMoney={this.state.playerMoney}
                                    currentQuestionNo={this.state.currentQuestionNumberInRound + 1}
                                    onTruthSelected={Scene.handleQuestionAnswered.bind(null, true)}
-                                   onBunkSelected={Scene.handleQuestionAnswered.bind(null, false)} />
+                                   onBunkSelected={Scene.handleQuestionAnswered.bind(null, false)}
+                                   onQuestionShown={Scene.handleQuestionShown.bind(null)} />
                 );
 
             case SCENE_STATES.ANSWER_RESULTS:
@@ -163,6 +164,12 @@ class Scene extends React.Component<{},ISceneState> {
         });
 
         hashHistory.replace('/highscores');
+    }
+
+    private static handleQuestionShown() {
+        dispatcher.handleViewAction({
+            action: new QuestionShownAction()
+        });
     }
 
     private onGameStoreChange() {

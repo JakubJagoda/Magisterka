@@ -1,14 +1,8 @@
 import * as Api from '../api/api';
 import userStore from '../user/userStore';
+import {Answer, IPlainAnswer} from './answer';
 
-interface IAnswer {
-    contentID: number;
-    dateTime?: Date | string;
-    answer: boolean;
-    correctAnswer: boolean;
-    time: number;
-    reported: boolean;
-}
+export {Answer, IPlainAnswer};
 
 export interface ISendAnswersPayloadEntry {
     correct_phrase_id: string;
@@ -20,29 +14,26 @@ export interface ISendAnswersPayloadEntry {
     reported: boolean;
 }
 
-interface ISendAnswersPhrasesPayloadEntry {
-    phrases: Array<number>;
-}
-
 const PHRASE_CORRECT_TO_ID = new Map<boolean, string>([[true, '1'], [false, '2']]);
 const LOCAL_STORAGE_KEY = 'tgame.answers';
+const MAX_ANSWERS_STORED = 10;
 
-function convertAnswerToPayload(answer:IAnswer): ISendAnswersPayloadEntry {
+function convertAnswerToPayload(answer:IPlainAnswer): ISendAnswersPayloadEntry {
     return {
         correct_phrase_id: PHRASE_CORRECT_TO_ID.get(answer.correctAnswer),
         content_id: answer.contentID,
         date_time: new Date(answer.dateTime).getTime() / 1000,
         phrases: ['3', '4', PHRASE_CORRECT_TO_ID.get(!answer.correctAnswer)], //what an idiot designed this...
-        answer_phrase_id: PHRASE_CORRECT_TO_ID.get(answer.answer),
-        time: answer.time,
+        answer_phrase_id: PHRASE_CORRECT_TO_ID.get(answer.selectedAnswer),
+        time: answer.timeForAnswerInMs,
         reported: answer.reported
     };
 }
 
-async function postAnswers(): Promise<any> {
-    const storageEntry: IAnswer[] = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
+async function postAnswersIfEnoughSaved(): Promise<any> {
+    const storageEntry: IPlainAnswer[] = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
 
-    if (storageEntry.length < 3) {
+    if (storageEntry.length < MAX_ANSWERS_STORED) {
         return;
     }
 
@@ -52,13 +43,9 @@ async function postAnswers(): Promise<any> {
     return Api.sendAnswers(userStore.getUserData().userID, payload);
 }
 
-export function saveAnswer(answer: IAnswer): void {
-    answer.dateTime = new Date();
-
+export function saveAnswer(answer: Answer): void {
     const storageEntry = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify([...storageEntry, answer]));
 
-    postAnswers();
+    postAnswersIfEnoughSaved().catch(e => console.error(e));
 }
-
-postAnswers();

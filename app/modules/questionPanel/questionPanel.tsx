@@ -17,9 +17,14 @@ interface IQuestionPanelProps {
     answerToCurrentQuestion?: boolean;
     isAnswerToCurrentQuestionCorrect?: boolean;
     onResultShown?: () => void;
+    onQuestionShown?: () => void;
 }
 
-export default class QuestionPanel extends React.Component<IQuestionPanelProps, {}> {
+interface IQuestionPanelState {
+    showButtons: boolean;
+}
+
+export default class QuestionPanel extends React.Component<IQuestionPanelProps, IQuestionPanelState> {
     private playerMoney: number;
 
     constructor(props) {
@@ -28,6 +33,9 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
         // this is because we want to render only initial amount of money. When this gets updated, the component
         // will be unmounted and mounted again anyway
         this.playerMoney = this.props.playerMoney;
+        this.state = {
+            showButtons: false
+        };
     }
 
     render() {
@@ -103,7 +111,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
 
     private renderQuestionDetails(): JSX.Element {
         return (
-            <Typist avgTypingDelay={20} className="question-panel-question" cursor={{show: false}}>
+            <Typist avgTypingDelay={20} className="question-panel-question" cursor={{show: false}} onTypingDone={this.onQuestionShown.bind(this)}>
                 <span>Question #{String(this.props.currentQuestionNo)}</span>
                 <span>{this.props.word}</span> -
                 <span>{this.props.definition}</span>
@@ -218,6 +226,18 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                 {animatedCounter}
             </div>
         )
+    }
+
+    private onQuestionShown() {
+        if (this.props.hasOwnProperty('answerToCurrentQuestion')) {
+            return;
+        }
+
+        this.setState({showButtons: true});
+
+        if (this.props.onQuestionShown) {
+            this.props.onQuestionShown();
+        }
     }
 
     private static wrapContentsInAnimatedFadeOut(contents: JSX.Element) {
