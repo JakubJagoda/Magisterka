@@ -49,7 +49,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
     private renderAnswerResult() {
         return (
             <div className="question-panel">
-                {QuestionPanel.wrapContentsInAnimatedFadeOut(this.renderQuestionDetails())}
+                {QuestionPanel.wrapContentsInAnimatedFadeOut(this.renderQuestionContents())}
                 <div className="question-panel-buttons">
                     {this.renderAnimatedButtons()}
                 </div>
@@ -111,12 +111,20 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
 
     private renderQuestionDetails(): JSX.Element {
         return (
-            <Typist avgTypingDelay={20} className="question-panel-question" cursor={{show: false}} onTypingDone={this.onQuestionShown.bind(this)}>
+            <Typist avgTypingDelay={20} cursor={{show: false}} onTypingDone={this.onQuestionShown.bind(this)}>
+                {this.renderQuestionContents()}
+            </Typist>
+        );
+    }
+
+    private renderQuestionContents(): JSX.Element {
+        return (
+            <div className="question-panel-question" >
                 <span>Question #{String(this.props.currentQuestionNo)}</span>
                 <span>{this.props.word}</span> -
                 <span>{this.props.definition}</span>
-            </Typist>
-        );
+            </div>
+        )
     }
 
     private renderStatus(): JSX.Element {
