@@ -8,8 +8,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = function (env) {
     return {
         entry: [
-            './app/app.tsx',
-            'babel-polyfill'
+            './app/app.tsx'
         ],
         output: {
             path: path.resolve(__dirname, 'dist'),
@@ -25,16 +24,6 @@ module.exports = function (env) {
                     test: /\.tsx?$/,
                     exclude: /node_modules/,
                     use: [
-                        {
-                            loader: 'babel-loader',
-                            options: {
-                                presets: [
-                                    ['react'],
-                                    ['env', { 'browsers': ['last 2 versions'] }]
-                                ],
-                                plugins: ['transform-runtime']
-                            }
-                        },
                         {
                             loader: 'ts-loader'
                         }
@@ -95,7 +84,7 @@ module.exports = function (env) {
                     title: 'App'
                 })
             ]),
-        devtool: env.production ? '' : 'source-map',
+        devtool: env.production ? '' : 'inline-source-map',
         devServer: {
             contentBase: path.join(__dirname, "app"),
             inline: true,
@@ -105,4 +94,4 @@ module.exports = function (env) {
             disableHostCheck: true
         }
     };
-}
+};
