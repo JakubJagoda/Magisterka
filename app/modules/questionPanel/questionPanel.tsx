@@ -120,9 +120,10 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
     private renderQuestionContents(): JSX.Element {
         return (
             <div className="question-panel-question" >
-                <span>Question #{String(this.props.currentQuestionNo)}</span>
-                <span>{this.props.word}</span> -
-                <span>{this.props.definition}</span>
+                <span className="question-panel-question__question-no">Question #{String(this.props.currentQuestionNo)}</span>
+                <span className="question-panel-question__word">{this.props.word}</span>
+                <span className="question-panel-question__hyphen">is</span>
+                <span className="question-panel-question__definition">{this.props.definition}</span>
             </div>
         )
     }

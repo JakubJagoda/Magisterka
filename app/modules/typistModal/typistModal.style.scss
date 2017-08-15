@@ -1,8 +1,9 @@
 .typist-modal-container {
-  width: 494px;
+  width: 100vw;
   height: 299px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-left: 0;
+  border-right: 0;
   box-shadow: 0 0 5px #99a0ff;
   padding: 20px;
 
@@ -15,6 +16,12 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
+
+  @media screen and (min-width: 500px) {
+    width: 494px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
 }
 
 .typist-modal {
