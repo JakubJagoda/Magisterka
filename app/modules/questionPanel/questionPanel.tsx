@@ -59,23 +59,12 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
     }
 
     private renderQuestion() {
-        return (
-            <div className="question-panel">
+        let buttons: JSX.Element;
+
+        if (this.state.showButtons) {
+            buttons = (
                 <Animated animations={{
-                    length: 400,
-                    style: {
-                        top: 0
-                    }
-                }} initialStyle={{
-                    position: 'absolute',
-                    top: '-100%'
-                }} finalStyle={{
-                    position: 'static'
-                }}>
-                    {this.renderQuestionDetails()}
-                </Animated>
-                <Animated animations={{
-                    delay: 2000,
+                    delay: 50,
                     length: 400,
                     style: {
                         opacity: 1
@@ -92,6 +81,27 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                                 onClick={this.props.onBunkSelected}>BUNK</button>
                     </div>
                 </Animated>
+            );
+        } else {
+            buttons = null;
+        }
+
+        return (
+            <div className="question-panel">
+                <Animated animations={{
+                    length: 400,
+                    style: {
+                        top: 0
+                    }
+                }} initialStyle={{
+                    position: 'absolute',
+                    top: '-100%'
+                }} finalStyle={{
+                    position: 'static'
+                }}>
+                    {this.renderQuestionDetails()}
+                </Animated>
+                {buttons}
                 <Animated animations={{
                     length: 400,
                     style: {
