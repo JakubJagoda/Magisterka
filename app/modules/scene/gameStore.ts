@@ -2,9 +2,11 @@ import Store from '../flux/store';
 import {IDispatcherPayload} from "../flux/dispatcher";
 import {
     SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction,
-    AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction, QuestionsLoadedAction, QuestionShownAction
+    AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction, QuestionsLoadedAction, QuestionShownAction,
+    QuestionTimeoutAction
 } from "./sceneActions";
 import * as Puzzles from "../puzzles/puzzles";
+import {EAnswerType} from '../questionPanel/questionPanel';
 
 type Question = Puzzles.Question;
 
@@ -30,6 +32,7 @@ export interface IGameState {
     currentQuestionNumberInRound: number;
     answerToCurrentQuestion: boolean;
     isAnswerToCurrentQuestionCorrect: boolean;
+    answerType: EAnswerType;
 }
 
 class GameStore extends Store {
@@ -41,6 +44,7 @@ class GameStore extends Store {
     private currentQuestion: Question = null;
     private currentQuestionNumberInRound = 0;
     private answerToCurrentQuestion = true;
+    private answerType: EAnswerType = null;
     private isAnswerToCurrentQuestionCorrect = true;
     private questionShownTime: Date = null;
 
@@ -51,7 +55,7 @@ class GameStore extends Store {
         const action = payload.action;
 
         if (action instanceof QuestionsLoadedAction) {
-            this.currentGameState = SCENE_STATES.NAME_INPUT;
+            this.currentGameState = SCENE_STATES.QUESTION;
             this.currentQuestion = Puzzles.getQuestion(this.currentRound);
         } else if (action instanceof SetPlayerNameAction) {
             this.playerName = action.name;
@@ -69,7 +73,8 @@ class GameStore extends Store {
         } else if (action instanceof QuestionShownAction) {
             this.questionShownTime = new Date();
         } else if (action instanceof AnswerQuestionAction) {
-            if (this.currentQuestion.getIsDefinitionCorrect() != action.answer) {
+            if ((this.currentQuestion.getIsDefinitionCorrect() && action.answer !== EAnswerType.BUNK) ||
+                (!this.currentQuestion.getIsDefinitionCorrect() && action.answer !== EAnswerType.TRUTH)) {
                 this.isAnswerToCurrentQuestionCorrect = false;
                 this.playerMoney -= this.currentBet;
             } else if (this.currentQuestion.getIsDefinitionCorrect()) {
@@ -80,10 +85,10 @@ class GameStore extends Store {
                 this.playerMoney += this.currentBet * 3;
             }
 
-            this.answerToCurrentQuestion = action.answer;
+            this.answerType = action.answer;
 
             const answer = Puzzles.Answer.fromPlainAnswer({
-                selectedAnswer: action.answer,
+                selectedAnswer: action.answer === EAnswerType.TRUTH,
                 correctAnswer: this.currentQuestion.getIsDefinitionCorrect(),
                 contentID: this.currentQuestion.getContentID(),
                 reported: false,
@@ -93,6 +98,11 @@ class GameStore extends Store {
 
             Puzzles.saveAnswer(answer);
 
+            this.currentGameState = SCENE_STATES.ANSWER_RESULTS;
+        } else if(action instanceof QuestionTimeoutAction) {
+            this.isAnswerToCurrentQuestionCorrect = false;
+            this.answerType = EAnswerType.TIMEOUT;
+            this.playerMoney -= this.currentBet;
             this.currentGameState = SCENE_STATES.ANSWER_RESULTS;
         } else if (action instanceof QuestionResultShownAction) {
             if (this.playerMoney <= 0) {
@@ -132,7 +142,8 @@ class GameStore extends Store {
             currentQuestion: this.currentQuestion,
             currentQuestionNumberInRound: this.currentQuestionNumberInRound,
             answerToCurrentQuestion: this.answerToCurrentQuestion,
-            isAnswerToCurrentQuestionCorrect: this.isAnswerToCurrentQuestionCorrect
+            isAnswerToCurrentQuestionCorrect: this.isAnswerToCurrentQuestionCorrect,
+            answerType: this.answerType
         };
     }
 
@@ -145,6 +156,7 @@ class GameStore extends Store {
         this.currentQuestionNumberInRound = 0;
         this.answerToCurrentQuestion = true;
         this.isAnswerToCurrentQuestionCorrect = true;
+        this.answerType = null;
     }
 }
 

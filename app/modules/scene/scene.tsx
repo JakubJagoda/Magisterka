@@ -4,7 +4,8 @@ import './scene.style';
 import dispatcher from '../flux/dispatcher';
 import {
     SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction,
-    AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction, QuestionsLoadedAction, QuestionShownAction
+    AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction, QuestionsLoadedAction, QuestionShownAction,
+    QuestionTimeoutAction
 } from './sceneActions';
 import {SaveHighScoreAction} from '../highScores/highScoresActions';
 import {default as gameStore, SCENE_STATES, IGameState} from './gameStore';
@@ -13,7 +14,7 @@ import * as Puzzles from '../puzzles/puzzles'
 import PlayerNameForm from '../playerNameForm/playerNameForm';
 import RoundIntro from "../roundIntro/roundIntro";
 import PlaceBetForm from "../placeBetForm/placeBetForm";
-import QuestionPanel from "../questionPanel/questionPanel";
+import QuestionPanel, {EAnswerType} from "../questionPanel/questionPanel";
 import GameOver from "../gameOver/gameOver";
 import {hashHistory} from "react-router";
 
@@ -71,8 +72,9 @@ class Scene extends React.Component<{},ISceneState> {
                     <QuestionPanel word={this.state.currentQuestion.getWord()} definition={this.state.currentQuestion.getDefinition()}
                                    currentBet={this.state.currentBet} playerMoney={this.state.playerMoney}
                                    currentQuestionNo={this.state.currentQuestionNumberInRound + 1}
-                                   onTruthSelected={Scene.handleQuestionAnswered.bind(null, true)}
-                                   onBunkSelected={Scene.handleQuestionAnswered.bind(null, false)}
+                                   onTruthSelected={Scene.handleQuestionAnswered.bind(null, EAnswerType.TRUTH)}
+                                   onBunkSelected={Scene.handleQuestionAnswered.bind(null, EAnswerType.BUNK)}
+                                   onQuestionTimeout={Scene.handleQuestionTimeout.bind(null)}
                                    onQuestionShown={Scene.handleQuestionShown.bind(null)} />
                 );
 
@@ -83,6 +85,7 @@ class Scene extends React.Component<{},ISceneState> {
                                    currentQuestionNo={this.state.currentQuestionNumberInRound + 1}
                                    answerToCurrentQuestion={this.state.answerToCurrentQuestion}
                                    isAnswerToCurrentQuestionCorrect={this.state.isAnswerToCurrentQuestionCorrect}
+                                   answerType={this.state.answerType}
                                    onResultShown={Scene.handleQuestionResultShown} />
                 );
 
@@ -141,7 +144,7 @@ class Scene extends React.Component<{},ISceneState> {
         });
     }
 
-    private static handleQuestionAnswered(answer: boolean) {
+    private static handleQuestionAnswered(answer: EAnswerType) {
         dispatcher.handleViewAction({
             action: new AnswerQuestionAction(answer)
         });
@@ -169,6 +172,12 @@ class Scene extends React.Component<{},ISceneState> {
     private static handleQuestionShown() {
         dispatcher.handleViewAction({
             action: new QuestionShownAction()
+        });
+    }
+
+    private static handleQuestionTimeout() {
+        dispatcher.handleViewAction({
+            action: new QuestionTimeoutAction()
         });
     }
 

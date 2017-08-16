@@ -6,6 +6,12 @@ import CountTo from '../../third-party/react-count-to';
 import './questionPanel.style';
 import Animated from "../animated/animated";
 
+export enum EAnswerType {
+    TRUTH,
+    BUNK,
+    TIMEOUT
+}
+
 interface IQuestionPanelProps {
     word: string;
     definition: string;
@@ -16,16 +22,22 @@ interface IQuestionPanelProps {
     onBunkSelected?: () => void;
     answerToCurrentQuestion?: boolean;
     isAnswerToCurrentQuestionCorrect?: boolean;
+    answerType?: EAnswerType;
     onResultShown?: () => void;
     onQuestionShown?: () => void;
+    onQuestionTimeout?: () => void;
 }
 
 interface IQuestionPanelState {
     showButtons: boolean;
+    timeTicking: boolean;
+    timeLeft: number;
 }
 
 export default class QuestionPanel extends React.Component<IQuestionPanelProps, IQuestionPanelState> {
+    private static TIME_FOR_QUESTION = 15;
     private playerMoney: number;
+    private interval: number;
 
     constructor(props) {
         super(props);
@@ -34,7 +46,9 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
         // will be unmounted and mounted again anyway
         this.playerMoney = this.props.playerMoney;
         this.state = {
-            showButtons: false
+            showButtons: false,
+            timeTicking: false,
+            timeLeft: 0
         };
     }
 
@@ -60,6 +74,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
 
     private renderQuestion() {
         let buttons: JSX.Element;
+        let timer: JSX.Element;
 
         if (this.state.showButtons) {
             buttons = (
@@ -82,8 +97,27 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                     </div>
                 </Animated>
             );
+
+            timer = (
+                <Animated animations={{
+                    delay: 50,
+                    length: 400,
+                    style: {
+                        opacity: 1
+                    }
+                }} initialStyle={{
+                    opacity: 0,
+                }}>
+                    <div className="question-panel-timer">
+                        <span className="question-panel-timer__info">Time left: </span>
+                        <span className="question-panel-timer__time">{this.state.timeLeft} sec</span>
+                        <div className="question-panel-timer__bar" style={{width: `${this.state.timeLeft / QuestionPanel.TIME_FOR_QUESTION * 100}%`}}></div>
+                    </div>
+                </Animated>
+            );
         } else {
             buttons = null;
+            timer = null;
         }
 
         return (
@@ -102,6 +136,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                     {this.renderQuestionDetails()}
                 </Animated>
                 {buttons}
+                {timer}
                 <Animated animations={{
                     length: 400,
                     style: {
@@ -148,6 +183,10 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
     }
 
     private renderAnimatedButtons() {
+        if (this.props.answerType === EAnswerType.TIMEOUT) {
+
+        }
+
         const isThisA = QuestionPanel.wrapContentsInAnimatedFadeOut(<span className="question-panel-buttons__text">Is this a...</span>);
         const or = QuestionPanel.wrapContentsInAnimatedFadeOut(<span>OR</span>);
 
@@ -172,7 +211,10 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
             </Animated>
         );
 
-        if (this.props.answerToCurrentQuestion) {
+        if (this.props.answerType === EAnswerType.TIMEOUT) {
+            buttonBunk = QuestionPanel.wrapContentsInAnimatedFadeOut(buttonBunk);
+            buttonTruth = QuestionPanel.wrapContentsInAnimatedFadeOut(buttonTruth);
+        } else if (this.props.answerToCurrentQuestion) {
             buttonBunk = QuestionPanel.wrapContentsInAnimatedFadeOut(buttonBunk);
             buttonTruth = (
                 <Animated animations={[
@@ -252,10 +294,24 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
             return;
         }
 
-        this.setState({showButtons: true});
+        this.setState({showButtons: true, timeTicking: true, timeLeft: QuestionPanel.TIME_FOR_QUESTION});
+        this.interval = setInterval(this.handleTimeTick.bind(this), 1000);
 
         if (this.props.onQuestionShown) {
             this.props.onQuestionShown();
+        }
+    }
+
+    private handleTimeTick() {
+        if (this.state.timeLeft === 0) {
+            clearInterval(this.interval);
+            this.interval = 0;
+
+            if (this.props.onQuestionTimeout) {
+                this.props.onQuestionTimeout();
+            }
+        } else {
+            this.setState({timeLeft: this.state.timeLeft - 1});
         }
     }
 

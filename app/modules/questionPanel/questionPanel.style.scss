@@ -97,6 +97,28 @@
     }
   }
 
+  .question-panel-timer {
+    text-align: center;
+
+    &__info {
+      font-size: 16px;
+      color: #c8c8c8;
+    }
+
+    &__time {
+      color: white;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    &__bar {
+      height: 5px;
+      margin-top: 5px;
+      background-color: rgb(253, 154, 20);
+      transition: width ease-in 100ms;
+    }
+  }
+
   .question-panel-status {
     width: 100%;
     height: 75px;
