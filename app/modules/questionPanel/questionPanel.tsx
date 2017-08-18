@@ -34,6 +34,7 @@ interface IQuestionPanelState {
     timeLeft: number;
 }
 
+// @TODO OH GOD PLEASE REFACTOR THIS ONE
 export default class QuestionPanel extends React.Component<IQuestionPanelProps, IQuestionPanelState> {
     private static TIME_FOR_QUESTION = 15;
     private playerMoney: number;
@@ -61,12 +62,21 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
     }
 
     private renderAnswerResult() {
+        const timer = (
+            <div className="question-panel-timer">
+                <span className="question-panel-timer__info">Time left: </span>
+                <span className="question-panel-timer__time">{this.state.timeLeft} sec</span>
+                <div className="question-panel-timer__bar" style={{width: `${this.state.timeLeft / QuestionPanel.TIME_FOR_QUESTION * 100}%`}}></div>
+            </div>
+        );
+
         return (
             <div className="question-panel">
                 {QuestionPanel.wrapContentsInAnimatedFadeOut(this.renderQuestionContents())}
                 <div className="question-panel-buttons">
                     {this.renderAnimatedButtons()}
                 </div>
+                {QuestionPanel.wrapContentsInAnimatedFadeOut(timer)}
                 {QuestionPanel.wrapContentsInAnimatedFadeOut(this.renderStatus())}
             </div>
         )
