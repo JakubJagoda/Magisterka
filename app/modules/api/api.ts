@@ -44,11 +44,12 @@ export async function registerDevice(name: string) {
     });
 }
 
-export async function getData(playerID: string, limit: number) {
+export async function getData(playerID: string, limit: number, difficulty: number = null) {
     return postToApi('getdata', {
         player_id: playerID,
         version: VERSION,
-        limit
+        limit,
+        difficulty
     });
 }
 

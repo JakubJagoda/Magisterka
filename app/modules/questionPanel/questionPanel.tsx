@@ -90,10 +90,10 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                     <div className="question-panel-buttons">
                         <span className="question-panel-buttons__text">Is this a...</span>
                         <button className="button button--ok question-panel-buttons__button"
-                                onClick={this.props.onTruthSelected}>TRUTH</button>
+                                onClick={() => {this.cancelTimeout(); this.props.onTruthSelected()}}>TRUTH</button>
                         <span>OR</span>
                         <button className="button button--warn question-panel-buttons__button"
-                                onClick={this.props.onBunkSelected}>BUNK</button>
+                                onClick={() => {this.cancelTimeout(); this.props.onBunkSelected()}}>BUNK</button>
                     </div>
                 </Animated>
             );
@@ -183,10 +183,6 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
     }
 
     private renderAnimatedButtons() {
-        if (this.props.answerType === EAnswerType.TIMEOUT) {
-
-        }
-
         const isThisA = QuestionPanel.wrapContentsInAnimatedFadeOut(<span className="question-panel-buttons__text">Is this a...</span>);
         const or = QuestionPanel.wrapContentsInAnimatedFadeOut(<span>OR</span>);
 
@@ -313,6 +309,10 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
         } else {
             this.setState({timeLeft: this.state.timeLeft - 1});
         }
+    }
+
+    private cancelTimeout() {
+        clearInterval(this.interval);
     }
 
     private static wrapContentsInAnimatedFadeOut(contents: JSX.Element) {

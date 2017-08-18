@@ -26,4 +26,8 @@ export class Answer {
 
         return answer;
     }
+
+    public getContentID() {
+        return this.contentID;
+    }
 }

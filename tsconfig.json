@@ -2,6 +2,7 @@
   "compilerOptions": {
     "module": "es6",
     "target": "es6",
+    "lib": ["es5", "es6", "es7", "dom"],
     "sourceMap": true,
     "jsx": "react",
     "allowSyntheticDefaultImports": true,

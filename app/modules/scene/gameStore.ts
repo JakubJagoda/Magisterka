@@ -2,8 +2,9 @@ import Store from '../flux/store';
 import {IDispatcherPayload} from "../flux/dispatcher";
 import {
     SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction,
-    AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction, QuestionsLoadedAction, QuestionShownAction,
-    QuestionTimeoutAction
+    AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction, QuestionsLoadedInitialAction,
+    QuestionShownAction,
+    QuestionTimeoutAction, QuestionsLoadedAction
 } from "./sceneActions";
 import * as Puzzles from "../puzzles/puzzles";
 import {EAnswerType} from '../questionPanel/questionPanel';
@@ -33,6 +34,7 @@ export interface IGameState {
     answerToCurrentQuestion: boolean;
     isAnswerToCurrentQuestionCorrect: boolean;
     answerType: EAnswerType;
+    difficultyLevelsWithNoQuestionsLeft: number[];
 }
 
 class GameStore extends Store {
@@ -47,6 +49,7 @@ class GameStore extends Store {
     private answerType: EAnswerType = null;
     private isAnswerToCurrentQuestionCorrect = true;
     private questionShownTime: Date = null;
+    private difficultyLevelsWithNoQuestionsLeft: number[] = [];
 
     private static MAX_ROUNDS_COUNT = 4;
     private static MAX_QUESTIONS_PER_ROUND_COUNT = 10;
@@ -54,7 +57,7 @@ class GameStore extends Store {
     protected onDispatch(payload: IDispatcherPayload) {
         const action = payload.action;
 
-        if (action instanceof QuestionsLoadedAction) {
+        if (action instanceof QuestionsLoadedInitialAction) {
             this.currentGameState = SCENE_STATES.QUESTION;
             this.currentQuestion = Puzzles.getQuestion(this.currentRound);
         } else if (action instanceof SetPlayerNameAction) {
@@ -68,8 +71,13 @@ class GameStore extends Store {
             this.currentGameState = SCENE_STATES.PLACING_BET
         } else if (action instanceof PlaceBetAction) {
             this.currentBet = action.bet;
-            this.currentQuestion = Puzzles.getQuestion(this.currentRound);
-            this.currentGameState = SCENE_STATES.QUESTION;
+
+            if (this.difficultyLevelsWithNoQuestionsLeft.includes(this.currentRound)) {
+                this.currentGameState = SCENE_STATES.WAITING_FOR_QUESTIONS;
+            } else {
+                this.currentQuestion = Puzzles.getQuestion(this.currentRound);
+                this.currentGameState = SCENE_STATES.QUESTION;
+            }
         } else if (action instanceof QuestionShownAction) {
             this.questionShownTime = new Date();
         } else if (action instanceof AnswerQuestionAction) {
@@ -97,6 +105,7 @@ class GameStore extends Store {
             });
 
             Puzzles.saveAnswer(answer);
+            this.difficultyLevelsWithNoQuestionsLeft = Puzzles.getDifficultyLevelsWithNoQuestionsLeft();
 
             this.currentGameState = SCENE_STATES.ANSWER_RESULTS;
         } else if(action instanceof QuestionTimeoutAction) {
@@ -125,6 +134,12 @@ class GameStore extends Store {
             }
         } else if (action instanceof FinalScoreShownAction) {
             this.resetGameStateToDefaults();
+        } else if (action instanceof QuestionsLoadedAction) {
+            this.difficultyLevelsWithNoQuestionsLeft = [];
+            if (this.currentGameState === SCENE_STATES.WAITING_FOR_QUESTIONS) {
+                this.currentQuestion = Puzzles.getQuestion(this.currentRound);
+                this.currentGameState = SCENE_STATES.QUESTION;
+            }
         } else {
             return;
         }
@@ -143,7 +158,8 @@ class GameStore extends Store {
             currentQuestionNumberInRound: this.currentQuestionNumberInRound,
             answerToCurrentQuestion: this.answerToCurrentQuestion,
             isAnswerToCurrentQuestionCorrect: this.isAnswerToCurrentQuestionCorrect,
-            answerType: this.answerType
+            answerType: this.answerType,
+            difficultyLevelsWithNoQuestionsLeft: this.difficultyLevelsWithNoQuestionsLeft.slice()
         };
     }
 
@@ -157,6 +173,7 @@ class GameStore extends Store {
         this.answerToCurrentQuestion = true;
         this.isAnswerToCurrentQuestionCorrect = true;
         this.answerType = null;
+        this.difficultyLevelsWithNoQuestionsLeft = [];
     }
 }
 

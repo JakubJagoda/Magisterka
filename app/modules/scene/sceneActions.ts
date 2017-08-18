@@ -36,14 +36,22 @@ export class FinalScoreShownAction implements IDispatcherAction {
     }
 }
 
-export class QuestionsLoadedAction implements IDispatcherAction {
-    constructor(){}
+export class QuestionsLoadedInitialAction implements IDispatcherAction {
+    constructor() {
+    }
 }
 
 export class QuestionShownAction implements IDispatcherAction {
-    constructor(){}
+    constructor() {
+    }
 }
 
 export class QuestionTimeoutAction implements IDispatcherAction {
-    constructor(){}
+    constructor() {
+    }
+}
+
+export class QuestionsLoadedAction implements IDispatcherAction {
+    constructor() {
+    }
 }

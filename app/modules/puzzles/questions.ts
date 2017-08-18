@@ -6,6 +6,7 @@ export {Question};
 
 interface IInternalPlainQuestion extends IPlainQuestion {
     timesSelected: number;
+    timesAnswered: number;
 }
 
 interface IGetDataResponseEntry {
@@ -47,11 +48,7 @@ export function getQuestion(level: number):Question {
         return new Question(); // well, this should never end here
     }
 
-    const minTimesSelected = questions.reduce((currentMin, question) => {
-        return Math.min(currentMin, question.timesSelected);
-    }, Infinity);
-    const highestChanceQuestions = questions.filter(question => question.timesSelected === minTimesSelected);
-    const selectedQuestion = highestChanceQuestions[Math.floor(Math.random() * highestChanceQuestions.length)];
+    const selectedQuestion = questions[Math.floor(Math.random() * questions.length)];
 
     if (!selectedQuestion) {
         return new Question(); // well, this should never end here
@@ -71,7 +68,7 @@ async function fetchQuestions():Promise<IInternalPlainQuestion[]> {
 
     return Api.getData(userStore.getUserData().userID, 100).then((response:IGetDataResponseEntry[]) => {
         const mappedResponse = convertResponseToPlainQuestions(response).map(plainQuestion => {
-            return Object.assign({}, plainQuestion, {timesSelected: 0});
+            return Object.assign({}, plainQuestion, {timesSelected: 0, timesAnswered: 0});
         });
 
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(mappedResponse));
@@ -95,6 +92,43 @@ function mapQuestionsToQuestionStorage(questions: IInternalPlainQuestion[]):Map<
 export async function loadInitialQuestionSet():Promise<void> {
     const questions = await fetchQuestions();
     questionsStorage = mapQuestionsToQuestionStorage(questions);
+}
+
+export function questionAnswered(contentID): void {
+    [...questionsStorage.entries()].every(([questionLevel, questions]: [number, IInternalPlainQuestion[]]) => {
+        const found = questions.find(question => question.contentID === contentID);
+
+        if (found) {
+            const newQuestions = questions.filter(question => question != found);
+            questionsStorage.set(questionLevel, newQuestions);
+            return false;
+        } else {
+            return true;
+        }
+    });
+
+    saveQuestionsStorage();
+}
+
+export function getDifficultyLevelsWithNoQuestionsLeft(): number[] {
+    return [...questionsStorage.entries()].reduce((reduced, [level, questions]) => {
+        if (questions.length === 0) {
+            reduced.push(level);
+        }
+
+        return reduced;
+    }, [])
+}
+
+export async function loadQuestions(difficultyLevel: number): Promise<void> {
+    return Api.getData(userStore.getUserData().userID, 100, difficultyLevel).then((response:IGetDataResponseEntry[]) => {
+        const mappedResponse = convertResponseToPlainQuestions(response).map(plainQuestion => {
+            return Object.assign({}, plainQuestion, {timesSelected: 0, timesAnswered: 0});
+        });
+
+        questionsStorage.set(difficultyLevel, mappedResponse);
+        saveQuestionsStorage();
+    });
 }
 
 function transformContentStringToDefinition(content: string) {
