@@ -4,12 +4,14 @@ import {
     SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction,
     AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction, QuestionsLoadedInitialAction,
     QuestionShownAction,
-    QuestionTimeoutAction, QuestionsLoadedAction
+    QuestionTimeoutAction, QuestionsLoadedAction, ShowReportQuestionFormAction, ReportQuestionAction,
+    FinishedReportingQuestionAction
 } from "./sceneActions";
 import * as Puzzles from "../puzzles/puzzles";
-import {EAnswerType} from '../questionPanel/questionPanel';
+import {EAnswerType} from "../puzzles/puzzles";
 
 type Question = Puzzles.Question;
+type Answer = Puzzles.Answer;
 
 export const enum SCENE_STATES {
     NAME_INPUT,
@@ -20,7 +22,8 @@ export const enum SCENE_STATES {
     ANSWER_RESULTS,
     PLAYER_LOSE,
     PLAYER_WIN,
-    WAITING_FOR_QUESTIONS
+    WAITING_FOR_QUESTIONS,
+    REPORT_QUESTION
 }
 
 export interface IGameState {
@@ -35,8 +38,13 @@ export interface IGameState {
     isAnswerToCurrentQuestionCorrect: boolean;
     answerType: EAnswerType;
     difficultyLevelsWithNoQuestionsLeft: number[];
+    canReportPreviousQuestion: boolean;
+    reportedQuestionInCurrentRound: boolean;
+    previousQuestion: Question;
+    previousAnswer: Answer;
 }
 
+// @TODO there should be a separate store for questions
 class GameStore extends Store {
     private playerName = '';
     private playerMoney = 100;
@@ -50,6 +58,10 @@ class GameStore extends Store {
     private isAnswerToCurrentQuestionCorrect = true;
     private questionShownTime: Date = null;
     private difficultyLevelsWithNoQuestionsLeft: number[] = [];
+    private canReportPreviousQuestion = false;
+    private reportedQuestionInCurrentRound = false;
+    private previousQuestion: Question = null;
+    private previousAnswer: Answer = null;
 
     private static MAX_ROUNDS_COUNT = 4;
     private static MAX_QUESTIONS_PER_ROUND_COUNT = 10;
@@ -58,13 +70,14 @@ class GameStore extends Store {
         const action = payload.action;
 
         if (action instanceof QuestionsLoadedInitialAction) {
-            this.currentGameState = SCENE_STATES.QUESTION;
+            this.currentGameState = SCENE_STATES.PLACING_BET;
             this.currentQuestion = Puzzles.getQuestion(this.currentRound);
         } else if (action instanceof SetPlayerNameAction) {
             this.playerName = action.name;
             this.currentGameState = SCENE_STATES.PLAYER_GREETING;
         } else if (action instanceof BeginRoundAction) {
             this.currentRound = action.round;
+            this.reportedQuestionInCurrentRound = false;
             this.currentQuestionNumberInRound = 0;
             this.currentGameState = SCENE_STATES.ROUND_INTRO;
         } else if (action instanceof RequestForBetAction) {
@@ -81,23 +94,26 @@ class GameStore extends Store {
         } else if (action instanceof QuestionShownAction) {
             this.questionShownTime = new Date();
         } else if (action instanceof AnswerQuestionAction) {
-            if ((this.currentQuestion.getIsDefinitionCorrect() && action.answer !== EAnswerType.BUNK) ||
-                (!this.currentQuestion.getIsDefinitionCorrect() && action.answer !== EAnswerType.TRUTH)) {
+            if ((this.currentQuestion.getCorrectAnswer() === EAnswerType.TRUTH && action.answer === EAnswerType.BUNK) ||
+                (this.currentQuestion.getCorrectAnswer() === EAnswerType.BUNK && action.answer === EAnswerType.TRUTH)) {
                 this.isAnswerToCurrentQuestionCorrect = false;
                 this.playerMoney -= this.currentBet;
-            } else if (this.currentQuestion.getIsDefinitionCorrect()) {
+                this.canReportPreviousQuestion = !this.reportedQuestionInCurrentRound;
+            } else if (this.currentQuestion.getCorrectAnswer() === EAnswerType.TRUTH && action.answer === EAnswerType.TRUTH) {
                 this.isAnswerToCurrentQuestionCorrect = true;
                 this.playerMoney += this.currentBet * 2;
+                this.canReportPreviousQuestion = false;
             } else {
                 this.isAnswerToCurrentQuestionCorrect = true;
                 this.playerMoney += this.currentBet * 3;
+                this.canReportPreviousQuestion = false;
             }
 
             this.answerType = action.answer;
 
             const answer = Puzzles.Answer.fromPlainAnswer({
-                selectedAnswer: action.answer === EAnswerType.TRUTH,
-                correctAnswer: this.currentQuestion.getIsDefinitionCorrect(),
+                selectedAnswer: action.answer,
+                correctAnswer: this.currentQuestion.getCorrectAnswer(),
                 contentID: this.currentQuestion.getContentID(),
                 reported: false,
                 timeForAnswerInMs: (new Date()).getTime() - this.questionShownTime.getTime(),
@@ -106,12 +122,26 @@ class GameStore extends Store {
 
             Puzzles.saveAnswer(answer);
             this.difficultyLevelsWithNoQuestionsLeft = Puzzles.getDifficultyLevelsWithNoQuestionsLeft();
+            this.previousQuestion = this.currentQuestion;
+            this.previousAnswer = answer;
 
             this.currentGameState = SCENE_STATES.ANSWER_RESULTS;
         } else if(action instanceof QuestionTimeoutAction) {
             this.isAnswerToCurrentQuestionCorrect = false;
             this.answerType = EAnswerType.TIMEOUT;
             this.playerMoney -= this.currentBet;
+
+            const answer = Puzzles.Answer.fromPlainAnswer({
+                selectedAnswer: EAnswerType.TIMEOUT,
+                correctAnswer: this.currentQuestion.getCorrectAnswer(),
+                contentID: this.currentQuestion.getContentID(),
+                reported: false,
+                timeForAnswerInMs: (new Date()).getTime() - this.questionShownTime.getTime(),
+                dateTime: new Date()
+            });
+
+            Puzzles.saveAnswer(answer);
+
             this.currentGameState = SCENE_STATES.ANSWER_RESULTS;
         } else if (action instanceof QuestionResultShownAction) {
             if (this.playerMoney <= 0) {
@@ -140,6 +170,22 @@ class GameStore extends Store {
                 this.currentQuestion = Puzzles.getQuestion(this.currentRound);
                 this.currentGameState = SCENE_STATES.QUESTION;
             }
+        } else if (action instanceof ShowReportQuestionFormAction) {
+            this.currentGameState = SCENE_STATES.REPORT_QUESTION;
+        } else if (action instanceof ReportQuestionAction) {
+            this.canReportPreviousQuestion = false;
+            this.reportedQuestionInCurrentRound = true;
+            this.playerMoney += this.currentBet;
+            this.currentQuestionNumberInRound -= 1;
+
+            if (this.currentQuestionNumberInRound < 0) {
+                this.currentQuestionNumberInRound = GameStore.MAX_QUESTIONS_PER_ROUND_COUNT - 1;
+                this.currentRound -= 1;
+            }
+
+            Puzzles.reportAnswer(action.answerID);
+        } else if (action instanceof FinishedReportingQuestionAction) {
+            this.currentGameState = SCENE_STATES.PLACING_BET;
         } else {
             return;
         }
@@ -148,19 +194,17 @@ class GameStore extends Store {
     }
 
     public getGameState():IGameState {
-        return {
-            playerName: this.playerName,
-            playerMoney: this.playerMoney,
-            currentGameState: this.currentGameState,
-            currentRound: this.currentRound,
-            currentBet: this.currentBet,
-            currentQuestion: this.currentQuestion,
-            currentQuestionNumberInRound: this.currentQuestionNumberInRound,
-            answerToCurrentQuestion: this.answerToCurrentQuestion,
-            isAnswerToCurrentQuestionCorrect: this.isAnswerToCurrentQuestionCorrect,
-            answerType: this.answerType,
-            difficultyLevelsWithNoQuestionsLeft: this.difficultyLevelsWithNoQuestionsLeft.slice()
-        };
+        return Object.getOwnPropertyNames(this).reduce((reduced, propertyName) => {
+            const propertyValue = this[propertyName];
+
+            if (Array.isArray(propertyValue)) {
+                reduced[propertyName] = propertyValue.slice();
+            } else {
+                reduced[propertyName] = propertyValue;
+            }
+
+            return reduced;
+        }, <IGameState>{});
     }
 
     private resetGameStateToDefaults() {
@@ -174,6 +218,7 @@ class GameStore extends Store {
         this.isAnswerToCurrentQuestionCorrect = true;
         this.answerType = null;
         this.difficultyLevelsWithNoQuestionsLeft = [];
+        this.canReportPreviousQuestion = false;
     }
 }
 

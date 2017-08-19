@@ -1,5 +1,5 @@
 import {IDispatcherAction} from "../flux/dispatcher";
-import {EAnswerType} from '../questionPanel/questionPanel';
+import {EAnswerType} from '../puzzles/puzzles';
 
 export class SetPlayerNameAction implements IDispatcherAction {
     constructor(public name: string) {
@@ -52,6 +52,21 @@ export class QuestionTimeoutAction implements IDispatcherAction {
 }
 
 export class QuestionsLoadedAction implements IDispatcherAction {
+    constructor() {
+    }
+}
+
+export class ShowReportQuestionFormAction implements IDispatcherAction {
+    constructor() {
+    }
+}
+
+export class ReportQuestionAction implements IDispatcherAction {
+    constructor(public answerID: string) {
+    }
+}
+
+export class FinishedReportingQuestionAction implements IDispatcherAction{
     constructor() {
     }
 }

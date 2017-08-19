@@ -14,17 +14,26 @@ export interface ISendAnswersPayloadEntry {
     reported: boolean;
 }
 
-const PHRASE_CORRECT_TO_ID = new Map<boolean, string>([[true, '1'], [false, '2']]);
+export enum EAnswerType {
+    TRUTH = '1',
+    BUNK = '2',
+    SKIP = '3', // unused in the game
+    UNSURE = '4', // unused in the game
+    TIMEOUT = '5' // unused in original TGame
+}
+
 const LOCAL_STORAGE_KEY = 'tgame.answers';
 const MAX_ANSWERS_STORED = 10;
 
 function convertAnswerToPayload(answer:IPlainAnswer): ISendAnswersPayloadEntry {
+    const remainingAnswerPhraseID = answer.correctAnswer === EAnswerType.TRUTH ? EAnswerType.BUNK : EAnswerType.TRUTH;
+
     return {
-        correct_phrase_id: PHRASE_CORRECT_TO_ID.get(answer.correctAnswer),
+        correct_phrase_id: answer.correctAnswer,
         content_id: answer.contentID,
         date_time: new Date(answer.dateTime).getTime() / 1000,
-        phrases: ['3', '4', PHRASE_CORRECT_TO_ID.get(!answer.correctAnswer)], //what an idiot designed this...
-        answer_phrase_id: PHRASE_CORRECT_TO_ID.get(answer.selectedAnswer),
+        phrases: [EAnswerType.SKIP, EAnswerType.UNSURE, remainingAnswerPhraseID], //what an idiot designed this...
+        answer_phrase_id: answer.selectedAnswer,
         time: answer.timeForAnswerInMs,
         reported: answer.reported
     };
@@ -48,4 +57,14 @@ export function saveAnswer(answer: Answer): void {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify([...storageEntry, answer]));
 
     postAnswersIfEnoughSaved().catch(e => console.error(e));
+}
+
+export function reportAnswer(answerID: string): void {
+    const storageEntry = <IPlainAnswer[]>JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
+    const answer = storageEntry.find(answer => answer.answerID === answerID);
+
+    if (answer) {
+        answer.reported = true;
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(storageEntry));
+    }
 }

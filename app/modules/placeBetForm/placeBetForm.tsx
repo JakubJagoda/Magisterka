@@ -8,6 +8,8 @@ interface IPlaceBetFormProps {
     maxBet?: number;
     currentPlayerMoney?: number;
     minBet: number;
+    allowReport?: boolean;
+    onReportQuestionClicked: () => void;
 }
 
 interface IPlaceBetFormState {
@@ -39,9 +41,10 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps,IPl
     private renderBudgetLessThanMinBetWarning() {
         return (
             <TypistModal text={`Almost out of cash!
-            You have to go va banque!`} typistProps={{avgTypingDelay: 40}}>
+            You have to go va banque!`} typistProps={{avgTypingDelay: 40}} className="place-bet-form">
                 <span className="place-bet-form__current-cash-status">Current cash: ${this.props.currentPlayerMoney}</span>
-                <button className="button place-bet-form__button" onClick={this.handleVaBanqueButtonClick.bind(this)}>OK</button>
+                <button className="place-bet-form__button" onClick={this.handleVaBanqueButtonClick.bind(this)}>OK</button>
+                {this.props.allowReport && <button className="place-bet-form__button place-bet-form__button--report" onClick={this.handleReportClick.bind(this)}>Report previous question</button>}
             </TypistModal>
         );
     }
@@ -56,8 +59,9 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps,IPl
                     <div className="place-bet-form__current-cash-status">
                         Current cash: <span className="place-bet-form__current-cash-amount">${this.props.currentPlayerMoney}</span>
                     </div>
-                    <button className="button place-bet-form__button" type="submit">OK</button>
+                    <button className="place-bet-form__button" type="submit">OK</button>
                 </form>
+                {this.props.allowReport && <button className="place-bet-form__button place-bet-form__button--report" onClick={this.handleReportClick.bind(this)}>Report previous question</button>}
             </TypistModal>
         );
     }
@@ -86,5 +90,9 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps,IPl
         }), () => {
             this.props.onBetEntered(this.state.bet);
         });
+    }
+
+    private handleReportClick(): void {
+        this.props.onReportQuestionClicked();
     }
 }

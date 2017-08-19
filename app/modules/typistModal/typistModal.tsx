@@ -9,6 +9,7 @@ interface ITypistModalProps {
     typistProps?: {
         [prop:string]: any
     }
+    className?: string;
 }
 
 interface ITypistModalState {
@@ -28,7 +29,7 @@ export default class TypistModal extends React.Component<ITypistModalProps,ITypi
 
     render() {
         return (
-            <div className="typist-modal-container">
+            <div className={classnames("typist-modal-container", this.props.className)}>
                 <Typist className="typist-modal-container__text" typing={1} stdTypingDelay={0}
                         cursor={{show: false}}
                         onTypingDone={() => this.setState(Object.assign(this.state, {childrenVisible: true}))}

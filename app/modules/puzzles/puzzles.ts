@@ -1,8 +1,9 @@
 import * as Questions from './questions';
 import * as Answers from './answers';
+import {EAnswerType} from "./answers";
 
 export {Question} from './questions';
-export {Answer, ISendAnswersPayloadEntry} from './answers';
+export {Answer, ISendAnswersPayloadEntry, EAnswerType} from './answers';
 
 export function getQuestion(level: number): Questions.Question {
     return Questions.getQuestion(level);
@@ -21,6 +22,13 @@ export async function loadQuestions(level: number): Promise<void> {
 }
 
 export function saveAnswer(answer: Answers.Answer) {
-    Questions.questionAnswered(answer.getContentID());
+    if (answer.getSelectedAnswer() !== EAnswerType.TIMEOUT) {
+        Questions.questionAnswered(answer.getContentID());
+    }
+
     Answers.saveAnswer(answer);
+}
+
+export function reportAnswer(answerID: string) {
+    Answers.reportAnswer(answerID);
 }

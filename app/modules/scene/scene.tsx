@@ -12,7 +12,8 @@ import {
     FinalScoreShownAction,
     QuestionsLoadedInitialAction,
     QuestionShownAction,
-    QuestionTimeoutAction, QuestionsLoadedAction
+    QuestionTimeoutAction, QuestionsLoadedAction, ShowReportQuestionFormAction, ReportQuestionAction,
+    FinishedReportingQuestionAction
 } from './sceneActions';
 import {SaveHighScoreAction} from '../highScores/highScoresActions';
 import {default as gameStore, SCENE_STATES, IGameState} from './gameStore';
@@ -21,9 +22,10 @@ import * as Puzzles from '../puzzles/puzzles'
 import PlayerNameForm from '../playerNameForm/playerNameForm';
 import RoundIntro from "../roundIntro/roundIntro";
 import PlaceBetForm from "../placeBetForm/placeBetForm";
-import QuestionPanel, {EAnswerType} from "../questionPanel/questionPanel";
+import QuestionPanel from "../questionPanel/questionPanel";
 import GameOver from "../gameOver/gameOver";
 import {hashHistory} from "react-router";
+import ReportForm from "../reportForm/reportForm";
 
 interface ISceneState extends IGameState {
 }
@@ -78,7 +80,9 @@ class Scene extends React.Component<{}, ISceneState> {
                 return (
                     <PlaceBetForm minBet={10} maxBet={this.state.playerMoney}
                                   currentPlayerMoney={this.state.playerMoney}
-                                  onBetEntered={Scene.handleBetEntered}/>
+                                  onBetEntered={Scene.handleBetEntered}
+                                  allowReport={this.state.canReportPreviousQuestion}
+                                  onReportQuestionClicked={Scene.handleShowReportQuestionForm}/>
                 );
 
             case SCENE_STATES.QUESTION:
@@ -87,8 +91,8 @@ class Scene extends React.Component<{}, ISceneState> {
                                    definition={this.state.currentQuestion.getDefinition()}
                                    currentBet={this.state.currentBet} playerMoney={this.state.playerMoney}
                                    currentQuestionNo={this.state.currentQuestionNumberInRound + 1}
-                                   onTruthSelected={Scene.handleQuestionAnswered.bind(null, EAnswerType.TRUTH)}
-                                   onBunkSelected={Scene.handleQuestionAnswered.bind(null, EAnswerType.BUNK)}
+                                   onTruthSelected={Scene.handleQuestionAnswered.bind(null, Puzzles.EAnswerType.TRUTH)}
+                                   onBunkSelected={Scene.handleQuestionAnswered.bind(null, Puzzles.EAnswerType.BUNK)}
                                    onQuestionTimeout={Scene.handleQuestionTimeout.bind(null)}
                                    onQuestionShown={Scene.handleQuestionShown.bind(null)}/>
                 );
@@ -99,7 +103,6 @@ class Scene extends React.Component<{}, ISceneState> {
                                    definition={this.state.currentQuestion.getDefinition()}
                                    currentBet={this.state.currentBet} playerMoney={this.state.playerMoney}
                                    currentQuestionNo={this.state.currentQuestionNumberInRound + 1}
-                                   answerToCurrentQuestion={this.state.answerToCurrentQuestion}
                                    isAnswerToCurrentQuestionCorrect={this.state.isAnswerToCurrentQuestionCorrect}
                                    answerType={this.state.answerType}
                                    onResultShown={Scene.handleQuestionResultShown}/>
@@ -120,6 +123,14 @@ class Scene extends React.Component<{}, ISceneState> {
             case SCENE_STATES.WAITING_FOR_QUESTIONS:
                 return (
                     <div>Loading questions... If it takes too long, there might be a server issue</div>
+                );
+
+            case SCENE_STATES.REPORT_QUESTION:
+                return (
+                  <ReportForm previousAnswer={this.state.previousAnswer}
+                              previousQuestion={this.state.previousQuestion}
+                              onReportClicked={Scene.handleReportQuestion}
+                              onCancelClicked={Scene.handleCancelReportingQuestion} />
                 );
 
             default:
@@ -160,7 +171,7 @@ class Scene extends React.Component<{}, ISceneState> {
         });
     }
 
-    private static handleQuestionAnswered(answer: EAnswerType) {
+    private static handleQuestionAnswered(answer: Puzzles.EAnswerType) {
         dispatcher.handleViewAction({
             action: new AnswerQuestionAction(answer)
         });
@@ -194,6 +205,24 @@ class Scene extends React.Component<{}, ISceneState> {
     private static handleQuestionTimeout() {
         dispatcher.handleViewAction({
             action: new QuestionTimeoutAction()
+        });
+    }
+
+    private static handleShowReportQuestionForm() {
+        dispatcher.handleViewAction({
+            action: new ShowReportQuestionFormAction()
+        });
+    }
+
+    private static handleReportQuestion(answerID: string) {
+        dispatcher.handleViewAction({
+            action: new ReportQuestionAction(answerID)
+        });
+    }
+
+    private static handleCancelReportingQuestion() {
+        dispatcher.handleViewAction({
+            action: new FinishedReportingQuestionAction()
         });
     }
 

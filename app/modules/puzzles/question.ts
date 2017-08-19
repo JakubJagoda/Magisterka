@@ -1,6 +1,8 @@
+import {EAnswerType} from "./answers";
+
 export interface IPlainQuestion {
     contentID: number;
-    isDefinitionCorrect: boolean;
+    correctAnswer: EAnswerType;
     word: string;
     definition: string;
     difficulty: number;
@@ -9,7 +11,7 @@ export interface IPlainQuestion {
 export class Question {
     private word: string;
     private definition: string;
-    private isDefinitionCorrect: boolean;
+    private correctAnswer: EAnswerType;
     private difficulty: number;
     private contentID: number;
 
@@ -17,7 +19,7 @@ export class Question {
         const question = new Question();
         question.word = plainQuestion.word;
         question.definition = plainQuestion.definition;
-        question.isDefinitionCorrect = plainQuestion.isDefinitionCorrect;
+        question.correctAnswer = plainQuestion.correctAnswer;
         question.difficulty = plainQuestion.difficulty;
         question.contentID = plainQuestion.contentID;
 
@@ -32,15 +34,15 @@ export class Question {
         return this.definition;
     }
 
-    getIsDefinitionCorrect(): boolean {
-        return this.isDefinitionCorrect;
-    }
-
     getDifficulty(): number {
         return this.difficulty;
     }
 
     getContentID(): number {
         return this.contentID;
+    }
+
+    getCorrectAnswer(): EAnswerType {
+        return this.correctAnswer;
     }
 }

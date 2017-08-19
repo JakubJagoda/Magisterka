@@ -5,12 +5,7 @@ import CountTo from '../../third-party/react-count-to';
 
 import './questionPanel.style';
 import Animated from "../animated/animated";
-
-export enum EAnswerType {
-    TRUTH,
-    BUNK,
-    TIMEOUT
-}
+import {EAnswerType} from "../puzzles/puzzles";
 
 interface IQuestionPanelProps {
     word: string;
@@ -20,7 +15,6 @@ interface IQuestionPanelProps {
     currentQuestionNo: number;
     onTruthSelected?: () => void;
     onBunkSelected?: () => void;
-    answerToCurrentQuestion?: boolean;
     isAnswerToCurrentQuestionCorrect?: boolean;
     answerType?: EAnswerType;
     onResultShown?: () => void;
@@ -36,7 +30,7 @@ interface IQuestionPanelState {
 
 // @TODO OH GOD PLEASE REFACTOR THIS ONE
 export default class QuestionPanel extends React.Component<IQuestionPanelProps, IQuestionPanelState> {
-    private static TIME_FOR_QUESTION = 15;
+    private static TIME_FOR_QUESTION = 20;
     private playerMoney: number;
     private interval: number;
 
@@ -54,7 +48,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
     }
 
     render() {
-        if (this.props.hasOwnProperty('answerToCurrentQuestion')) {
+        if (this.props.hasOwnProperty('answerType')) {
             return this.renderAnswerResult();
         } else {
             return this.renderQuestion();
@@ -220,7 +214,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
         if (this.props.answerType === EAnswerType.TIMEOUT) {
             buttonBunk = QuestionPanel.wrapContentsInAnimatedFadeOut(buttonBunk);
             buttonTruth = QuestionPanel.wrapContentsInAnimatedFadeOut(buttonTruth);
-        } else if (this.props.answerToCurrentQuestion) {
+        } else if (this.props.answerType === EAnswerType.TRUTH) {
             buttonBunk = QuestionPanel.wrapContentsInAnimatedFadeOut(buttonBunk);
             buttonTruth = (
                 <Animated animations={[
@@ -296,7 +290,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
     }
 
     private onQuestionShown() {
-        if (this.props.hasOwnProperty('answerToCurrentQuestion')) {
+        if (this.props.hasOwnProperty('answerType')) {
             return;
         }
 

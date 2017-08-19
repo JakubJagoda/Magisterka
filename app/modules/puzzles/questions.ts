@@ -1,6 +1,7 @@
 import * as Api from '../api/api';
 import userStore from '../user/userStore';
 import {IPlainQuestion, Question} from './question';
+import {EAnswerType} from "./answers";
 
 export {Question};
 
@@ -21,10 +22,6 @@ interface IGetDataResponseEntry {
 }
 
 const LOCAL_STORAGE_KEY = 'tgame.questions';
-const PHRASE_ID_TO_CORRECT = {
-    '1': true,
-    '2': false
-};
 let questionsStorage = new Map<number, IInternalPlainQuestion[]>();
 
 function convertResponseToPlainQuestions(response:IGetDataResponseEntry[]):IPlainQuestion[] {
@@ -33,7 +30,7 @@ function convertResponseToPlainQuestions(response:IGetDataResponseEntry[]):IPlai
 
         return {
             contentID: Number(responseEntry.content_id),
-            isDefinitionCorrect: PHRASE_ID_TO_CORRECT[responseEntry.correct_phrase_id],
+            correctAnswer: <EAnswerType>responseEntry.correct_phrase_id,
             word,
             definition,
             difficulty: Number(responseEntry.difficulty)
