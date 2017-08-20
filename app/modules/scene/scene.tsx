@@ -15,7 +15,6 @@ import {
     QuestionTimeoutAction, QuestionsLoadedAction, ShowReportQuestionFormAction, ReportQuestionAction,
     FinishedReportingQuestionAction
 } from './sceneActions';
-import {SaveHighScoreAction} from '../highScores/highScoresActions';
 import {default as gameStore, SCENE_STATES, IGameState} from './gameStore';
 import * as Puzzles from '../puzzles/puzzles'
 
@@ -82,7 +81,11 @@ class Scene extends React.Component<{}, ISceneState> {
                                   currentPlayerMoney={this.state.playerMoney}
                                   onBetEntered={Scene.handleBetEntered}
                                   allowReport={this.state.canReportPreviousQuestion}
-                                  onReportQuestionClicked={Scene.handleShowReportQuestionForm}/>
+                                  onReportQuestionClicked={Scene.handleShowReportQuestionForm}
+                                  questionNumber={this.state.currentQuestionNumberInRound}
+                                  roundNumber={this.state.currentRound}
+                                  maxQuestionsInRound={this.state.numberOfQuestionsInRound}
+                                  maxRounds={this.state.numberOfRounds}/>
                 );
 
             case SCENE_STATES.QUESTION:

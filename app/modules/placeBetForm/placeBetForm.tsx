@@ -10,6 +10,11 @@ interface IPlaceBetFormProps {
     minBet: number;
     allowReport?: boolean;
     onReportQuestionClicked: () => void;
+    roundNumber: number;
+    questionNumber: number;
+    maxQuestionsInRound: number;
+    maxRounds: number;
+    allowFinish?: boolean;
 }
 
 interface IPlaceBetFormState {
@@ -44,7 +49,14 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps,IPl
             You have to go va banque!`} typistProps={{avgTypingDelay: 40}} className="place-bet-form">
                 <span className="place-bet-form__current-cash-status">Current cash: ${this.props.currentPlayerMoney}</span>
                 <button className="place-bet-form__button" onClick={this.handleVaBanqueButtonClick.bind(this)}>OK</button>
-                {this.props.allowReport && <button className="place-bet-form__button place-bet-form__button--report" onClick={this.handleReportClick.bind(this)}>Report previous question</button>}
+                <div className="place-bet-form__extras">
+                    <div className="place-bet-form-info">
+                        <span>Round {this.props.roundNumber + 1}/{this.props.maxRounds}</span>
+                        <span>Question {this.props.questionNumber + 1}/{this.props.maxQuestionsInRound}</span>
+                    </div>
+                    {this.props.allowReport && <button className="place-bet-form__button place-bet-form__button--report" onClick={this.handleReportClick.bind(this)}>Report question</button>}
+                    {this.props.allowFinish && <button className="place-bet-form__button place-bet-form__button--finish" onClick={this.handleFinishClick.bind(this)}>End game</button>}
+                </div>
             </TypistModal>
         );
     }
@@ -60,8 +72,15 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps,IPl
                         Current cash: <span className="place-bet-form__current-cash-amount">${this.props.currentPlayerMoney}</span>
                     </div>
                     <button className="place-bet-form__button" type="submit">OK</button>
+                    <div className="place-bet-form__extras">
+                        <div className="place-bet-form-info">
+                            <span>Round {this.props.roundNumber + 1}/{this.props.maxRounds}</span>
+                            <span>Question {this.props.questionNumber + 1}/{this.props.maxQuestionsInRound}</span>
+                        </div>
+                        {this.props.allowReport && <button className="place-bet-form__button place-bet-form__button--report" onClick={this.handleReportClick.bind(this)}>Report question</button>}
+                        {this.props.allowFinish && <button className="place-bet-form__button place-bet-form__button--finish" onClick={this.handleFinishClick.bind(this)}>End game</button>}
+                    </div>
                 </form>
-                {this.props.allowReport && <button className="place-bet-form__button place-bet-form__button--report" onClick={this.handleReportClick.bind(this)}>Report previous question</button>}
             </TypistModal>
         );
     }
@@ -94,5 +113,9 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps,IPl
 
     private handleReportClick(): void {
         this.props.onReportQuestionClicked();
+    }
+
+    private handleFinishClick(): void {
+
     }
 }
