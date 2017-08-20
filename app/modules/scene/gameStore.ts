@@ -5,7 +5,7 @@ import {
     AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction, QuestionsLoadedInitialAction,
     QuestionShownAction,
     QuestionTimeoutAction, QuestionsLoadedAction, ShowReportQuestionFormAction, ReportQuestionAction,
-    FinishedReportingQuestionAction
+    FinishedReportingQuestionAction, FinishGameAction
 } from "./sceneActions";
 import * as Puzzles from "../puzzles/puzzles";
 import {EAnswerType} from "../puzzles/puzzles";
@@ -45,6 +45,7 @@ export interface IGameState {
     gameID: string;
     numberOfRounds: number;
     numberOfQuestionsInRound: number;
+    canFinishGame: boolean;
 }
 
 // @TODO there should be a separate store for questions
@@ -69,6 +70,7 @@ class GameStore extends Store {
     private previousQuestion: Question = null;
     private previousAnswer: Answer = null;
     private gameID: string;
+    private canFinishGame = false;
     private readonly numberOfRounds = GameStore.MAX_ROUNDS_COUNT;
     private readonly numberOfQuestionsInRound = GameStore.MAX_QUESTIONS_PER_ROUND_COUNT;
 
@@ -163,6 +165,7 @@ class GameStore extends Store {
                 if (this.currentQuestionNumberInRound >= GameStore.MAX_QUESTIONS_PER_ROUND_COUNT) {
                     this.currentRound++;
                     this.currentQuestionNumberInRound = 0;
+                    this.canFinishGame = true;
 
                     if (this.currentRound >= GameStore.MAX_ROUNDS_COUNT) {
                         this.currentGameState = SCENE_STATES.PLAYER_WIN;
@@ -170,6 +173,7 @@ class GameStore extends Store {
                         this.currentGameState = SCENE_STATES.ROUND_INTRO;
                     }
                 } else {
+                    this.canFinishGame = false;
                     this.currentGameState = SCENE_STATES.PLACING_BET;
                 }
             }
@@ -197,6 +201,8 @@ class GameStore extends Store {
             Puzzles.reportAnswer(action.answerID);
         } else if (action instanceof FinishedReportingQuestionAction) {
             this.currentGameState = SCENE_STATES.PLACING_BET;
+        } else if (action instanceof FinishGameAction) {
+            this.currentGameState = SCENE_STATES.PLAYER_WIN;
         } else {
             return;
         }
@@ -231,6 +237,7 @@ class GameStore extends Store {
         this.difficultyLevelsWithNoQuestionsLeft = [];
         this.canReportPreviousQuestion = false;
         this.gameID = GameStore.getNewGameID();
+        this.canFinishGame = false;
     }
 }
 

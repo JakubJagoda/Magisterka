@@ -70,3 +70,8 @@ export class FinishedReportingQuestionAction implements IDispatcherAction{
     constructor() {
     }
 }
+
+export class FinishGameAction implements IDispatcherAction {
+    constructor() {
+    }
+}

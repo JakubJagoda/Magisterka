@@ -15,6 +15,7 @@ interface IPlaceBetFormProps {
     maxQuestionsInRound: number;
     maxRounds: number;
     allowFinish?: boolean;
+    onFinishGameClicked?: () => void;
 }
 
 interface IPlaceBetFormState {
@@ -116,6 +117,6 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps,IPl
     }
 
     private handleFinishClick(): void {
-
+        this.props.onFinishGameClicked && this.props.onFinishGameClicked();
     }
 }

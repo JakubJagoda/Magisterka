@@ -13,7 +13,7 @@ import {
     QuestionsLoadedInitialAction,
     QuestionShownAction,
     QuestionTimeoutAction, QuestionsLoadedAction, ShowReportQuestionFormAction, ReportQuestionAction,
-    FinishedReportingQuestionAction
+    FinishedReportingQuestionAction, FinishGameAction
 } from './sceneActions';
 import {default as gameStore, SCENE_STATES, IGameState} from './gameStore';
 import * as Puzzles from '../puzzles/puzzles'
@@ -85,7 +85,8 @@ class Scene extends React.Component<{}, ISceneState> {
                                   questionNumber={this.state.currentQuestionNumberInRound}
                                   roundNumber={this.state.currentRound}
                                   maxQuestionsInRound={this.state.numberOfQuestionsInRound}
-                                  maxRounds={this.state.numberOfRounds}/>
+                                  maxRounds={this.state.numberOfRounds} allowFinish={this.state.canFinishGame}
+                                  onFinishGameClicked={Scene.handleFinishGame}/>
                 );
 
             case SCENE_STATES.QUESTION:
@@ -223,6 +224,12 @@ class Scene extends React.Component<{}, ISceneState> {
     private static handleCancelReportingQuestion() {
         dispatcher.handleViewAction({
             action: new FinishedReportingQuestionAction()
+        });
+    }
+
+    private static handleFinishGame() {
+        dispatcher.handleViewAction({
+            action: new FinishGameAction()
         });
     }
 
