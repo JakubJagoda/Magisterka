@@ -42,10 +42,16 @@ export interface IGameState {
     reportedQuestionInCurrentRound: boolean;
     previousQuestion: Question;
     previousAnswer: Answer;
+    gameID: string;
+    numberOfRounds: number;
+    numberOfQuestionsInRound: number;
 }
 
 // @TODO there should be a separate store for questions
 class GameStore extends Store {
+    private static MAX_ROUNDS_COUNT = 5;
+    private static MAX_QUESTIONS_PER_ROUND_COUNT = 8;
+
     private playerName = '';
     private playerMoney = 100;
     private currentGameState: SCENE_STATES = SCENE_STATES.WAITING_FOR_QUESTIONS;
@@ -62,9 +68,13 @@ class GameStore extends Store {
     private reportedQuestionInCurrentRound = false;
     private previousQuestion: Question = null;
     private previousAnswer: Answer = null;
+    private gameID: string;
+    private readonly numberOfRounds = GameStore.MAX_ROUNDS_COUNT;
+    private readonly numberOfQuestionsInRound = GameStore.MAX_QUESTIONS_PER_ROUND_COUNT;
 
-    private static MAX_ROUNDS_COUNT = 4;
-    private static MAX_QUESTIONS_PER_ROUND_COUNT = 10;
+    private static getNewGameID(): string {
+        return String(Math.random()).split('.')[1];
+    }
 
     protected onDispatch(payload: IDispatcherPayload) {
         const action = payload.action;
@@ -72,6 +82,7 @@ class GameStore extends Store {
         if (action instanceof QuestionsLoadedInitialAction) {
             this.currentGameState = SCENE_STATES.PLACING_BET;
             this.currentQuestion = Puzzles.getQuestion(this.currentRound);
+            this.gameID = GameStore.getNewGameID();
         } else if (action instanceof SetPlayerNameAction) {
             this.playerName = action.name;
             this.currentGameState = SCENE_STATES.PLAYER_GREETING;
@@ -219,6 +230,7 @@ class GameStore extends Store {
         this.answerType = null;
         this.difficultyLevelsWithNoQuestionsLeft = [];
         this.canReportPreviousQuestion = false;
+        this.gameID = GameStore.getNewGameID();
     }
 }
 

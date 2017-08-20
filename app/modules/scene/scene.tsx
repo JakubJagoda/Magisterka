@@ -111,12 +111,14 @@ class Scene extends React.Component<{}, ISceneState> {
             case SCENE_STATES.PLAYER_LOSE:
                 return (
                     <GameOver didPlayerWin={false} playerMoney={this.state.playerMoney}
+                              gameID={this.state.gameID}
                               onScoreShown={Scene.handleFinalScoreShown}/>
                 );
 
             case SCENE_STATES.PLAYER_WIN:
                 return (
                     <GameOver didPlayerWin={true} playerMoney={this.state.playerMoney}
+                              gameID={this.state.gameID}
                               onScoreShown={Scene.handleFinalScoreShown}/>
                 );
 
@@ -127,10 +129,10 @@ class Scene extends React.Component<{}, ISceneState> {
 
             case SCENE_STATES.REPORT_QUESTION:
                 return (
-                  <ReportForm previousAnswer={this.state.previousAnswer}
-                              previousQuestion={this.state.previousQuestion}
-                              onReportClicked={Scene.handleReportQuestion}
-                              onCancelClicked={Scene.handleCancelReportingQuestion} />
+                    <ReportForm previousAnswer={this.state.previousAnswer}
+                                previousQuestion={this.state.previousQuestion}
+                                onReportClicked={Scene.handleReportQuestion}
+                                onCancelClicked={Scene.handleCancelReportingQuestion}/>
                 );
 
             default:
@@ -184,11 +186,6 @@ class Scene extends React.Component<{}, ISceneState> {
     }
 
     private static handleFinalScoreShown() {
-        const {playerName, playerMoney, currentRound} = gameStore.getGameState();
-        dispatcher.handleViewAction({
-            action: new SaveHighScoreAction(playerName, currentRound, playerMoney)
-        });
-
         dispatcher.handleViewAction({
             action: new FinalScoreShownAction()
         });

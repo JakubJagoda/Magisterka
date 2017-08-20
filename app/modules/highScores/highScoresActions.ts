@@ -1,6 +1,7 @@
 import {IDispatcherAction} from '../flux/dispatcher';
+import {IHighScoresResponse} from "../api/api";
 
-export class SaveHighScoreAction implements IDispatcherAction {
-    constructor(public playerName: string, public round: number, public money: number) {
+export class HighScoresLoadedAction implements IDispatcherAction {
+    constructor(public highScores: IHighScoresResponse) {
     }
 }

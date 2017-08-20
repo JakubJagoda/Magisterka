@@ -3,14 +3,24 @@ import Animated from "../animated/animated";
 import CountTo from "../../third-party/react-count-to";
 
 import './gameOver.style';
+import User from "../user/user";
 
 interface IGameOverProps {
     didPlayerWin: boolean;
+    gameID: string;
     playerMoney: number;
     onScoreShown: () => void;
 }
 
 export default class GameOver extends React.Component<IGameOverProps,{}> {
+    private postScoresPromise: Promise<void>;
+
+    constructor(...props) {
+        super(...props);
+
+        this.postScoresPromise = User.postScores(this.props.gameID, this.props.playerMoney);
+    }
+
     render() {
         return (
             <div className="game-over">
@@ -28,7 +38,7 @@ export default class GameOver extends React.Component<IGameOverProps,{}> {
                         style: {
                             top: '-100%'
                         },
-                        callback: this.props.onScoreShown
+                        callback: this.handleScoreShown.bind(this)
                     }
                 ]} initialStyle={{
                     opacity: 0,
@@ -71,5 +81,11 @@ export default class GameOver extends React.Component<IGameOverProps,{}> {
         return (
             <img className="question-panel-buttons__result-text" src={`static/img/${src}.png`}/>
         );
+    }
+
+    private handleScoreShown(): void {
+        this.postScoresPromise.then(() => {
+            this.props.onScoreShown();
+        });
     }
 }

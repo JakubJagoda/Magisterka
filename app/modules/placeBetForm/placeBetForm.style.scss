@@ -15,7 +15,14 @@
 
     &--report {
       @extend .button--warn;
-      margin-top: 20px;
+      margin: 0;
+      width: auto;
+      font-size: 14px;
+    }
+
+    &--finish {
+      @extend .button--ok;
+      margin: 0;
       width: auto;
       font-size: 14px;
     }
@@ -37,5 +44,21 @@
       border: 1px solid red;
       box-shadow: 0 0 4px red;
     }
+  }
+
+  &__extras {
+    margin-top: 1em;
+    display: flex;
+    align-items: center;
+
+    > * {
+      margin-right: 0.5em;
+      margin-left: 0.5em;
+    }
+  }
+
+  .place-bet-form-info {
+    display: flex;
+    flex-direction: column;
   }
 }

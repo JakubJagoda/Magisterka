@@ -22,7 +22,23 @@ interface ILoginUserResponse {
     avatar: string;
 }
 
-type OperationTypes = 'register' | 'getdata' | 'sendanswers' | 'sendstats' |'getstats' | 'login' | 'register_user';
+interface ISendStatsPayload {
+    stats: {
+        money: number;
+    };
+}
+
+export interface IHighScoresEntry {
+    name: string;
+    score: number;
+}
+
+export interface IHighScoresResponse {
+    single: IHighScoresEntry[];
+    total: IHighScoresEntry[];
+}
+
+type OperationTypes = 'register' | 'getdata' | 'sendanswers' | 'sendstats' |'getstats' | 'login' | 'register_user' | 'sendtobstats' | 'gettobhighscores';
 
 export async function registerUser({login, email, password, confirmPassword: confirm_password}: IRegisterUserParams) {
     return postToApi('register_user', {
@@ -61,6 +77,18 @@ export async function sendAnswers(playerID: string, answers: ISendAnswersPayload
     });
 }
 
+export async function sendStats(playerID: string, stats: ISendStatsPayload) {
+    return postToApi('sendtobstats', {
+        player_id: playerID,
+        data: JSON.stringify(stats),
+        version: VERSION
+    });
+}
+
+export async function getHighScores(): Promise<IHighScoresResponse> {
+    return getFromApi('gettobhighscores');
+}
+
 function postToApi(operation: OperationTypes, data: {[key: string]: any}) {
     const formData = new FormData();
 
@@ -72,10 +100,14 @@ function postToApi(operation: OperationTypes, data: {[key: string]: any}) {
     }).then(readResponse);
 }
 
-function getFromApi(operation: OperationTypes, params: {[key: string]: any}) {
-    const queryParams = QueryString.stringify(params);
+function getFromApi(operation: OperationTypes, params?: {[key: string]: any}) {
+    let queryParams = QueryString.stringify(params);
 
-    return fetch(`${API_URL}${operation}?${queryParams}`, {
+    if (queryParams) {
+        queryParams = `?${queryParams}`;
+    }
+
+    return fetch(`${API_URL}${operation}${queryParams}`, {
         method: 'GET',
     }).then(readResponse);
 }
