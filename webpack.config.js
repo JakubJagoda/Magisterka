@@ -8,7 +8,8 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = function (env) {
     return {
         entry: [
-            './app/app.tsx'
+            './app/app.tsx',
+            'babel-polyfill'
         ],
         output: {
             path: path.resolve(__dirname, 'dist'),
@@ -24,6 +25,16 @@ module.exports = function (env) {
                     test: /\.tsx?$/,
                     exclude: /node_modules/,
                     use: [
+                        {
+                            loader: 'babel-loader',
+                            options: {
+                                presets: [
+                                    ['react'],
+                                    ['env', { 'browsers': ['last 2 versions', 'not ie <= 10'] }]
+                                ],
+                                plugins: ['transform-runtime']
+                            }
+                        },
                         {
                             loader: 'ts-loader'
                         }
@@ -59,7 +70,7 @@ module.exports = function (env) {
                 },
                 {
                     test: /\.(jpg|png)$/,
-                    use: ['file-loader?name=[name].[ext]']
+                    use: ['file-loader?name=/static/img/[name].[ext]']
                 },
                 {
                     test: /\.json$/,
@@ -78,13 +89,15 @@ module.exports = function (env) {
                 new ExtractTextPlugin('styles.css')
             ].concat(env.production ? [
                 new CleanWebpackPlugin(['dist']),
-                new webpack.optimize.UglifyJsPlugin({ compress: env.production })
+                new HtmlWebpackPlugin({
+                    title: 'Truth Or Bunk'
+                })
             ] : [
                 new HtmlWebpackPlugin({
                     title: 'App'
                 })
             ]),
-        devtool: env.production ? '' : 'inline-source-map',
+        devtool: env.production ? 'cheap-module-source-map' : 'source-map',
         devServer: {
             contentBase: path.join(__dirname, "app"),
             inline: true,

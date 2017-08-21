@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "dev": "./node_modules/.bin/webpack-dev-server --env.development",
-    "build": "./node_modules/.bin/webpack --env.production"
+    "build": "./node_modules/.bin/webpack -p --env.production"
   },
   "author": "Jakub Jagoda",
   "license": "ISC",

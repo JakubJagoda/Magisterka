@@ -66,7 +66,7 @@ export default class Menu extends React.Component<IMenuProps,IMenuState> {
                                   right: 0
                               }
                           }} initialStyle={{right: '-100%'}} skipIf={Boolean(this.props.location.query.skipAnimation)}>
-                        <img src="static/img/logo-truth.png" />
+                        <img src={require('../../static/img/logo-truth.png')} />
                     </Animated>
                     <Animated animations={{
                               delay: 800,
@@ -75,7 +75,7 @@ export default class Menu extends React.Component<IMenuProps,IMenuState> {
                                   top: 0
                               }
                           }} initialStyle={{top: '100%'}} skipIf={Boolean(this.props.location.query.skipAnimation)}>
-                        <img src="static/img/logo-or.png" />
+                        <img src={require('../../static/img/logo-or.png')} />
                     </Animated>
                     <Animated animations={{
                               delay: 1600,
@@ -84,7 +84,7 @@ export default class Menu extends React.Component<IMenuProps,IMenuState> {
                                   left: 0
                               }
                           }} initialStyle={{left: '-100%'}} skipIf={Boolean(this.props.location.query.skipAnimation)}>
-                        <img src="static/img/logo-bunk.png" />
+                        <img src={require('../../static/img/logo-bunk.png')} />
                     </Animated>
                 </div>
             </Animated>
@@ -106,7 +106,7 @@ export default class Menu extends React.Component<IMenuProps,IMenuState> {
             )
         } else {
             inner = (<div className="menu__buttons">
-                <div className="menu__signed-in">Signed in as <strong>{userStore.getUserData().userName}</strong></div>
+                {userStore.getUserData().userName && <div className="menu__signed-in">Signed in as <strong>{userStore.getUserData().userName}</strong></div>}
                 <Link to="/game">
                     <button className="menu__item">New Game</button>
                 </Link>

@@ -79,7 +79,7 @@ export default class GameOver extends React.Component<IGameOverProps,{}> {
     private renderImageText(): JSX.Element {
         const src = this.props.didPlayerWin ? 'you-won' : 'you-lose';
         return (
-            <img className="question-panel-buttons__result-text" src={`static/img/${src}.png`}/>
+            <img className="question-panel-buttons__result-text" src={require(`../../static/img/${src}.png`)}/>
         );
     }
 

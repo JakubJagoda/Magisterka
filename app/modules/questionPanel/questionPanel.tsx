@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as classnames from "classnames";
+import classnames from "classnames";
 import Typist from 'react-typist';
 import CountTo from '../../third-party/react-count-to';
 
@@ -207,7 +207,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
             ]} initialStyle={{
                 top: '-100vh'
             }}>
-                <img className="question-panel-buttons__result-text" src={`static/img/${textFileName}.png`} />
+                <img className="question-panel-buttons__result-text" src={require(`../../static/img/${textFileName}.png`)}/>
             </Animated>
         );
 
