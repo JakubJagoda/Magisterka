@@ -1,7 +1,8 @@
 import * as QueryString from 'query-string';
 import {ISendAnswersPayloadEntry} from "../puzzles/answers";
+import {API_URL} from "constants";
 
-const API_URL = 'http://localhost:8000/api.php?o=';
+const API_ENDPOINT = `${API_URL}/api.php?o=`;
 const VERSION = '1.0.4';
 
 interface IRegisterUserParams {
@@ -94,7 +95,7 @@ function postToApi(operation: OperationTypes, data: {[key: string]: any}) {
 
     Object.keys(data).forEach(key => formData.append(key, data[key]));
 
-    return fetch(`${API_URL}${operation}`, {
+    return fetch(`${API_ENDPOINT}${operation}`, {
         method: 'POST',
         body: formData
     }).then(readResponse);
@@ -107,7 +108,7 @@ function getFromApi(operation: OperationTypes, params?: {[key: string]: any}) {
         queryParams = `?${queryParams}`;
     }
 
-    return fetch(`${API_URL}${operation}${queryParams}`, {
+    return fetch(`${API_ENDPOINT}${operation}${queryParams}`, {
         method: 'GET',
     }).then(readResponse);
 }
