@@ -94,6 +94,29 @@ export default class Menu extends React.Component<IMenuProps,IMenuState> {
     private renderButtonsAnimation(): JSX.Element {
         let inner;
 
+        const buttons = {
+            newGame: (
+                <Link to="/game">
+                    <button className="menu__item">New Game</button>
+                </Link>
+            ),
+            register: (
+                <Link to="/register">
+                    <button className="menu__item">Register</button>
+                </Link>
+            ),
+            signIn: (
+                <Link to="/signin">
+                    <button className="menu__item">Sign in</button>
+                </Link>
+            ),
+            signOut: (
+                <Link to="/signin">
+                    <button className="menu__item">Sign out</button>
+                </Link>
+            )
+        };
+
         if (this.state.loading) {
             inner = (
                 <div className="menu__buttons">
@@ -106,17 +129,11 @@ export default class Menu extends React.Component<IMenuProps,IMenuState> {
             )
         } else {
             inner = (<div className="menu__buttons">
-                {userStore.getUserData().userName && <div className="menu__signed-in">Signed in as <strong>{userStore.getUserData().userName}</strong></div>}
-                <Link to="/game">
-                    <button className="menu__item">New Game</button>
-                </Link>
-                <Link to="/register">
-                    <button className="menu__item">Register</button>
-                </Link>
-                <Link to="/signin">
-                    <button className="menu__item">Sign in</button>
-                </Link>
-                <button className="menu__item">Exit</button>
+                {userStore.isUserLoggedIn() && <div className="menu__signed-in">Signed in as <strong>{userStore.getUserData().userName}</strong></div>}
+                {buttons.newGame}
+                {userStore.isUserLoggedIn() && buttons.signOut}
+                {!userStore.isUserLoggedIn() && buttons.register}
+                {!userStore.isUserLoggedIn() && buttons.signIn}
             </div>);
         }
 

@@ -73,7 +73,7 @@ module.exports = function (env) {
                 },
                 {
                     test: /\.(jpg|png)$/,
-                    use: ['file-loader?name=/static/img/[name].[ext]']
+                    use: [`file-loader?name=/${env.production ? 'tgame5/tob/' : ''}static/img/[name].[ext]`]
                 },
                 {
                     test: /\.json$/,

@@ -48,6 +48,10 @@ class UserStore extends Store {
         };
     }
 
+    public isUserLoggedIn(): boolean {
+        return !!this.userID;
+    }
+
     private syncStoreWithLocalStorage() {
         const valueFromLocalStorage = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
 
