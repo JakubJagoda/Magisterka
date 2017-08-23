@@ -4,6 +4,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = function (env) {
     return {
@@ -73,7 +74,7 @@ module.exports = function (env) {
                 },
                 {
                     test: /\.(jpg|png)$/,
-                    use: [`file-loader?name=/${env.production ? 'tgame5/tob/' : ''}static/img/[name].[ext]`]
+                    use: [`file-loader?name=/static/img/[name].[ext]`]
                 },
                 {
                     test: /\.json$/,
@@ -94,7 +95,8 @@ module.exports = function (env) {
                 new CleanWebpackPlugin(['dist']),
                 new HtmlWebpackPlugin({
                     title: 'Truth Or Bunk'
-                })
+                }),
+                new CopyWebpackPlugin([{from: './app/static/img/*', to: './static/img/[name].[ext]'}])
             ] : [
                 new HtmlWebpackPlugin({
                     title: 'App'

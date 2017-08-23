@@ -35,7 +35,7 @@ export default class RoundIntro extends React.Component<IRoundIntroProps,{}> {
                         }
                     }
                 ]}>
-                    <div className="round-intro__round"><img src={require('../../static/img/round.png')} /></div>
+                    <div className="round-intro__round"><img src='./static/img/round.png' /></div>
                 </Animated>
                 <Animated animations={[
                     {
@@ -46,7 +46,7 @@ export default class RoundIntro extends React.Component<IRoundIntroProps,{}> {
                         }
                     }
                 ]}>
-                    <div className="round-intro__number"><img src={require(`../../static/img/${humanizedRoundNumber}.png`)}/></div>
+                    <div className="round-intro__number"><img src={`./static/img/${humanizedRoundNumber}.png`}/></div>
                 </Animated>
             </div>
             </Animated>

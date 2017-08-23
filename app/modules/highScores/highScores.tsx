@@ -78,7 +78,7 @@ export default class HighScores extends React.Component<{}, IHighScoresState> {
                     top: '-100%',
                     position: 'relative'
                 }}>
-                    <img src={require('../../static/img/high-scores.png')} />
+                    <img src='./static/img/high-scores.png' />
                 </Animated>
                 <Animated animations={[
                     {

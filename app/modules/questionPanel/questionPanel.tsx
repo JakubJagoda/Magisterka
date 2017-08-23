@@ -207,7 +207,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
             ]} initialStyle={{
                 top: '-100vh'
             }}>
-                <img className="question-panel-buttons__result-text" src={require(`../../static/img/${textFileName}.png`)}/>
+                <img className="question-panel-buttons__result-text" src={`./static/img/${textFileName}.png`}/>
             </Animated>
         );
 
