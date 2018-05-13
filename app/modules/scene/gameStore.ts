@@ -1,12 +1,6 @@
 import Store from '../flux/store';
 import {IDispatcherPayload} from "../flux/dispatcher";
-import {
-    SetPlayerNameAction, BeginRoundAction, RequestForBetAction, PlaceBetAction,
-    AnswerQuestionAction, QuestionResultShownAction, FinalScoreShownAction, QuestionsLoadedInitialAction,
-    QuestionShownAction,
-    QuestionTimeoutAction, QuestionsLoadedAction, ShowReportQuestionFormAction, ReportQuestionAction,
-    FinishedReportingQuestionAction, FinishGameAction
-} from "./sceneActions";
+import * as SceneActions from "./sceneActions";
 import * as Puzzles from "../puzzles/puzzles";
 import {EAnswerType} from "../puzzles/puzzles";
 
@@ -81,133 +75,169 @@ class GameStore extends Store {
     protected onDispatch(payload: IDispatcherPayload) {
         const action = payload.action;
 
-        if (action instanceof QuestionsLoadedInitialAction) {
-            this.currentGameState = SCENE_STATES.PLACING_BET;
-            this.currentQuestion = Puzzles.getQuestion(this.currentRound);
-            this.gameID = GameStore.getNewGameID();
-        } else if (action instanceof SetPlayerNameAction) {
-            this.playerName = action.name;
-            this.currentGameState = SCENE_STATES.PLAYER_GREETING;
-        } else if (action instanceof BeginRoundAction) {
-            this.currentRound = action.round;
-            this.reportedQuestionInCurrentRound = false;
-            this.currentQuestionNumberInRound = 0;
-            this.currentGameState = SCENE_STATES.ROUND_INTRO;
-        } else if (action instanceof RequestForBetAction) {
+        if (action instanceof SceneActions.QuestionsLoadedInitialAction) {
+            this.handleQuestionsLoadedInitialAction();
+        } else if (action instanceof SceneActions.SetPlayerNameAction) {
+            this.handleSetPlayerNameAction(action);
+        } else if (action instanceof SceneActions.BeginRoundAction) {
+            this.handleBeginRoundAction(action);
+        } else if (action instanceof SceneActions.RequestForBetAction) {
             this.currentGameState = SCENE_STATES.PLACING_BET
-        } else if (action instanceof PlaceBetAction) {
-            this.currentBet = action.bet;
-
-            if (this.difficultyLevelsWithNoQuestionsLeft.includes(this.currentRound)) {
-                this.currentGameState = SCENE_STATES.WAITING_FOR_QUESTIONS;
-            } else {
-                this.currentQuestion = Puzzles.getQuestion(this.currentRound);
-                this.currentGameState = SCENE_STATES.QUESTION;
-            }
-        } else if (action instanceof QuestionShownAction) {
+        } else if (action instanceof SceneActions.PlaceBetAction) {
+            this.handlePlaceBetAction(action);
+        } else if (action instanceof SceneActions.QuestionShownAction) {
             this.questionShownTime = new Date();
-        } else if (action instanceof AnswerQuestionAction) {
-            if ((this.currentQuestion.getCorrectAnswer() === EAnswerType.TRUTH && action.answer === EAnswerType.BUNK) ||
-                (this.currentQuestion.getCorrectAnswer() === EAnswerType.BUNK && action.answer === EAnswerType.TRUTH)) {
-                this.isAnswerToCurrentQuestionCorrect = false;
-                this.playerMoney -= this.currentBet;
-                this.canReportPreviousQuestion = !this.reportedQuestionInCurrentRound;
-            } else if (this.currentQuestion.getCorrectAnswer() === EAnswerType.TRUTH && action.answer === EAnswerType.TRUTH) {
-                this.isAnswerToCurrentQuestionCorrect = true;
-                this.playerMoney += this.currentBet * 2;
-                this.canReportPreviousQuestion = false;
-            } else {
-                this.isAnswerToCurrentQuestionCorrect = true;
-                this.playerMoney += this.currentBet * 3;
-                this.canReportPreviousQuestion = false;
-            }
-
-            this.answerType = action.answer;
-
-            const answer = Puzzles.Answer.fromPlainAnswer({
-                selectedAnswer: action.answer,
-                correctAnswer: this.currentQuestion.getCorrectAnswer(),
-                contentID: this.currentQuestion.getContentID(),
-                reported: false,
-                timeForAnswerInMs: (new Date()).getTime() - this.questionShownTime.getTime(),
-                dateTime: new Date()
-            });
-
-            Puzzles.saveAnswer(answer);
-            this.difficultyLevelsWithNoQuestionsLeft = Puzzles.getDifficultyLevelsWithNoQuestionsLeft();
-            this.previousQuestion = this.currentQuestion;
-            this.previousAnswer = answer;
-
-            this.currentGameState = SCENE_STATES.ANSWER_RESULTS;
-        } else if(action instanceof QuestionTimeoutAction) {
-            this.isAnswerToCurrentQuestionCorrect = false;
-            this.answerType = EAnswerType.TIMEOUT;
-            this.playerMoney -= this.currentBet;
-
-            const answer = Puzzles.Answer.fromPlainAnswer({
-                selectedAnswer: EAnswerType.TIMEOUT,
-                correctAnswer: this.currentQuestion.getCorrectAnswer(),
-                contentID: this.currentQuestion.getContentID(),
-                reported: false,
-                timeForAnswerInMs: (new Date()).getTime() - this.questionShownTime.getTime(),
-                dateTime: new Date()
-            });
-
-            Puzzles.saveAnswer(answer);
-
-            this.currentGameState = SCENE_STATES.ANSWER_RESULTS;
-        } else if (action instanceof QuestionResultShownAction) {
-            if (this.playerMoney <= 0) {
-                this.currentGameState = SCENE_STATES.PLAYER_LOSE;
-            } else {
-                this.currentQuestionNumberInRound++;
-
-                if (this.currentQuestionNumberInRound >= GameStore.MAX_QUESTIONS_PER_ROUND_COUNT) {
-                    this.currentRound++;
-                    this.currentQuestionNumberInRound = 0;
-                    this.canFinishGame = true;
-
-                    if (this.currentRound >= GameStore.MAX_ROUNDS_COUNT) {
-                        this.currentGameState = SCENE_STATES.PLAYER_WIN;
-                    } else {
-                        this.currentGameState = SCENE_STATES.ROUND_INTRO;
-                    }
-                } else {
-                    this.canFinishGame = false;
-                    this.currentGameState = SCENE_STATES.PLACING_BET;
-                }
-            }
-        } else if (action instanceof FinalScoreShownAction) {
+        } else if (action instanceof SceneActions.AnswerQuestionAction) {
+            this.handleAnswerQuestionAction(action);
+        } else if(action instanceof SceneActions.QuestionTimeoutAction) {
+            this.handleQuestionTimeoutAction();
+        } else if (action instanceof SceneActions.QuestionResultShownAction) {
+            this.handleQuestionResultShownAction();
+        } else if (action instanceof SceneActions.FinalScoreShownAction) {
             this.resetGameStateToDefaults();
-        } else if (action instanceof QuestionsLoadedAction) {
-            this.difficultyLevelsWithNoQuestionsLeft = [];
-            if (this.currentGameState === SCENE_STATES.WAITING_FOR_QUESTIONS) {
-                this.currentQuestion = Puzzles.getQuestion(this.currentRound);
-                this.currentGameState = SCENE_STATES.QUESTION;
-            }
-        } else if (action instanceof ShowReportQuestionFormAction) {
+        } else if (action instanceof SceneActions.QuestionsLoadedAction) {
+            this.handleQuestionsLoadedAction();
+        } else if (action instanceof SceneActions.ShowReportQuestionFormAction) {
             this.currentGameState = SCENE_STATES.REPORT_QUESTION;
-        } else if (action instanceof ReportQuestionAction) {
-            this.canReportPreviousQuestion = false;
-            this.reportedQuestionInCurrentRound = true;
-            this.playerMoney += this.currentBet;
-            this.currentQuestionNumberInRound -= 1;
-
-            if (this.currentQuestionNumberInRound < 0) {
-                this.currentQuestionNumberInRound = GameStore.MAX_QUESTIONS_PER_ROUND_COUNT - 1;
-                this.currentRound -= 1;
-            }
-
-            Puzzles.reportAnswer(action.answerID);
-        } else if (action instanceof FinishedReportingQuestionAction) {
+        } else if (action instanceof SceneActions.ReportQuestionAction) {
+            this.handleReportQuestionAction(action);
+        } else if (action instanceof SceneActions.FinishedReportingQuestionAction) {
             this.currentGameState = SCENE_STATES.PLACING_BET;
-        } else if (action instanceof FinishGameAction) {
+        } else if (action instanceof SceneActions.FinishGameAction) {
             this.currentGameState = SCENE_STATES.PLAYER_WIN;
         } else {
             return;
         }
 
         this.emitChange();
+    }
+
+    private handleQuestionsLoadedAction() {
+        this.difficultyLevelsWithNoQuestionsLeft = [];
+        if (this.currentGameState === SCENE_STATES.WAITING_FOR_QUESTIONS) {
+            this.currentQuestion = Puzzles.getQuestion(this.currentRound);
+            this.currentGameState = SCENE_STATES.QUESTION;
+        }
+    }
+
+    private handleQuestionsLoadedInitialAction() {
+        this.currentGameState = SCENE_STATES.PLACING_BET;
+        this.currentQuestion = Puzzles.getQuestion(this.currentRound);
+        this.gameID = GameStore.getNewGameID();
+    }
+
+    private handleSetPlayerNameAction(action: SceneActions.SetPlayerNameAction) {
+        this.playerName = action.name;
+        this.currentGameState = SCENE_STATES.PLAYER_GREETING;
+    }
+
+    private handleBeginRoundAction(action: SceneActions.BeginRoundAction) {
+        this.currentRound = action.round;
+        this.reportedQuestionInCurrentRound = false;
+        this.currentQuestionNumberInRound = 0;
+        this.currentGameState = SCENE_STATES.ROUND_INTRO;
+    }
+
+    private handlePlaceBetAction(action: SceneActions.PlaceBetAction) {
+        this.currentBet = action.bet;
+
+        if (this.difficultyLevelsWithNoQuestionsLeft.includes(this.currentRound)) {
+            this.currentGameState = SCENE_STATES.WAITING_FOR_QUESTIONS;
+        } else {
+            this.currentQuestion = Puzzles.getQuestion(this.currentRound);
+            this.currentGameState = SCENE_STATES.QUESTION;
+        }
+    }
+
+    private handleAnswerQuestionAction(action: SceneActions.AnswerQuestionAction) {
+        if ((this.currentQuestion.getCorrectAnswer() === EAnswerType.TRUTH && action.answer === EAnswerType.BUNK) ||
+            (this.currentQuestion.getCorrectAnswer() === EAnswerType.BUNK && action.answer === EAnswerType.TRUTH)) {
+            this.isAnswerToCurrentQuestionCorrect = false;
+            this.playerMoney -= this.currentBet;
+            this.canReportPreviousQuestion = !this.reportedQuestionInCurrentRound;
+        } else if (this.currentQuestion.getCorrectAnswer() === EAnswerType.TRUTH && action.answer === EAnswerType.TRUTH) {
+            this.isAnswerToCurrentQuestionCorrect = true;
+            this.playerMoney += this.currentBet * 2;
+            this.canReportPreviousQuestion = false;
+        } else {
+            this.isAnswerToCurrentQuestionCorrect = true;
+            this.playerMoney += this.currentBet * 3;
+            this.canReportPreviousQuestion = false;
+        }
+
+        this.answerType = action.answer;
+
+        const answer = Puzzles.Answer.fromPlainAnswer({
+            selectedAnswer: action.answer,
+            correctAnswer: this.currentQuestion.getCorrectAnswer(),
+            contentID: this.currentQuestion.getContentID(),
+            reported: false,
+            timeForAnswerInMs: (new Date()).getTime() - this.questionShownTime.getTime(),
+            dateTime: new Date()
+        });
+
+        Puzzles.saveAnswer(answer);
+        this.difficultyLevelsWithNoQuestionsLeft = Puzzles.getDifficultyLevelsWithNoQuestionsLeft();
+        this.previousQuestion = this.currentQuestion;
+        this.previousAnswer = answer;
+
+        this.currentGameState = SCENE_STATES.ANSWER_RESULTS;
+    }
+
+    private handleQuestionTimeoutAction() {
+        this.isAnswerToCurrentQuestionCorrect = false;
+        this.answerType = EAnswerType.TIMEOUT;
+        this.playerMoney -= this.currentBet;
+
+        const answer = Puzzles.Answer.fromPlainAnswer({
+            selectedAnswer: EAnswerType.TIMEOUT,
+            correctAnswer: this.currentQuestion.getCorrectAnswer(),
+            contentID: this.currentQuestion.getContentID(),
+            reported: false,
+            timeForAnswerInMs: (new Date()).getTime() - this.questionShownTime.getTime(),
+            dateTime: new Date()
+        });
+
+        Puzzles.saveAnswer(answer);
+
+        this.currentGameState = SCENE_STATES.ANSWER_RESULTS;
+    }
+
+    private handleQuestionResultShownAction() {
+        if (this.playerMoney <= 0) {
+            this.currentGameState = SCENE_STATES.PLAYER_LOSE;
+        } else {
+            this.currentQuestionNumberInRound++;
+
+            if (this.currentQuestionNumberInRound >= GameStore.MAX_QUESTIONS_PER_ROUND_COUNT) {
+                this.currentRound++;
+                this.currentQuestionNumberInRound = 0;
+                this.canFinishGame = true;
+
+                if (this.currentRound >= GameStore.MAX_ROUNDS_COUNT) {
+                    this.currentGameState = SCENE_STATES.PLAYER_WIN;
+                } else {
+                    this.currentGameState = SCENE_STATES.ROUND_INTRO;
+                }
+            } else {
+                this.canFinishGame = false;
+                this.currentGameState = SCENE_STATES.PLACING_BET;
+            }
+        }
+    }
+
+    private handleReportQuestionAction(action: SceneActions.ReportQuestionAction) {
+        this.canReportPreviousQuestion = false;
+        this.reportedQuestionInCurrentRound = true;
+        this.playerMoney += this.currentBet;
+        this.currentQuestionNumberInRound -= 1;
+
+        if (this.currentQuestionNumberInRound < 0) {
+            this.currentQuestionNumberInRound = GameStore.MAX_QUESTIONS_PER_ROUND_COUNT - 1;
+            this.currentRound -= 1;
+        }
+
+        Puzzles.reportAnswer(action.answerID);
     }
 
     public getGameState():IGameState {
