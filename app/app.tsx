@@ -9,6 +9,7 @@ import Scene from './modules/scene/scene';
 import HighScores from './modules/highScores/highScores';
 import RegisterForm from './modules/registerForm/registerForm';
 import * as RegisterDevice from './modules/registerDevice/registerDevice';
+import Sounds from './modules/sounds/sounds';
 
 import './static/stylesheets/style';
 
@@ -65,11 +66,12 @@ const topLevelApp = (
     </div>
 );
 
-ReactDOM.render(
-    topLevelApp,
-    document.body
-);
-
 document.body.appendChild(wrapper);
 
 RegisterDevice.registerDevice();
+Sounds.initializeSamples().then(() => {
+    ReactDOM.render(
+        topLevelApp,
+        document.body
+    );
+});
