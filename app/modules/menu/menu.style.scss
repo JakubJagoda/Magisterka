@@ -1,7 +1,5 @@
 $spinkit-spinner-color: #fff;
 @import "../../../node_modules/spinkit/scss/spinners/2-double-bounce";
-@import "../../static/stylesheets/button";
-
 .menu {
   height: 100vh;
   width: 100vw;
@@ -38,8 +36,6 @@ $spinkit-spinner-color: #fff;
   }
 
   &__item {
-    @extend .button;
-
     width: 200px;
   }
 

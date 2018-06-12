@@ -4,6 +4,7 @@ import {Link} from 'react-router';
 import Animated from '../animated/animated';
 import userStore from '../user/userStore';
 import RouterContext from 'react-router/lib/RouterContext';
+import Button from '../shared/button/button';
 
 interface IMenuState {
     loading: boolean;
@@ -97,22 +98,23 @@ export default class Menu extends React.Component<IMenuProps,IMenuState> {
         const buttons = {
             newGame: (
                 <Link to="/game">
-                    <button className="menu__item">New Game</button>
+                    <Button>New Game</Button>
+                    {/*<button className="menu__item">New Game</button>*/}
                 </Link>
             ),
             register: (
                 <Link to="/register">
-                    <button className="menu__item">Register</button>
+                    <Button>Register</Button>
                 </Link>
             ),
             signIn: (
                 <Link to="/signin">
-                    <button className="menu__item">Sign in</button>
+                    <Button>Sign in</Button>
                 </Link>
             ),
             signOut: (
                 <Link to="/signin">
-                    <button className="menu__item">Sign out</button>
+                    <Button>Sign out</Button>
                 </Link>
             )
         };

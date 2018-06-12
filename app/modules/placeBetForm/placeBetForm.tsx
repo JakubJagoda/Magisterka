@@ -2,6 +2,7 @@ import * as React from 'react';
 import TypistModal from "../typistModal/typistModal";
 
 import './placeBetForm.style';
+import Button, {EButtonType} from "../shared/button/button";
 
 interface IPlaceBetFormProps {
     onBetEntered: (bet: number) => void;
@@ -23,7 +24,7 @@ interface IPlaceBetFormState {
     formDirty: boolean;
 }
 
-export default class PlaceBetForm extends React.Component<IPlaceBetFormProps,IPlaceBetFormState> {
+export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IPlaceBetFormState> {
     private input: HTMLInputElement;
     private static MINIMAL_BET = 10;
 
@@ -47,16 +48,21 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps,IPl
     private renderBudgetLessThanMinBetWarning() {
         return (
             <TypistModal text={`Almost out of cash!
-            You have to go va banque!`} typistProps={{avgTypingDelay: 40}} className="place-bet-form">
+            You have to go va banque!`}
+                         typistProps={{avgTypingDelay: 40}}
+                         className="place-bet-form">
                 <span className="place-bet-form__current-cash-status">Current cash: ${this.props.currentPlayerMoney}</span>
-                <button className="place-bet-form__button" onClick={this.handleVaBanqueButtonClick.bind(this)}>OK</button>
+                <Button onClick={this.handleVaBanqueButtonClick.bind(this)}>OK</Button>
                 <div className="place-bet-form__extras">
                     <div className="place-bet-form-info">
                         <span>Round {this.props.roundNumber + 1}/{this.props.maxRounds}</span>
                         <span>Question {this.props.questionNumber + 1}/{this.props.maxQuestionsInRound}</span>
                     </div>
-                    {this.props.allowReport && <button className="place-bet-form__button place-bet-form__button--report" onClick={this.handleReportClick.bind(this)}>Report question</button>}
-                    {this.props.allowFinish && <button className="place-bet-form__button place-bet-form__button--finish" onClick={this.handleFinishClick.bind(this)}>End game</button>}
+                    {this.props.allowReport && <Button buttonType={EButtonType.WARN}
+                                                       onClick={this.handleReportClick.bind(this)}>Report
+                        question</Button>}
+                    {this.props.allowFinish && <Button buttonType={EButtonType.OK}
+                                                       onClick={this.handleFinishClick.bind(this)}>End game</Button>}
                 </div>
             </TypistModal>
         );
@@ -64,22 +70,37 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps,IPl
 
     private renderForm() {
         return (
-            <TypistModal text={'Please place your bet:'} typistProps={{avgTypingDelay: 50}}>
-                <form className="place-bet-form" onSubmit={this.handlePlaceBetFormSubmit.bind(this)}>
-                    <input type="number" autoFocus className="place-bet-form__input" min={PlaceBetForm.MINIMAL_BET}
-                           max={this.props.maxBet} step="10" defaultValue={String(this.state.bet)}
-                           onChange={this.handleBetUpdate.bind(this)} ref={input => this.input = input} />
+            <TypistModal text={'Please place your bet:'}
+                         typistProps={{avgTypingDelay: 20}}>
+                <form className="place-bet-form"
+                      onSubmit={this.handlePlaceBetFormSubmit.bind(this)}>
+                    <input type="number"
+                           autoFocus
+                           className="place-bet-form__input"
+                           min={PlaceBetForm.MINIMAL_BET}
+                           max={this.props.maxBet}
+                           step="10"
+                           defaultValue={String(this.state.bet)}
+                           onChange={this.handleBetUpdate.bind(this)}
+                           ref={input => this.input = input}/>
                     <div className="place-bet-form__current-cash-status">
-                        Current cash: <span className="place-bet-form__current-cash-amount">${this.props.currentPlayerMoney}</span>
+                        Current cash:
+                        <span className="place-bet-form__current-cash-amount">${this.props.currentPlayerMoney}</span>
                     </div>
-                    <button className="place-bet-form__button" type="submit">OK</button>
+                    <Button onClick={this.handlePlaceBetFormSubmit.bind(this)}>
+                        OK
+                    </Button>
                     <div className="place-bet-form__extras">
                         <div className="place-bet-form-info">
                             <span>Round {this.props.roundNumber + 1}/{this.props.maxRounds}</span>
                             <span>Question {this.props.questionNumber + 1}/{this.props.maxQuestionsInRound}</span>
                         </div>
-                        {this.props.allowReport && <button className="place-bet-form__button place-bet-form__button--report" onClick={this.handleReportClick.bind(this)}>Report question</button>}
-                        {this.props.allowFinish && <button className="place-bet-form__button place-bet-form__button--finish" onClick={this.handleFinishClick.bind(this)}>End game</button>}
+                        {this.props.allowReport &&
+                        <Button buttonType={EButtonType.WARN}
+                                onClick={this.handleReportClick.bind(this)}>Report question</Button>}
+                        {this.props.allowFinish &&
+                        <Button buttonType={EButtonType.OK}
+                                onClick={this.handleFinishClick.bind(this)}>End game</Button>}
                     </div>
                 </form>
             </TypistModal>
