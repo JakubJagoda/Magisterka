@@ -60,7 +60,7 @@ export default class PlayerNameForm extends React.Component<IPlayerNameFormProps
         });
 
         return (
-            <TypistModal text={'Please type your name:'} typistProps={{avgTypingDelay: 50}}>
+            <TypistModal text={'Please type your name:'} typistProps={{avgTypingDelay: 20}}>
                 <form className="name-form" onSubmit={this.handleNameFormSubmit.bind(this)}>
                     <input type="text" name="playerName" autoFocus className={inputClassNames}
                            onChange={this.handleNameUpdate.bind(this)} ref={input => this.input = input}/>

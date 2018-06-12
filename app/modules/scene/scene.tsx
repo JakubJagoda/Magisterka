@@ -25,6 +25,7 @@ import QuestionPanel from "../questionPanel/questionPanel";
 import GameOver from "../gameOver/gameOver";
 import {hashHistory} from "react-router";
 import ReportForm from "../reportForm/reportForm";
+import Sounds from "../sounds/sounds";
 
 interface ISceneState extends IGameState {
 }
@@ -150,6 +151,7 @@ class Scene extends React.Component<{}, ISceneState> {
 
     componentWillUnmount() {
         gameStore.removeListener(this.boundGameStoreUpdateHandler);
+        Sounds.stopMainMusic();
     }
 
     private static handleNameEntered(playerName: string) {

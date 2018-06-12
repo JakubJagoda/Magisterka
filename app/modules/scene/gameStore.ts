@@ -3,6 +3,7 @@ import {IDispatcherPayload} from "../flux/dispatcher";
 import * as SceneActions from "./sceneActions";
 import * as Puzzles from "../puzzles/puzzles";
 import {EAnswerType} from "../puzzles/puzzles";
+import Sounds from "../sounds/sounds";
 
 type Question = Puzzles.Question;
 type Answer = Puzzles.Answer;
@@ -124,6 +125,7 @@ class GameStore extends Store {
         this.currentGameState = SCENE_STATES.PLACING_BET;
         this.currentQuestion = Puzzles.getQuestion(this.currentRound);
         this.gameID = GameStore.getNewGameID();
+        Sounds.playMainMusic();
     }
 
     private handleSetPlayerNameAction(action: SceneActions.SetPlayerNameAction) {

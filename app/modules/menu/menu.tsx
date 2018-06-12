@@ -5,6 +5,7 @@ import Animated from '../animated/animated';
 import userStore from '../user/userStore';
 import RouterContext from 'react-router/lib/RouterContext';
 import Button from '../shared/button/button';
+import Sounds, {ESoundSample} from '../sounds/sounds';
 
 interface IMenuState {
     loading: boolean;
@@ -14,7 +15,7 @@ interface IMenuProps extends RouterContext.RouterContextProps {
     loading?: boolean;
 }
 
-export default class Menu extends React.Component<IMenuProps,IMenuState> {
+export default class Menu extends React.Component<IMenuProps, IMenuState> {
     private onUserStoreChangeBound = this.onUserStoreChange.bind(this);
 
     constructor(...props) {
@@ -29,6 +30,7 @@ export default class Menu extends React.Component<IMenuProps,IMenuState> {
 
     componentWillUnmount() {
         userStore.removeListener(this.onUserStoreChangeBound);
+        Sounds.stopMenuMusic();
     }
 
     private onUserStoreChange() {
@@ -51,41 +53,60 @@ export default class Menu extends React.Component<IMenuProps,IMenuState> {
     private renderEnteringAnimation(): JSX.Element {
         return (
             <Animated animations={{
-                    delay: 2500,
-                    length: 200,
-                    style: {
-                        width: 'auto',
-                        height: 'auto',
-                        transform: 'scale(0.75) translateY(-75%)'
-                    }
-                }} initialStyle={{width: '100vw', height: '100vh'}} skipIf={Boolean(this.props.location.query.skipAnimation)}>
+                delay: 2500,
+                length: 200,
+                style: {
+                    width: 'auto',
+                    height: 'auto',
+                    transform: 'scale(0.75) translateY(-75%)'
+                }
+            }}
+                      initialStyle={{width: '100vw', height: '100vh'}}
+                      skipIf={Boolean(this.props.location.query.skipAnimation)}>
                 <div className="menu__game-title">
-                    <Animated animations={{
-                              delay: 0,
-                              length: 200,
-                              style: {
-                                  right: 0
-                              }
-                          }} initialStyle={{right: '-100%'}} skipIf={Boolean(this.props.location.query.skipAnimation)}>
-                        <img src='./static/img/logo-truth.png' />
+                    <Animated animations={
+                        {
+                            delay: 0,
+                            length: 200,
+                            style: {
+                                right: 0
+                            },
+                            callback: () => {
+                                Sounds.playSound(ESoundSample.LOGO_FADE_IN);
+                            }
+                        }}
+                              initialStyle={{right: '-100%'}}
+                              skipIf={Boolean(this.props.location.query.skipAnimation)}>
+                        <img src='./static/img/logo-truth.png'/>
                     </Animated>
                     <Animated animations={{
-                              delay: 800,
-                              length: 200,
-                              style: {
-                                  top: 0
-                              }
-                          }} initialStyle={{top: '100%'}} skipIf={Boolean(this.props.location.query.skipAnimation)}>
-                        <img src='./static/img/logo-or.png' />
+                        delay: 800,
+                        length: 200,
+                        style: {
+                            top: 0
+                        },
+                        callback: () => {
+                            Sounds.playSound(ESoundSample.LOGO_FADE_IN);
+                        }
+                    }}
+                              initialStyle={{top: '100%'}}
+                              skipIf={Boolean(this.props.location.query.skipAnimation)}>
+                        <img src='./static/img/logo-or.png'/>
                     </Animated>
                     <Animated animations={{
-                              delay: 1600,
-                              length: 200,
-                              style: {
-                                  left: 0
-                              }
-                          }} initialStyle={{left: '-100%'}} skipIf={Boolean(this.props.location.query.skipAnimation)}>
-                        <img src='./static/img/logo-bunk.png' />
+                        delay: 1600,
+                        length: 200,
+                        style: {
+                            left: 0
+                        },
+                        callback: () => {
+                            Sounds.playSound(ESoundSample.LOGO_FADE_IN);
+                            Sounds.playMenuMusic();
+                        }
+                    }}
+                              initialStyle={{left: '-100%'}}
+                              skipIf={Boolean(this.props.location.query.skipAnimation)}>
+                        <img src='./static/img/logo-bunk.png'/>
                     </Animated>
                 </div>
             </Animated>
@@ -131,7 +152,8 @@ export default class Menu extends React.Component<IMenuProps,IMenuState> {
             )
         } else {
             inner = (<div className="menu__buttons">
-                {userStore.isUserLoggedIn() && <div className="menu__signed-in">Signed in as <strong>{userStore.getUserData().userName}</strong></div>}
+                {userStore.isUserLoggedIn() &&
+                <div className="menu__signed-in">Signed in as <strong>{userStore.getUserData().userName}</strong></div>}
                 {buttons.newGame}
                 {userStore.isUserLoggedIn() && buttons.signOut}
                 {!userStore.isUserLoggedIn() && buttons.register}
@@ -146,7 +168,9 @@ export default class Menu extends React.Component<IMenuProps,IMenuState> {
                 top: '50%'
             },
             easing: 'ease-out',
-        }} initialStyle={{top: '100%'}} skipIf={Boolean(this.props.location.query.skipAnimation)}>
+        }}
+                          initialStyle={{top: '100%'}}
+                          skipIf={Boolean(this.props.location.query.skipAnimation)}>
             {inner}
         </Animated>);
     }
