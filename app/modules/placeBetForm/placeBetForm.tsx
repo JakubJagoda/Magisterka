@@ -52,16 +52,18 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IP
                          typistProps={{avgTypingDelay: 40}}
                          className="place-bet-form">
                 <span className="place-bet-form__current-cash-status">Current cash: ${this.props.currentPlayerMoney}</span>
-                <Button onClick={this.handleVaBanqueButtonClick.bind(this)}>OK</Button>
+                <Button className="place-bet-form__button" onClick={this.handleVaBanqueButtonClick.bind(this)}>OK</Button>
                 <div className="place-bet-form__extras">
                     <div className="place-bet-form-info">
                         <span>Round {this.props.roundNumber + 1}/{this.props.maxRounds}</span>
                         <span>Question {this.props.questionNumber + 1}/{this.props.maxQuestionsInRound}</span>
                     </div>
                     {this.props.allowReport && <Button buttonType={EButtonType.WARN}
+                                                       className="place-bet-form__button place-bet-form__button--report"
                                                        onClick={this.handleReportClick.bind(this)}>Report
                         question</Button>}
                     {this.props.allowFinish && <Button buttonType={EButtonType.OK}
+                                                       className="place-bet-form__button place-bet-form__button--finish"
                                                        onClick={this.handleFinishClick.bind(this)}>End game</Button>}
                 </div>
             </TypistModal>
@@ -87,7 +89,8 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IP
                         Current cash:
                         <span className="place-bet-form__current-cash-amount">${this.props.currentPlayerMoney}</span>
                     </div>
-                    <Button onClick={this.handlePlaceBetFormSubmit.bind(this)}>
+                    <Button className="place-bet-form__button"
+                            onClick={this.handlePlaceBetFormSubmit.bind(this)}>
                         OK
                     </Button>
                     <div className="place-bet-form__extras">
@@ -97,9 +100,11 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IP
                         </div>
                         {this.props.allowReport &&
                         <Button buttonType={EButtonType.WARN}
+                                className="place-bet-form__button place-bet-form__button--report"
                                 onClick={this.handleReportClick.bind(this)}>Report question</Button>}
                         {this.props.allowFinish &&
                         <Button buttonType={EButtonType.OK}
+                                className="place-bet-form__button place-bet-form__button--finish"
                                 onClick={this.handleFinishClick.bind(this)}>End game</Button>}
                     </div>
                 </form>
