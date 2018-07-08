@@ -34,8 +34,8 @@ class Scene extends React.Component<{}, ISceneState> {
     private boundGameStoreUpdateHandler: () => void;
     private static questionLevelsLoading: Set<number> = new Set<number>();
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.state = gameStore.getGameState();
         this.boundGameStoreUpdateHandler = this.onGameStoreChange.bind(this);

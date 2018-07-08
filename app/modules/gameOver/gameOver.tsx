@@ -15,8 +15,8 @@ interface IGameOverProps {
 export default class GameOver extends React.Component<IGameOverProps,{}> {
     private postScoresPromise: Promise<void>;
 
-    constructor(...props) {
-        super(...props);
+    constructor(props) {
+        super(props);
 
         this.postScoresPromise = User.postScores(this.props.gameID, this.props.playerMoney);
     }

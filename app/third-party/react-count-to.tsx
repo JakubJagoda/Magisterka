@@ -18,40 +18,33 @@ interface ICountToState {
     counter: number;
 }
 
-const CountTo = React.createClass<ICountToProps, ICountToState>({
-
-    propTypes: {
-        from: React.PropTypes.number,
-        to: React.PropTypes.number.isRequired,
-        speed: React.PropTypes.number.isRequired,
-        delay: React.PropTypes.number,
-        initialDelay: React.PropTypes.number,
-        onComplete: React.PropTypes.func,
-        digits: React.PropTypes.number,
-        className: React.PropTypes.string
-    },
+class CountTo extends React.Component<ICountToProps, ICountToState> {
+    private loopsCounter;
+    private loops;
+    private increment;
+    private interval;
 
     getInitialState() {
         return {
             counter: this.props.from || 0
         };
-    },
+    }
 
     componentDidMount() {
         setTimeout(() => {
             this.start(this.props);
         }, this.props.initialDelay || 0);
-    },
+    }
 
     componentWillReceiveProps(nextProps) {
         setTimeout(() => {
             this.start(nextProps);
         }, nextProps.initialDelay || 0);
-    },
+    }
 
     componentWillUnmount() {
         this.clear();
-    },
+    }
 
     start(props) {
         this.clear();
@@ -62,7 +55,7 @@ const CountTo = React.createClass<ICountToProps, ICountToState>({
             this.increment = (props.to - this.state.counter) / this.loops;
             this.interval = setInterval(this.next.bind(this, props), delay);
         });
-    },
+    }
 
     next(props) {
         if (this.loopsCounter < this.loops) {
@@ -76,11 +69,11 @@ const CountTo = React.createClass<ICountToProps, ICountToState>({
                 props.onComplete();
             }
         }
-    },
+    }
 
     clear() {
         clearInterval(this.interval);
-    },
+    }
 
     render() {
         return (
@@ -90,6 +83,6 @@ const CountTo = React.createClass<ICountToProps, ICountToState>({
         );
     }
 
-});
+}
 
 export default CountTo;

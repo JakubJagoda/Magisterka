@@ -19,8 +19,8 @@ interface IRegisterFormState extends IRegisterFormFormFields {
 type RegisterFormStateAllowedFields = keyof IRegisterFormFormFields;
 
 export default class RegisterForm extends React.Component<{},IRegisterFormState> {
-    constructor(...props) {
-        super(...props);
+    constructor(props) {
+        super(props);
 
         this.state = {
             login: "",

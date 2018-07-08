@@ -1,9 +1,8 @@
 import * as React from "react";
 import './menu.style';
-import {Link} from 'react-router';
+import {Link, WithRouterProps} from 'react-router';
 import Animated from '../animated/animated';
 import userStore from '../user/userStore';
-import RouterContext from 'react-router/lib/RouterContext';
 import Button from '../shared/button/button';
 import Sounds, {ESoundSample} from '../sounds/sounds';
 
@@ -11,15 +10,15 @@ interface IMenuState {
     loading: boolean;
 }
 
-interface IMenuProps extends RouterContext.RouterContextProps {
+interface IMenuProps extends WithRouterProps {
     loading?: boolean;
 }
 
 export default class Menu extends React.Component<IMenuProps, IMenuState> {
     private onUserStoreChangeBound = this.onUserStoreChange.bind(this);
 
-    constructor(...props) {
-        super(...props);
+    constructor(props) {
+        super(props);
 
         this.state = {
             loading: !userStore.getUserData().deviceID

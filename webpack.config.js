@@ -20,7 +20,7 @@ module.exports = function (env) {
             // modulesDirectories: ['node_modules'],
             extensions: ['.webpack.js', '.web.js', '.ts', '.tsx', '.js', '.scss', '.css'],
             alias: {
-                constants: path.resolve(__dirname, env.production ? 'app/constants.prod.ts' : 'app/constants.ts')
+                'app-constants': path.resolve(__dirname, env.production ? 'app/constants.prod.ts' : 'app/constants.ts')
             }
         },
         module: {

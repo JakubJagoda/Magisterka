@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {hashHistory, Link} from 'react-router';
+import {Link} from 'react-router';
 
 import * as Api from '../api/api';
 import './signInForm.style';
@@ -21,8 +21,8 @@ interface IRegisterFormState extends ISignInFormFormFields {
 type SignInFormStateAllowedFields = keyof ISignInFormFormFields;
 
 export default class SignInForm extends React.Component<{},IRegisterFormState> {
-    constructor(...props) {
-        super(...props);
+    constructor(props) {
+        super(props);
 
         this.state = {
             login: '',

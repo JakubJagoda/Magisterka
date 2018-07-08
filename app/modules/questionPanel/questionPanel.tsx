@@ -6,6 +6,8 @@ import CountTo from '../../third-party/react-count-to';
 import './questionPanel.style';
 import Animated from "../animated/animated";
 import {EAnswerType} from "../puzzles/puzzles";
+import Button from "../shared/button/button";
+import {ESoundSample, default as Sounds} from "../sounds/sounds";
 
 interface IQuestionPanelProps {
     word: string;
@@ -93,11 +95,11 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                 }}>
                     <div className="question-panel-buttons">
                         <span className="question-panel-buttons__text">Is this a...</span>
-                        <button className="button button--ok question-panel-buttons__button"
-                                onClick={() => {this.cancelTimeout(); this.props.onTruthSelected()}}>TRUTH</button>
+                        <Button className="button button--ok question-panel-buttons__button"
+                                onClick={() => {this.cancelTimeout(); this.props.onTruthSelected()}}>TRUTH</Button>
                         <span>OR</span>
-                        <button className="button button--warn question-panel-buttons__button"
-                                onClick={() => {this.cancelTimeout(); this.props.onBunkSelected()}}>BUNK</button>
+                        <Button className="button button--warn question-panel-buttons__button"
+                                onClick={() => {this.cancelTimeout(); this.props.onBunkSelected()}}>BUNK</Button>
                     </div>
                 </Animated>
             );

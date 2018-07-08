@@ -1,6 +1,6 @@
 import * as QueryString from 'query-string';
 import {ISendAnswersPayloadEntry} from "../puzzles/answers";
-import {API_URL} from "constants";
+import {API_URL} from 'app-constants';
 
 const API_ENDPOINT = `${API_URL}/api.php?o=`;
 const VERSION = '1.0.4';

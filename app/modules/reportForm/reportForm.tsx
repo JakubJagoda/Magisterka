@@ -4,6 +4,7 @@ import {Question, Answer} from "../puzzles/puzzles";
 import {EAnswerType} from "../puzzles/answers";
 
 import './reportForm.style';
+import Button from "../shared/button/button";
 
 interface IReportFormProps {
     previousQuestion: Question;
@@ -17,8 +18,8 @@ interface IReportFormState {
 }
 
 export default class ReportForm extends React.Component<IReportFormProps, IReportFormState> {
-    constructor(...props) {
-        super(...props);
+    constructor(props) {
+        super(props);
 
         this.state = {
             reported: false
@@ -41,7 +42,7 @@ export default class ReportForm extends React.Component<IReportFormProps, IRepor
                     We will look into it and try to investigate any abnormalities. Sorry for the inconvenience!
                 </div>
                 <div className="report-form__buttons">
-                    <button className="button" onClick={this.props.onCancelClicked}>OK</button>
+                    <Button className="button" onClick={this.props.onCancelClicked}>OK</Button>
                 </div>
             </div>
         )
@@ -82,9 +83,9 @@ export default class ReportForm extends React.Component<IReportFormProps, IRepor
                     </div>
                 </div>
                 <div className="report-form__buttons">
-                    <button className="button button--warn" onClick={this.handleReportButtonClicked.bind(this)}>Report
-                    </button>
-                    <button className="button" onClick={this.props.onCancelClicked}>Cancel</button>
+                    <Button className="button button--warn" onClick={this.handleReportButtonClicked.bind(this)}>Report
+                    </Button>
+                    <Button className="button" onClick={this.props.onCancelClicked}>Cancel</Button>
                 </div>
             </div>
         );

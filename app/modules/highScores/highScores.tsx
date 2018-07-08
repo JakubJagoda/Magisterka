@@ -7,6 +7,7 @@ import * as Api from '../api/api';
 import dispatcher from "../flux/dispatcher";
 import {HighScoresLoadedAction} from "./highScoresActions";
 import {IHighScoresEntry, IHighScoresResponse} from "../api/api";
+import Button from "../shared/button/button";
 
 interface IHighScoresState {
     loading: boolean;
@@ -14,8 +15,8 @@ interface IHighScoresState {
 }
 
 export default class HighScores extends React.Component<{}, IHighScoresState> {
-    constructor(...props) {
-        super(...props);
+    constructor(props) {
+        super(props);
 
         highScoresStore.addListener(this.onHighScoresStoreChanged.bind(this));
 
@@ -104,7 +105,7 @@ export default class HighScores extends React.Component<{}, IHighScoresState> {
                     bottom: '-100%',
                     position: 'relative'
                 }}>
-                    <button className="button" onClick={HighScores.goBack}>&laquo; Back</button>
+                    <Button className="button" onClick={HighScores.goBack}>&laquo; Back</Button>
                 </Animated>
             </div>
         )

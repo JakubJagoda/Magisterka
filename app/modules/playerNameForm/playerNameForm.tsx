@@ -20,8 +20,8 @@ interface IPlayerNameFormProps {
 export default class PlayerNameForm extends React.Component<IPlayerNameFormProps,IPlayerNameFormState> {
     private input: HTMLInputElement;
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.state = {
             playerName: '',
