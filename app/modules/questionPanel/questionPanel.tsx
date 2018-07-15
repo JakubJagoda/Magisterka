@@ -32,7 +32,7 @@ interface IQuestionPanelState {
 
 // @TODO OH GOD PLEASE REFACTOR THIS ONE
 export default class QuestionPanel extends React.Component<IQuestionPanelProps, IQuestionPanelState> {
-    private static TIME_FOR_QUESTION = 20;
+    private static TIME_FOR_QUESTION = 25;
     private playerMoney: number;
     private interval: number;
 
@@ -57,12 +57,18 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
         }
     }
 
+    componentWillUnmount() {
+        clearInterval(this.interval);
+        this.interval = 0;
+    }
+
     private renderAnswerResult() {
         const timer = (
             <div className="question-panel-timer">
                 <span className="question-panel-timer__info">Time left: </span>
                 <span className="question-panel-timer__time">{this.state.timeLeft} sec</span>
-                <div className="question-panel-timer__bar" style={{width: `${this.state.timeLeft / QuestionPanel.TIME_FOR_QUESTION * 100}%`}}></div>
+                <div className="question-panel-timer__bar"
+                     style={{width: `${this.state.timeLeft / QuestionPanel.TIME_FOR_QUESTION * 100}%`}}></div>
             </div>
         );
 
@@ -82,42 +88,56 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
         let buttons: JSX.Element;
         let timer: JSX.Element;
 
+        const animatedPropsForButtonsAndTimes = {
+            animations: {
+                delay: 50,
+                length: 400,
+                style: {
+                    opacity: 1
+                }
+            },
+            initialStyle: {
+                opacity: 0
+            }
+        };
+
+        const animatedPropsForQuestionPanel = {
+            initialStyle: {
+                position: 'absolute',
+                top: '-100%'
+            },
+            finalStyle: {
+                position: 'static'
+            }
+        };
+
         if (this.state.showButtons) {
             buttons = (
-                <Animated animations={{
-                    delay: 50,
-                    length: 400,
-                    style: {
-                        opacity: 1
-                    }
-                }} initialStyle={{
-                    opacity: 0,
-                }}>
+                <Animated {...animatedPropsForButtonsAndTimes}>
                     <div className="question-panel-buttons">
                         <span className="question-panel-buttons__text">Is this a...</span>
                         <Button className="button button--ok question-panel-buttons__button"
-                                onClick={() => {this.cancelTimeout(); this.props.onTruthSelected()}}>TRUTH</Button>
+                                onClick={() => {
+                                    this.cancelTimeout();
+                                    this.props.onTruthSelected()
+                                }}>TRUTH</Button>
                         <span>OR</span>
                         <Button className="button button--warn question-panel-buttons__button"
-                                onClick={() => {this.cancelTimeout(); this.props.onBunkSelected()}}>BUNK</Button>
+                                onClick={() => {
+                                    this.cancelTimeout();
+                                    this.props.onBunkSelected()
+                                }}>BUNK</Button>
                     </div>
                 </Animated>
             );
 
             timer = (
-                <Animated animations={{
-                    delay: 50,
-                    length: 400,
-                    style: {
-                        opacity: 1
-                    }
-                }} initialStyle={{
-                    opacity: 0,
-                }}>
+                <Animated {...animatedPropsForButtonsAndTimes}>
                     <div className="question-panel-timer">
                         <span className="question-panel-timer__info">Time left: </span>
                         <span className="question-panel-timer__time">{this.state.timeLeft} sec</span>
-                        <div className="question-panel-timer__bar" style={{width: `${this.state.timeLeft / QuestionPanel.TIME_FOR_QUESTION * 100}%`}}></div>
+                        <div className="question-panel-timer__bar"
+                             style={{width: `${this.state.timeLeft / QuestionPanel.TIME_FOR_QUESTION * 100}%`}}></div>
                     </div>
                 </Animated>
             );
@@ -132,13 +152,9 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                     length: 400,
                     style: {
                         top: 0
-                    }
-                }} initialStyle={{
-                    position: 'absolute',
-                    top: '-100%'
-                }} finalStyle={{
-                    position: 'static'
-                }}>
+                    },
+                    callback: this.onQuestionShown.bind(this)
+                }} {...animatedPropsForQuestionPanel}>
                     {this.renderQuestionDetails()}
                 </Animated>
                 {buttons}
@@ -148,12 +164,7 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                     style: {
                         bottom: 0
                     }
-                }} initialStyle={{
-                    position: 'absolute',
-                    bottom: '-100%'
-                }} finalStyle={{
-                    position: 'static'
-                }}>
+                }} {...animatedPropsForQuestionPanel}>
                     {this.renderStatus()}
                 </Animated>
             </div>
@@ -162,15 +173,13 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
 
     private renderQuestionDetails(): JSX.Element {
         return (
-            <Typist avgTypingDelay={20} cursor={{show: false}} onTypingDone={this.onQuestionShown.bind(this)}>
-                {this.renderQuestionContents()}
-            </Typist>
+            this.renderQuestionContents()
         );
     }
 
     private renderQuestionContents(): JSX.Element {
         return (
-            <div className="question-panel-question" >
+            <div className="question-panel-question">
                 <span className="question-panel-question__question-no">Question #{String(this.props.currentQuestionNo)}</span>
                 <span className="question-panel-question__word">{this.props.word}</span>
                 <span className="question-panel-question__hyphen">is</span>
@@ -204,12 +213,20 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                     style: {
                         top: '-80px'
                     },
-                    easing: 'ease-out'
+                    easing: 'ease-out',
+                    callback: () => {
+                        const sound = this.props.isAnswerToCurrentQuestionCorrect ? ESoundSample.CORRECT_ANSWER : ESoundSample.WRONG_ANSWER;
+                        Sounds.playSound(sound, {
+                            callback: () => setTimeout(this.props.onResultShown, 1000)
+                        });
+                    }
                 }
-            ]} initialStyle={{
-                top: '-100vh'
-            }}>
-                <img className="question-panel-buttons__result-text" src={`./static/img/${textFileName}.png`}/>
+            ]}
+                      initialStyle={{
+                          top: '-100vh'
+                      }}>
+                <img className="question-panel-buttons__result-text"
+                     src={`./static/img/${textFileName}.png`}/>
             </Animated>
         );
 
@@ -227,10 +244,11 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                             transform: 'translateX(-50%)'
                         }
                     }
-                ]} initialStyle={{
-                    position: 'relative',
-                    left: 0
-                }}>
+                ]}
+                          initialStyle={{
+                              position: 'relative',
+                              left: 0
+                          }}>
                     {buttonTruth}
                 </Animated>
             );
@@ -245,10 +263,11 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                             transform: 'translateX(50%)'
                         }
                     }
-                ]} initialStyle={{
-                    position: 'relative',
-                    right: 0
-                }}>
+                ]}
+                          initialStyle={{
+                              position: 'relative',
+                              right: 0
+                          }}>
                     {buttonBunk}
                 </Animated>
             );
@@ -261,20 +280,24 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
 
         const animatedCounter = (
             <Animated animations={[
-                    {
-                        delay: 2000,
-                        length: 200,
-                        style: {
-                            opacity: 1
-                        }
+                {
+                    delay: 2000,
+                    length: 200,
+                    style: {
+                        opacity: 1
                     }
-                ]} initialStyle={{
-                    opacity: 0
-                }}>
+                }
+            ]}
+                      initialStyle={{
+                          opacity: 0
+                      }}>
                     <span className="question-panel-buttons__animated-status">
-                    Current cash: $<CountTo from={this.playerMoney} to={this.props.playerMoney} speed={500}
-                                                      className={moneyClassNames} initialDelay={2500} delay={50}
-                                                      onComplete={() => setTimeout(this.props.onResultShown, 1000)} />
+                    Current cash: $<CountTo from={this.playerMoney}
+                                            to={this.props.playerMoney}
+                                            speed={500}
+                                            className={moneyClassNames}
+                                            initialDelay={2500}
+                                            delay={50}/>
                 </span>
             </Animated>
         );
@@ -305,6 +328,12 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
     }
 
     private handleTimeTick() {
+        const tickWithReverbVolume = (QuestionPanel.TIME_FOR_QUESTION - this.state.timeLeft) / QuestionPanel.TIME_FOR_QUESTION;
+        const normalTickVolume = 1 - tickWithReverbVolume;
+
+        Sounds.playSound(ESoundSample.TICK, { volume: normalTickVolume });
+        Sounds.playSound(ESoundSample.TICK_REVERB, { volume: tickWithReverbVolume });
+
         if (this.state.timeLeft === 0) {
             clearInterval(this.interval);
             this.interval = 0;
@@ -332,7 +361,8 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                     },
                     easing: 'linear',
                 }
-            ]} key={Math.random()}>
+            ]}
+                      key={Math.random()}>
                 {contents}
             </Animated>
         );

@@ -71,6 +71,9 @@ export default class Menu extends React.Component<IMenuProps, IMenuState> {
                                 right: 0
                             },
                             callback: () => {
+                                if (this.props.location.query.skipAnimation) {
+                                    return;
+                                }
                                 Sounds.playSound(ESoundSample.LOGO_FADE_IN);
                             }
                         }}
@@ -85,6 +88,9 @@ export default class Menu extends React.Component<IMenuProps, IMenuState> {
                             top: 0
                         },
                         callback: () => {
+                            if (this.props.location.query.skipAnimation) {
+                                return;
+                            }
                             Sounds.playSound(ESoundSample.LOGO_FADE_IN);
                         }
                     }}
@@ -99,7 +105,9 @@ export default class Menu extends React.Component<IMenuProps, IMenuState> {
                             left: 0
                         },
                         callback: () => {
-                            Sounds.playSound(ESoundSample.LOGO_FADE_IN);
+                            if (!this.props.location.query.skipAnimation) {
+                                Sounds.playSound(ESoundSample.LOGO_FADE_IN);
+                            }
                             Sounds.playMenuMusic();
                         }
                     }}

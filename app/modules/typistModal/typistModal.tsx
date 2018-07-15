@@ -3,6 +3,7 @@ import classnames from 'classnames';
 import Typist from 'react-typist';
 
 import './typistModal.style';
+import {ESoundSample, default as Sounds} from "../sounds/sounds";
 
 interface ITypistModalProps {
     text?: string | JSX.Element;
@@ -32,6 +33,7 @@ export default class TypistModal extends React.Component<ITypistModalProps,ITypi
             <div className={classnames("typist-modal-container", this.props.className)}>
                 <Typist className="typist-modal-container__text" typing={1} stdTypingDelay={0}
                         cursor={{show: false}}
+                        onCharacterTyped={() => Sounds.playSound(ESoundSample.CHARACTER_TYPED)}
                         onTypingDone={() => this.setState(Object.assign(this.state, {childrenVisible: true}))}
                         {...this.props.typistProps}>
                     <span key={this.key}>{this.props.text}</span>

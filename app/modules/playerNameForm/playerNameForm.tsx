@@ -5,6 +5,7 @@ import './playerNameForm.style';
 
 import Animated from "../animated/animated";
 import TypistModal from "../typistModal/typistModal";
+import Button from "../shared/button/button";
 
 interface IPlayerNameFormState {
     playerName: string;
@@ -64,9 +65,10 @@ export default class PlayerNameForm extends React.Component<IPlayerNameFormProps
                 <form className="name-form" onSubmit={this.handleNameFormSubmit.bind(this)}>
                     <input type="text" name="playerName" autoFocus className={inputClassNames}
                            onChange={this.handleNameUpdate.bind(this)} ref={input => this.input = input}/>
-                    <button className="button name-form__button"
-                            type="submit">OK
-                    </button>
+                    <Button className="place-bet-form__button"
+                            onClick={this.handleNameFormSubmit.bind(this)}>
+                        OK
+                    </Button>
                 </form>
             </TypistModal>
         )

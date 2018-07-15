@@ -24,6 +24,14 @@ class CountTo extends React.Component<ICountToProps, ICountToState> {
     private increment;
     private interval;
 
+    constructor(props: ICountToProps) {
+        super(props);
+
+        this.state = {
+            counter: props.from || 0
+        };
+    }
+
     getInitialState() {
         return {
             counter: this.props.from || 0

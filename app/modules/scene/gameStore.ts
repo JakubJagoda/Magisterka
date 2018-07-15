@@ -48,29 +48,34 @@ class GameStore extends Store {
     private static MAX_ROUNDS_COUNT = 5;
     private static MAX_QUESTIONS_PER_ROUND_COUNT = 8;
 
-    private playerName = '';
-    private playerMoney = 100;
-    private currentGameState: SCENE_STATES = SCENE_STATES.WAITING_FOR_QUESTIONS;
-    private currentRound = 0;
-    private currentBet = 0;
-    private currentQuestion: Question = null;
-    private currentQuestionNumberInRound = 0;
-    private answerToCurrentQuestion = true;
-    private answerType: EAnswerType = null;
-    private isAnswerToCurrentQuestionCorrect = true;
-    private questionShownTime: Date = null;
-    private difficultyLevelsWithNoQuestionsLeft: number[] = [];
-    private canReportPreviousQuestion = false;
-    private reportedQuestionInCurrentRound = false;
-    private previousQuestion: Question = null;
-    private previousAnswer: Answer = null;
+    private playerName: string;
+    private playerMoney: number;
+    private currentGameState: SCENE_STATES;
+    private currentRound: number;
+    private currentBet: number;
+    private currentQuestion: Question;
+    private currentQuestionNumberInRound: number;
+    private answerToCurrentQuestion: boolean;
+    private answerType: EAnswerType;
+    private isAnswerToCurrentQuestionCorrect;
+    private questionShownTime: Date;
+    private difficultyLevelsWithNoQuestionsLeft: number[];
+    private canReportPreviousQuestion: boolean;
+    private reportedQuestionInCurrentRound: boolean;
+    private previousQuestion: Question;
+    private previousAnswer: Answer;
     private gameID: string;
-    private canFinishGame = false;
+    private canFinishGame: boolean;
     private readonly numberOfRounds = GameStore.MAX_ROUNDS_COUNT;
     private readonly numberOfQuestionsInRound = GameStore.MAX_QUESTIONS_PER_ROUND_COUNT;
 
     private static getNewGameID(): string {
         return String(Math.random()).split('.')[1];
+    }
+
+    constructor() {
+        super();
+        this.resetGameStateToDefaults();
     }
 
     protected onDispatch(payload: IDispatcherPayload) {
@@ -122,7 +127,7 @@ class GameStore extends Store {
     }
 
     private handleQuestionsLoadedInitialAction() {
-        this.currentGameState = SCENE_STATES.PLACING_BET;
+        this.currentGameState = SCENE_STATES.NAME_INPUT;
         this.currentQuestion = Puzzles.getQuestion(this.currentRound);
         this.gameID = GameStore.getNewGameID();
         Sounds.playMainMusic();
@@ -254,6 +259,11 @@ class GameStore extends Store {
 
             return reduced;
         }, <IGameState>{});
+    }
+
+    public getFreshGameState(): IGameState {
+        this.resetGameStateToDefaults();
+        return this.getGameState();
     }
 
     private resetGameStateToDefaults() {

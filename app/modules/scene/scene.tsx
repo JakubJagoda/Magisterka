@@ -37,7 +37,7 @@ class Scene extends React.Component<{}, ISceneState> {
     constructor(props) {
         super(props);
 
-        this.state = gameStore.getGameState();
+        this.state = gameStore.getFreshGameState();
         this.boundGameStoreUpdateHandler = this.onGameStoreChange.bind(this);
 
         Puzzles.loadInitialQuestionSet().then(() => {
