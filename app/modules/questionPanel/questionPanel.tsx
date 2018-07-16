@@ -135,7 +135,9 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                 <Animated {...animatedPropsForButtonsAndTimes}>
                     <div className="question-panel-timer">
                         <span className="question-panel-timer__info">Time left: </span>
-                        <span className="question-panel-timer__time">{this.state.timeLeft} sec</span>
+                        <span className={classnames("question-panel-timer__time", {
+                            "question-panel-timer__time--low": this.state.timeLeft < 10
+                        })} key={this.state.timeLeft}>{this.state.timeLeft} sec</span>
                         <div className="question-panel-timer__bar"
                              style={{width: `${this.state.timeLeft / QuestionPanel.TIME_FOR_QUESTION * 100}%`}}></div>
                     </div>

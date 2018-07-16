@@ -107,6 +107,10 @@
       color: white;
       font-weight: bold;
       font-size: 20px;
+
+      &--low {
+        animation: timer-low 1s;
+      }
     }
 
     &__bar {
@@ -142,6 +146,15 @@
       font-weight: bold;
       color: white;
       font-size: 24px;
+    }
+  }
+
+  @keyframes timer-low {
+    0% {
+      color: red;
+    }
+    100% {
+      color: white;
     }
   }
 }
