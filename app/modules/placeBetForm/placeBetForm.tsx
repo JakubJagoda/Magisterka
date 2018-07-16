@@ -47,25 +47,13 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IP
 
     private renderBudgetLessThanMinBetWarning() {
         return (
-            <TypistModal text={`Almost out of cash!
-            You have to go va banque!`}
+            <TypistModal text={`Almost out of cash! You have to go va banque!`}
                          typistProps={{avgTypingDelay: 40}}
                          className="place-bet-form">
                 <span className="place-bet-form__current-cash-status">Current cash: ${this.props.currentPlayerMoney}</span>
-                <Button className="place-bet-form__button" onClick={this.handleVaBanqueButtonClick.bind(this)}>OK</Button>
-                <div className="place-bet-form__extras">
-                    <div className="place-bet-form-info">
-                        <span>Round {this.props.roundNumber + 1}/{this.props.maxRounds}</span>
-                        <span>Question {this.props.questionNumber + 1}/{this.props.maxQuestionsInRound}</span>
-                    </div>
-                    {this.props.allowReport && <Button buttonType={EButtonType.WARN}
-                                                       className="place-bet-form__button place-bet-form__button--report"
-                                                       onClick={this.handleReportClick.bind(this)}>Report
-                        question</Button>}
-                    {this.props.allowFinish && <Button buttonType={EButtonType.OK}
-                                                       className="place-bet-form__button place-bet-form__button--finish"
-                                                       onClick={this.handleFinishClick.bind(this)}>End game</Button>}
-                </div>
+                <Button className="place-bet-form__button"
+                        onClick={this.handleVaBanqueButtonClick.bind(this)}>OK</Button>
+                {this.renderFormExtras()}
             </TypistModal>
         );
     }
@@ -90,26 +78,26 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IP
                         <span className="place-bet-form__current-cash-amount">${this.props.currentPlayerMoney}</span>
                     </div>
                     <Button className="place-bet-form__button"
-                            onClick={this.handlePlaceBetFormSubmit.bind(this)}>
-                        OK
-                    </Button>
-                    <div className="place-bet-form__extras">
-                        <div className="place-bet-form-info">
-                            <span>Round {this.props.roundNumber + 1}/{this.props.maxRounds}</span>
-                            <span>Question {this.props.questionNumber + 1}/{this.props.maxQuestionsInRound}</span>
-                        </div>
-                        {this.props.allowReport &&
-                        <Button buttonType={EButtonType.WARN}
-                                className="place-bet-form__button place-bet-form__button--report"
-                                onClick={this.handleReportClick.bind(this)}>Report question</Button>}
-                        {this.props.allowFinish &&
-                        <Button buttonType={EButtonType.OK}
-                                className="place-bet-form__button place-bet-form__button--finish"
-                                onClick={this.handleFinishClick.bind(this)}>End game</Button>}
-                    </div>
+                            onClick={this.handlePlaceBetFormSubmit.bind(this)}>OK</Button>
+                    {this.renderFormExtras()}
                 </form>
             </TypistModal>
         );
+    }
+
+    private renderFormExtras() {
+        return <div className="place-bet-form__extras">
+            <div className="place-bet-form-info">
+                <span>Round {this.props.roundNumber + 1}/{this.props.maxRounds}</span>
+                <span>Question {this.props.questionNumber + 1}/{this.props.maxQuestionsInRound}</span>
+            </div>
+            {this.props.allowReport && <Button buttonType={EButtonType.WARN}
+                                               className="place-bet-form__button place-bet-form__button--report"
+                                               onClick={this.handleReportClick.bind(this)}>Report previous question</Button>}
+            {this.props.allowFinish && <Button buttonType={EButtonType.OK}
+                                               className="place-bet-form__button place-bet-form__button--finish"
+                                               onClick={this.handleFinishClick.bind(this)}>End game</Button>}
+        </div>;
     }
 
     private handleBetUpdate() {
@@ -121,6 +109,10 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IP
 
     private handlePlaceBetFormSubmit(event: Event) {
         event.preventDefault();
+
+        if (this.state.bet > this.props.maxBet) {
+            return;
+        }
 
         this.setState(Object.assign(this.state, {
             formDirty: true

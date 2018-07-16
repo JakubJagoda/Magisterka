@@ -81,6 +81,23 @@
       text-align: center;
     }
 
+    &__animated-status-wrapper {
+      position: relative;
+    }
+
+    &__animated-status-diff {
+      font-weight: bold;
+      opacity: 0;
+      position: absolute;
+      left: 50%;
+      top: -15px;
+      color: rgb(210, 138, 20);
+      transform: translateX(-50%);
+      animation: money-diff-disappear 1000ms;
+      animation-fill-mode: forwards;
+      animation-delay: 2.5s;
+    }
+
     &__animated-status-money {
       font-weight: bold;
       font-size: 34px;
@@ -155,6 +172,17 @@
     }
     100% {
       color: white;
+    }
+  }
+
+  @keyframes money-diff-disappear {
+    0% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0;
+      top: -50px;
     }
   }
 }

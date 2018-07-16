@@ -1,13 +1,12 @@
 import * as React from 'react';
 import classnames from "classnames";
-import Typist from 'react-typist';
 import CountTo from '../../third-party/react-count-to';
 
 import './questionPanel.style';
 import Animated from "../animated/animated";
 import {EAnswerType} from "../puzzles/puzzles";
 import Button from "../shared/button/button";
-import {ESoundSample, default as Sounds} from "../sounds/sounds";
+import {default as Sounds, ESoundSample} from "../sounds/sounds";
 
 interface IQuestionPanelProps {
     word: string;
@@ -137,7 +136,8 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                         <span className="question-panel-timer__info">Time left: </span>
                         <span className={classnames("question-panel-timer__time", {
                             "question-panel-timer__time--low": this.state.timeLeft < 10
-                        })} key={this.state.timeLeft}>{this.state.timeLeft} sec</span>
+                        })}
+                              key={this.state.timeLeft}>{this.state.timeLeft} sec</span>
                         <div className="question-panel-timer__bar"
                              style={{width: `${this.state.timeLeft / QuestionPanel.TIME_FOR_QUESTION * 100}%`}}></div>
                     </div>
@@ -280,6 +280,8 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
             'question-panel-buttons__animated-status-money--minus': !this.props.isAnswerToCurrentQuestionCorrect
         });
 
+        const moneyDiff = this.props.playerMoney - this.playerMoney;
+
         const animatedCounter = (
             <Animated animations={[
                 {
@@ -294,12 +296,19 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
                           opacity: 0
                       }}>
                     <span className="question-panel-buttons__animated-status">
-                    Current cash: $<CountTo from={this.playerMoney}
-                                            to={this.props.playerMoney}
-                                            speed={500}
-                                            className={moneyClassNames}
-                                            initialDelay={2500}
-                                            delay={50}/>
+                    Current cash: $<span className='question-panel-buttons__animated-status-wrapper'>
+                            <CountTo from={this.playerMoney}
+                                     to={this.props.playerMoney}
+                                     speed={500}
+                                     className={moneyClassNames}
+                                     initialDelay={2500}
+                                     delay={50}
+                                     onTick={() => Sounds.playSound(ESoundSample.CHARACTER_TYPED)}/>
+                            <span className="question-panel-buttons__animated-status-diff">
+                                {moneyDiff > 0 && '+'}
+                                {moneyDiff}
+                            </span>
+                        </span>
                 </span>
             </Animated>
         );
@@ -333,8 +342,8 @@ export default class QuestionPanel extends React.Component<IQuestionPanelProps, 
         const tickWithReverbVolume = (QuestionPanel.TIME_FOR_QUESTION - this.state.timeLeft) / QuestionPanel.TIME_FOR_QUESTION;
         const normalTickVolume = 1 - tickWithReverbVolume;
 
-        Sounds.playSound(ESoundSample.TICK, { volume: normalTickVolume });
-        Sounds.playSound(ESoundSample.TICK_REVERB, { volume: tickWithReverbVolume });
+        Sounds.playSound(ESoundSample.TICK, {volume: normalTickVolume});
+        Sounds.playSound(ESoundSample.TICK_REVERB, {volume: tickWithReverbVolume});
 
         if (this.state.timeLeft === 0) {
             clearInterval(this.interval);

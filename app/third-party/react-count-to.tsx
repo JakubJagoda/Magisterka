@@ -4,14 +4,15 @@
 import * as React from 'react';
 
 interface ICountToProps {
-    from?: number,
-    to: number,
-    speed: number,
-    delay?: number,
-    initialDelay?: number,
-    onComplete?: () => void,
-    digits?: number,
+    from?: number;
+    to: number;
+    speed: number;
+    delay?: number;
+    initialDelay?: number;
+    onComplete?: () => void;
+    digits?: number;
     className?: string
+    onTick?: () => void;
 }
 
 interface ICountToState {
@@ -71,6 +72,10 @@ class CountTo extends React.Component<ICountToProps, ICountToState> {
             this.setState({
                 counter: this.state.counter + this.increment
             });
+
+            if (props.onTick) {
+                props.onTick();
+            }
         } else {
             this.clear();
             if (props.onComplete) {
