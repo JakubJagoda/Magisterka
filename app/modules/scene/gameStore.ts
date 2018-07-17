@@ -88,7 +88,7 @@ class GameStore extends Store {
         } else if (action instanceof SceneActions.BeginRoundAction) {
             this.handleBeginRoundAction(action);
         } else if (action instanceof SceneActions.RequestForBetAction) {
-            this.currentGameState = SCENE_STATES.PLACING_BET
+            this.currentGameState = SCENE_STATES.PLACING_BET;
         } else if (action instanceof SceneActions.PlaceBetAction) {
             this.handlePlaceBetAction(action);
         } else if (action instanceof SceneActions.QuestionShownAction) {

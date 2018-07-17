@@ -88,8 +88,14 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IP
     private renderFormExtras() {
         return <div className="place-bet-form__extras">
             <div className="place-bet-form-info">
-                <span>Round {this.props.roundNumber + 1}/{this.props.maxRounds}</span>
-                <span>Question {this.props.questionNumber + 1}/{this.props.maxQuestionsInRound}</span>
+                <div className="place-bet-form-progress">
+                    <span className="place-bet-form-progress__text-item">Round:</span>
+                    {this.renderBarCounter(this.props.roundNumber + 1, this.props.maxRounds)}
+                </div>
+                <div className="place-bet-form-progress">
+                    <span className="place-bet-form-progress__text-item">Question:</span>
+                    {this.renderBarCounter(this.props.questionNumber + 1, this.props.maxQuestionsInRound)}
+                </div>
             </div>
             {this.props.allowReport && <Button buttonType={EButtonType.WARN}
                                                className="place-bet-form__button place-bet-form__button--report"
@@ -98,6 +104,21 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IP
                                                className="place-bet-form__button place-bet-form__button--finish"
                                                onClick={this.handleFinishClick.bind(this)}>End game</Button>}
         </div>;
+    }
+
+    private renderBarCounter(currentVal: number, maxVal: number) {
+        return <React.Fragment>
+            {
+                new Array(currentVal)
+                    .fill(0)
+                    .map((_, i) => <div key={i} className="place-bet-form-progress__item"></div>)
+            }
+            {
+                new Array(maxVal - currentVal)
+                    .fill(0)
+                    .map((_, i) => <div key={i} className="place-bet-form-progress__item place-bet-form-progress__item--inactive"></div>)
+            }
+        </React.Fragment>
     }
 
     private handleBetUpdate() {

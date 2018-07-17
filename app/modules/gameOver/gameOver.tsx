@@ -4,6 +4,8 @@ import CountTo from "../../third-party/react-count-to";
 
 import './gameOver.style';
 import User from "../user/user";
+import {ESoundSample} from "../sounds/sounds";
+import Sounds from "../sounds/sounds";
 
 interface IGameOverProps {
     didPlayerWin: boolean;
@@ -77,7 +79,11 @@ export default class GameOver extends React.Component<IGameOverProps,{}> {
     }
 
     private renderImageText(): JSX.Element {
+        const sample = this.props.didPlayerWin ? ESoundSample.CORRECT_ANSWER : ESoundSample.WRONG_ANSWER;
         const src = this.props.didPlayerWin ? 'you-won' : 'you-lose';
+
+        Sounds.playSound(sample);
+
         return (
             <img className="question-panel-buttons__result-text" src={`./static/img/${src}.png`}/>
         );

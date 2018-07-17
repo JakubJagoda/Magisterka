@@ -43,8 +43,6 @@
 
   &__extras {
     margin-top: 1em;
-    display: flex;
-    align-items: center;
 
     > * {
       margin-right: 0.5em;
@@ -55,5 +53,37 @@
   .place-bet-form-info {
     display: flex;
     flex-direction: column;
+    margin-bottom: 0.5em;
+  }
+
+  .place-bet-form-progress {
+    display: flex;
+    margin-bottom: 20px;
+    width: 300px;
+    align-items: center;
+
+    &__item {
+      flex: 1;
+      background: white;
+      box-shadow: 0 0 10px white;
+      margin-right: 10px;
+      height: 10px;
+
+      &--inactive {
+        background: white;
+        opacity: 0.2;
+        box-shadow: none;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+
+    &__text-item {
+      font-size: 15px;
+      margin-right: 10px;
+      text-transform: capitalize;
+    }
   }
 }

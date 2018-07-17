@@ -42,7 +42,11 @@
     }
 
     &__definition {
+      text-transform: none;
 
+      &:first-letter {
+        text-transform: uppercase;
+      }
     }
   }
 
