@@ -46,7 +46,7 @@ export interface IGameState {
 // @TODO there should be a separate store for questions
 class GameStore extends Store {
     private static MAX_ROUNDS_COUNT = 5;
-    private static MAX_QUESTIONS_PER_ROUND_COUNT = 8;
+    private static MAX_QUESTIONS_PER_ROUND_COUNT = 5;
 
     private playerName: string;
     private playerMoney: number;

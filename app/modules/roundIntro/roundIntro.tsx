@@ -2,7 +2,7 @@ import * as React from 'react';
 import Animated from "../animated/animated";
 
 import './roundIntro.style';
-import {ESoundSample, default as Sounds} from "../sounds/sounds";
+import {default as Sounds, ESoundSample} from "../sounds/sounds";
 
 interface IRoundIntroProps {
     currentRound: number;
@@ -16,7 +16,7 @@ export default class RoundIntro extends React.Component<IRoundIntroProps,{}> {
         return (
             <Animated animations={[
                 {
-                    delay: 1500,
+                    delay: 3500,
                     length: 500,
                     style: {
                         transform: 'scale(0.5)',
@@ -35,6 +35,7 @@ export default class RoundIntro extends React.Component<IRoundIntroProps,{}> {
                             left: 0
                         },
                         callback: () => {
+                            Sounds.playSound(ESoundSample.ROUND_INTRO);
                             Sounds.playSound(ESoundSample.SWOOSH);
                         }
                     }

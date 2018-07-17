@@ -9,7 +9,8 @@ export enum ESoundSample {
     CORRECT_ANSWER = 'correct.mp3',
     WRONG_ANSWER = 'wrong.mp3',
     TICK = 'tick.wav',
-    TICK_REVERB = 'tick-reverb.wav'
+    TICK_REVERB = 'tick-reverb.wav',
+    ROUND_INTRO = 'round-intro.wav'
 }
 
 export interface SoundsOptions {
