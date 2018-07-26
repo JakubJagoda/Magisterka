@@ -10,6 +10,8 @@ import HighScores from './modules/highScores/highScores';
 import RegisterForm from './modules/registerForm/registerForm';
 import * as RegisterDevice from './modules/registerDevice/registerDevice';
 import Sounds from './modules/sounds/sounds';
+import {loadPNGAssets} from './modules/imagesPreloader/imagesPreloader';
+import {VERSION} from 'app-constants';
 
 import './static/stylesheets/style';
 
@@ -19,6 +21,12 @@ import SignInForm from './modules/signInForm/signInForm';
 if (parent) {
     //window['__REACT_DEVTOOLS_GLOBAL_HOOK__'] = parent['__REACT_DEVTOOLS_GLOBAL_HOOK__'];
     window['React'] = parent['React'] = React;
+}
+
+const currentVersion = localStorage.getItem('tgame.version');
+if (currentVersion !== VERSION) {
+    localStorage.clear();
+    localStorage.setItem('tgame.version', VERSION);
 }
 
 const wrapper = document.createElement('div');
@@ -69,9 +77,10 @@ const topLevelApp = (
 document.body.appendChild(wrapper);
 
 RegisterDevice.registerDevice();
-Sounds.initializeSamples().then(() => {
-    ReactDOM.render(
-        topLevelApp,
-        document.body
-    );
+
+Promise.all([
+    Sounds.initializeSamples(),
+    loadPNGAssets()
+]).then(() => {
+    ReactDOM.render(topLevelApp, document.body);
 });

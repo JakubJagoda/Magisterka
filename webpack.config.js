@@ -20,7 +20,7 @@ module.exports = function (env) {
             // modulesDirectories: ['node_modules'],
             extensions: ['.webpack.js', '.web.js', '.ts', '.tsx', '.js', '.scss', '.css'],
             alias: {
-                'app-constants': path.resolve(__dirname, env.production ? 'app/constants.prod.ts' : 'app/constants.ts')
+                'app-constants': path.join(__dirname, env.production ? 'app/constants.prod.ts' : 'app/constants.ts')
             }
         },
         module: {
@@ -34,7 +34,7 @@ module.exports = function (env) {
                             options: {
                                 presets: [
                                     ['react'],
-                                    ['env', { 'browsers': ['last 2 versions', 'not ie <= 10'] }]
+                                    ['env', {'browsers': ['last 2 versions', 'not ie <= 10']}]
                                 ],
                                 plugins: ['transform-runtime']
                             }
@@ -83,25 +83,30 @@ module.exports = function (env) {
             ]
         },
         plugins: [
-                new webpack.optimize.CommonsChunkPlugin({
-                    name: 'vendor', // Specify the common bundle's name.
-                    minChunks: function (module) {
-                        // this assumes your vendor imports exist in the node_modules directory
-                        return module.context && module.context.indexOf('node_modules') !== -1;
-                    }
-                }),
-                new ExtractTextPlugin('styles.css')
-            ].concat(env.production ? [
-                new CleanWebpackPlugin(['dist']),
-                new HtmlWebpackPlugin({
-                    title: 'Truth Or Bunk'
-                }),
-                new CopyWebpackPlugin([{from: './app/static/img/*', to: './static/img/[name].[ext]'}])
-            ] : [
-                new HtmlWebpackPlugin({
-                    title: 'App'
-                })
-            ]),
+            new webpack.optimize.CommonsChunkPlugin({
+                name: 'vendor', // Specify the common bundle's name.
+                minChunks: function (module) {
+                    // this assumes your vendor imports exist in the node_modules directory
+                    return module.context && module.context.indexOf('node_modules') !== -1;
+                }
+            }),
+            new ExtractTextPlugin('styles.css')
+        ].concat(env.production ? [
+            new CleanWebpackPlugin(['dist']),
+            new HtmlWebpackPlugin({
+                title: 'Truth Or Bunk',
+                template: './app/index.html'
+            }),
+            new CopyWebpackPlugin([
+                {from: './app/static/img/*', to: './static/img/[name].[ext]'},
+                {from: './app/static/snd/*', to: './static/snd/[name].[ext]'}
+            ])
+        ] : [
+            new HtmlWebpackPlugin({
+                title: 'App',
+                template: './app/index.html'
+            })
+        ]),
         devtool: env.production ? 'cheap-module-source-map' : 'source-map',
         devServer: {
             contentBase: path.join(__dirname, "app"),
