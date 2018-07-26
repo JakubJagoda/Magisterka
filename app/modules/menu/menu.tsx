@@ -5,6 +5,8 @@ import Animated from '../animated/animated';
 import userStore from '../user/userStore';
 import Button from '../shared/button/button';
 import Sounds, {ESoundSample} from '../sounds/sounds';
+import Dispatcher from "../flux/dispatcher";
+import {LogoutUserAction, UserLoggedInAction} from "../user/userActions";
 
 interface IMenuState {
     loading: boolean;
@@ -135,15 +137,18 @@ export default class Menu extends React.Component<IMenuProps, IMenuState> {
                     <Button>Register</Button>
                 </Link>
             ),
+            registerNew: (
+                <Link to="/register">
+                    <Button>Register new player</Button>
+                </Link>
+            ),
             signIn: (
                 <Link to="/signin">
                     <Button>Sign in</Button>
                 </Link>
             ),
             signOut: (
-                <Link to="/signin">
-                    <Button>Sign out</Button>
-                </Link>
+                <Button onClick={this.signOut.bind(this)}>Sign out</Button>
             )
         };
 
@@ -180,5 +185,11 @@ export default class Menu extends React.Component<IMenuProps, IMenuState> {
                           skipIf={Boolean(this.props.location.query.skipAnimation)}>
             {inner}
         </Animated>);
+    }
+
+    private signOut() {
+        Dispatcher.handleViewAction({
+            action: new LogoutUserAction()
+        });
     }
 }

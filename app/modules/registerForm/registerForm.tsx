@@ -35,8 +35,11 @@ export default class RegisterForm extends React.Component<{},IRegisterFormState>
     render() {
         return (
             <form className="register-form" onSubmit={this.submitForm.bind(this)}>
+                <span className="register-form__info--bold">
+                    Registering is optional.
+                </span>
                 <span className="register-form__info">
-                    Registering is optional. If you register, you'll be able to save your high scores and see the leaderboard.
+                    If you register, you'll be able to save your high scores and see the leaderboard.
                 </span>
                 <label className="register-form__item">
                     Login:
@@ -108,11 +111,9 @@ export default class RegisterForm extends React.Component<{},IRegisterFormState>
         const formData = Object.assign({}, this.state);
         try {
             await Api.registerUser(formData);
-            hashHistory.push('/');
+            hashHistory.push('/signin');
         } catch (e) {
-            this.setState(Object.assign({}, this.state, {error: e.message}));
-        } finally {
-            this.setState(Object.assign({}, this.state, {loading: false}));
+            this.setState(Object.assign({}, this.state, {error: e.message, loading: false}));
         }
     }
 }

@@ -12,6 +12,10 @@
     width: 400px;
     margin-bottom: 30px;
     text-align: center;
+
+    &--bold {
+      font-weight: bold;
+    }
   }
 
   &__item {
