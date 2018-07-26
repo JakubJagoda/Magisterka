@@ -1,7 +1,7 @@
 import {hashHistory} from 'react-router';
 import * as React from 'react';
 import "./highScores.style";
-import {default as highScoresStore} from './highScoresStore';
+import highScoresStore from './highScoresStore';
 import Animated from "../animated/animated";
 import * as Api from '../api/api';
 import dispatcher from "../flux/dispatcher";
@@ -15,10 +15,12 @@ interface IHighScoresState {
 }
 
 export default class HighScores extends React.Component<{}, IHighScoresState> {
+    private onHighScoresStoreChangedBound = this.onHighScoresStoreChanged.bind(this);
+
     constructor(props) {
         super(props);
 
-        highScoresStore.addListener(this.onHighScoresStoreChanged.bind(this));
+        highScoresStore.addListener(this.onHighScoresStoreChangedBound);
 
         this.state = {
             loading: true,
@@ -41,6 +43,10 @@ export default class HighScores extends React.Component<{}, IHighScoresState> {
         } else {
             return this.renderHighScores();
         }
+    }
+
+    componentWillUnmount() {
+        highScoresStore.removeListener(this.onHighScoresStoreChangedBound);
     }
 
     private renderLoading() {
@@ -105,7 +111,9 @@ export default class HighScores extends React.Component<{}, IHighScoresState> {
                     bottom: '-100%',
                     position: 'relative'
                 }}>
-                    <Button className="button" onClick={HighScores.goBack}>&laquo; Back</Button>
+                    <div>
+                        <Button className="button" onClick={HighScores.goBack}>&laquo; Back</Button>
+                    </div>
                 </Animated>
             </div>
         )
