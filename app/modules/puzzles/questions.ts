@@ -22,9 +22,11 @@ interface IGetDataResponseEntry {
 }
 
 const LOCAL_STORAGE_KEY = 'tgame.questions';
+const QUESTION_LIMIT = 20;
+const MAX_QUESTION_DIFFICULTY = 4; //from 0 to N inclusive
 let questionsStorage = new Map<number, IInternalPlainQuestion[]>();
 
-function convertResponseToPlainQuestions(response:IGetDataResponseEntry[]):IPlainQuestion[] {
+function convertResponseToPlainQuestions(response: IGetDataResponseEntry[]): IPlainQuestion[] {
     return response.map(responseEntry => {
         const {word, definition} = transformContentStringToDefinition(responseEntry.content);
 
@@ -38,7 +40,7 @@ function convertResponseToPlainQuestions(response:IGetDataResponseEntry[]):IPlai
     });
 }
 
-export function getQuestion(level: number):Question {
+export function getQuestion(level: number): Question {
     const questions = questionsStorage.get(level);
 
     if (!questions) {
@@ -57,13 +59,13 @@ export function getQuestion(level: number):Question {
     return Question.fromPlainQuestion(selectedQuestion);
 }
 
-async function fetchQuestions():Promise<IInternalPlainQuestion[]> {
+async function fetchQuestions(): Promise<IInternalPlainQuestion[]> {
     const questionsInStorage = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) as IInternalPlainQuestion[];
     if (questionsInStorage) {
         return questionsInStorage;
     }
 
-    return Api.getData(userStore.getUserData().userID, 100).then((response:IGetDataResponseEntry[]) => {
+    return Api.getData(userStore.getUserData().userID, QUESTION_LIMIT).then((response: IGetDataResponseEntry[]) => {
         const mappedResponse = convertResponseToPlainQuestions(response).map(plainQuestion => {
             return Object.assign({}, plainQuestion, {timesSelected: 0, timesAnswered: 0});
         });
@@ -73,7 +75,7 @@ async function fetchQuestions():Promise<IInternalPlainQuestion[]> {
     });
 }
 
-function mapQuestionsToQuestionStorage(questions: IInternalPlainQuestion[]):Map<number, IInternalPlainQuestion[]> {
+function mapQuestionsToQuestionStorage(questions: IInternalPlainQuestion[]): Map<number, IInternalPlainQuestion[]> {
     return questions.reduce((reduced, internalQuestion) => {
         const difficulty = internalQuestion.difficulty;
 
@@ -86,7 +88,7 @@ function mapQuestionsToQuestionStorage(questions: IInternalPlainQuestion[]):Map<
     }, new Map<number, IInternalPlainQuestion[]>());
 }
 
-export async function loadInitialQuestionSet():Promise<void> {
+export async function loadInitialQuestionSet(): Promise<void> {
     const questions = await fetchQuestions();
     questionsStorage = mapQuestionsToQuestionStorage(questions);
 }
@@ -108,24 +110,29 @@ export function questionAnswered(contentID): void {
 }
 
 export function getDifficultyLevelsWithNoQuestionsLeft(): number[] {
-    return [...questionsStorage.entries()].reduce((reduced, [level, questions]) => {
-        if (questions.length === 0) {
-            reduced.push(level);
-        }
+    return Array(MAX_QUESTION_DIFFICULTY)
+        .fill(0)
+        .reduce((reduced, _, i) => {
+            const questions = questionsStorage.get(i);
 
-        return reduced;
-    }, [])
+            if (!questions || questions.length === 0) {
+                reduced.push(i);
+            }
+
+            return reduced;
+        }, []);
 }
 
 export async function loadQuestions(difficultyLevel: number): Promise<void> {
-    return Api.getData(userStore.getUserData().userID, 100, difficultyLevel).then((response:IGetDataResponseEntry[]) => {
-        const mappedResponse = convertResponseToPlainQuestions(response).map(plainQuestion => {
-            return Object.assign({}, plainQuestion, {timesSelected: 0, timesAnswered: 0});
-        });
+    return Api.getData(userStore.getUserData().userID, QUESTION_LIMIT, difficultyLevel)
+        .then((response: IGetDataResponseEntry[]) => {
+            const mappedResponse = convertResponseToPlainQuestions(response).map(plainQuestion => {
+                return Object.assign({}, plainQuestion, {timesSelected: 0, timesAnswered: 0});
+            });
 
-        questionsStorage.set(difficultyLevel, mappedResponse);
-        saveQuestionsStorage();
-    });
+            questionsStorage.set(difficultyLevel, mappedResponse);
+            saveQuestionsStorage();
+        });
 }
 
 function transformContentStringToDefinition(content: string) {

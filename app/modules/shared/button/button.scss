@@ -29,4 +29,13 @@
     background: rgb(210, 52, 20);
     background: linear-gradient(0deg, rgb(210, 52, 20) 30%, rgb(255, 63, 24) 70%);
   }
+
+  &--non-clickable {
+    cursor: default !important;
+
+    &:hover {
+      box-shadow: none !important;
+      text-decoration: none !important;
+    }
+  }
 }

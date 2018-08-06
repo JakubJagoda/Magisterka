@@ -47,6 +47,7 @@ export interface IGameState {
 class GameStore extends Store {
     private static MAX_ROUNDS_COUNT = 5;
     private static MAX_QUESTIONS_PER_ROUND_COUNT = 5;
+    private static WINNING_BET_MULTIPLIER = 2;
 
     private playerName: string;
     private playerMoney: number;
@@ -130,6 +131,7 @@ class GameStore extends Store {
         this.currentGameState = SCENE_STATES.NAME_INPUT;
         this.currentQuestion = Puzzles.getQuestion(this.currentRound);
         this.gameID = GameStore.getNewGameID();
+        this.difficultyLevelsWithNoQuestionsLeft = Puzzles.getDifficultyLevelsWithNoQuestionsLeft();
         Sounds.playMainMusic();
     }
 
@@ -157,19 +159,14 @@ class GameStore extends Store {
     }
 
     private handleAnswerQuestionAction(action: SceneActions.AnswerQuestionAction) {
-        if ((this.currentQuestion.getCorrectAnswer() === EAnswerType.TRUTH && action.answer === EAnswerType.BUNK) ||
-            (this.currentQuestion.getCorrectAnswer() === EAnswerType.BUNK && action.answer === EAnswerType.TRUTH)) {
+        if (this.currentQuestion.getCorrectAnswer() === action.answer) {
+            this.isAnswerToCurrentQuestionCorrect = true;
+            this.playerMoney += this.currentBet * GameStore.WINNING_BET_MULTIPLIER;
+            this.canReportPreviousQuestion = false;
+        } else {
             this.isAnswerToCurrentQuestionCorrect = false;
             this.playerMoney -= this.currentBet;
             this.canReportPreviousQuestion = !this.reportedQuestionInCurrentRound;
-        } else if (this.currentQuestion.getCorrectAnswer() === EAnswerType.TRUTH && action.answer === EAnswerType.TRUTH) {
-            this.isAnswerToCurrentQuestionCorrect = true;
-            this.playerMoney += this.currentBet * 2;
-            this.canReportPreviousQuestion = false;
-        } else {
-            this.isAnswerToCurrentQuestionCorrect = true;
-            this.playerMoney += this.currentBet * 3;
-            this.canReportPreviousQuestion = false;
         }
 
         this.answerType = action.answer;

@@ -81,7 +81,7 @@ export default class Animated extends React.Component<IAnimatedProps,{}> {
         }
     }
 
-    private static applyAnimation($element:JQuery, animation:IAnimationDescriptor, { finalStyle, skipIf } : {finalStyle?: ICSSProps, skipIf?: boolean | (() => boolean)}) {
+    private static applyAnimation($element:any, animation:IAnimationDescriptor, { finalStyle, skipIf } : {finalStyle?: ICSSProps, skipIf?: boolean | (() => boolean)}) {
         if (Animated.isDisabled || animation.isDisabled) {
             animation.delay = 0;
             animation.length = 0;
