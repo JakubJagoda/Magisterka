@@ -49,7 +49,7 @@ async function postAnswersIfEnoughSaved(): Promise<any> {
     localStorage.removeItem(LOCAL_STORAGE_KEY);
 
     const payload = storageEntry.map(convertAnswerToPayload);
-    return Api.sendAnswers(userStore.getUserData().userID, payload);
+    return Api.sendAnswers(userStore.getUserData().deviceID, payload);
 }
 
 export function saveAnswer(answer: Answer): void {

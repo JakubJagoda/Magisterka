@@ -27,12 +27,13 @@ interface IPlaceBetFormState {
 export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IPlaceBetFormState> {
     private input: HTMLInputElement;
     private static MINIMAL_BET = 10;
+    private static BET_STEP = 10;
 
     constructor(props) {
         super(props);
 
         this.state = {
-            bet: this.props.minBet,
+            bet: Math.max(this.props.minBet, this.getInitialBet()),
             formDirty: false
         };
     }
@@ -43,6 +44,11 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IP
         } else {
             return this.renderForm();
         }
+    }
+
+    private getInitialBet() {
+        // player money divided by 2 but aligned to the step
+        return Math.floor((this.props.currentPlayerMoney / 2) / PlaceBetForm.BET_STEP) * PlaceBetForm.BET_STEP;
     }
 
     private renderBudgetLessThanMinBetWarning() {
@@ -69,7 +75,7 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IP
                            className="place-bet-form__input"
                            min={PlaceBetForm.MINIMAL_BET}
                            max={this.props.maxBet}
-                           step="10"
+                           step={PlaceBetForm.BET_STEP}
                            defaultValue={String(this.state.bet)}
                            onChange={this.handleBetUpdate.bind(this)}
                            ref={input => this.input = input}/>

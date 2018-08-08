@@ -22,7 +22,7 @@ interface IGetDataResponseEntry {
 }
 
 const LOCAL_STORAGE_KEY = 'tgame.questions';
-const QUESTION_LIMIT = 20;
+const QUESTION_LIMIT = 50;
 const MAX_QUESTION_DIFFICULTY = 4; //from 0 to N inclusive
 let questionsStorage = new Map<number, IInternalPlainQuestion[]>();
 
@@ -65,7 +65,7 @@ async function fetchQuestions(): Promise<IInternalPlainQuestion[]> {
         return questionsInStorage;
     }
 
-    return Api.getData(userStore.getUserData().userID, QUESTION_LIMIT).then((response: IGetDataResponseEntry[]) => {
+    return Api.getData(userStore.getUserData().deviceID, QUESTION_LIMIT).then((response: IGetDataResponseEntry[]) => {
         const mappedResponse = convertResponseToPlainQuestions(response).map(plainQuestion => {
             return Object.assign({}, plainQuestion, {timesSelected: 0, timesAnswered: 0});
         });
@@ -124,7 +124,7 @@ export function getDifficultyLevelsWithNoQuestionsLeft(): number[] {
 }
 
 export async function loadQuestions(difficultyLevel: number): Promise<void> {
-    return Api.getData(userStore.getUserData().userID, QUESTION_LIMIT, difficultyLevel)
+    return Api.getData(userStore.getUserData().deviceID, QUESTION_LIMIT, difficultyLevel)
         .then((response: IGetDataResponseEntry[]) => {
             const mappedResponse = convertResponseToPlainQuestions(response).map(plainQuestion => {
                 return Object.assign({}, plainQuestion, {timesSelected: 0, timesAnswered: 0});
