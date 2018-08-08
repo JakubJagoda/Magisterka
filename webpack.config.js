@@ -46,7 +46,7 @@ module.exports = function (env) {
                 },
                 {
                     test: /\.scss$/,
-                    use: ExtractTextPlugin.extract({
+                    use: new ExtractTextPlugin('styles-a.css').extract({
                         fallback: 'style-loader',
                         use: [{
                             loader: 'css-loader',
@@ -58,7 +58,7 @@ module.exports = function (env) {
                 },
                 {
                     test: /\.css$/,
-                    use: ExtractTextPlugin.extract({
+                    use: new ExtractTextPlugin('styles-b.css').extract({
                         fallback: 'style-loader',
                         use: [{
                             loader: 'css-loader',

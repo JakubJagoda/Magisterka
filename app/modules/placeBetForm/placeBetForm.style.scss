@@ -24,10 +24,10 @@
   }
 
   &__current-cash-status {
-    margin: 10px 0;
+    margin: 20px 0;
   }
 
-  &__current-cash-amount {
+  &__current-cash-amount, &__current-bet-amount {
     font-weight: bold;
     font-size: 28px;
   }
@@ -84,6 +84,24 @@
       font-size: 15px;
       margin-right: 10px;
       text-transform: capitalize;
+    }
+  }
+
+  .rc-slider {
+    margin-bottom: 5px;
+
+    .rc-slider-rail {
+      background-color: #717171;
+    }
+
+    .rc-slider-track {
+      background-color: white;
+      box-shadow: 0 0 10px white;
+    }
+
+    .rc-slider-handle, .rc-slider-handle:active {
+      border-color: white;
+      box-shadow: 0 0 10px white;
     }
   }
 }

@@ -1,5 +1,7 @@
 import * as React from 'react';
-import TypistModal from "../typistModal/typistModal";
+import TypistModal from '../typistModal/typistModal';
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
 
 import './placeBetForm.style';
 import Button, {EButtonType} from "../shared/button/button";
@@ -21,11 +23,9 @@ interface IPlaceBetFormProps {
 
 interface IPlaceBetFormState {
     bet: number;
-    formDirty: boolean;
 }
 
 export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IPlaceBetFormState> {
-    private input: HTMLInputElement;
     private static MINIMAL_BET = 10;
     private static BET_STEP = 10;
 
@@ -33,8 +33,7 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IP
         super(props);
 
         this.state = {
-            bet: Math.max(this.props.minBet, this.getInitialBet()),
-            formDirty: false
+            bet: Math.max(this.props.minBet, this.getInitialBet())
         };
     }
 
@@ -47,8 +46,8 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IP
     }
 
     private getInitialBet() {
-        // player money divided by 2 but aligned to the step
-        return Math.floor((this.props.currentPlayerMoney / 2) / PlaceBetForm.BET_STEP) * PlaceBetForm.BET_STEP;
+        // player money divided by 2 but aligned to the step and minimal bet
+        return Math.floor(((this.props.currentPlayerMoney + PlaceBetForm.MINIMAL_BET) / 2) / PlaceBetForm.BET_STEP) * PlaceBetForm.BET_STEP;
     }
 
     private renderBudgetLessThanMinBetWarning() {
@@ -70,15 +69,16 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IP
                          typistProps={{avgTypingDelay: 20}}>
                 <form className="place-bet-form"
                       onSubmit={this.handlePlaceBetFormSubmit.bind(this)}>
-                    <input type="number"
-                           autoFocus
-                           className="place-bet-form__input"
-                           min={PlaceBetForm.MINIMAL_BET}
-                           max={this.props.maxBet}
-                           step={PlaceBetForm.BET_STEP}
-                           defaultValue={String(this.state.bet)}
-                           onChange={this.handleBetUpdate.bind(this)}
-                           ref={input => this.input = input}/>
+
+                    <Slider min={PlaceBetForm.MINIMAL_BET}
+                            max={this.props.maxBet}
+                            step={PlaceBetForm.BET_STEP}
+                            defaultValue={this.state.bet}
+                            onChange={this.handleBetUpdate.bind(this)}/>
+                    <div className="place-bet-form__current-bet-status">
+                        Bet:
+                        <span className="place-bet-form__current-bet-amount">${this.state.bet}</span>
+                        </div>
                     <div className="place-bet-form__current-cash-status">
                         Current cash:
                         <span className="place-bet-form__current-cash-amount">${this.props.currentPlayerMoney}</span>
@@ -105,7 +105,8 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IP
             </div>
             {this.props.allowReport && <Button buttonType={EButtonType.WARN}
                                                className="place-bet-form__button place-bet-form__button--report"
-                                               onClick={this.handleReportClick.bind(this)}>Report previous question</Button>}
+                                               onClick={this.handleReportClick.bind(this)}>Report previous
+                question</Button>}
             {this.props.allowFinish && <Button buttonType={EButtonType.OK}
                                                className="place-bet-form__button place-bet-form__button--finish"
                                                onClick={this.handleFinishClick.bind(this)}>End game</Button>}
@@ -127,10 +128,9 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IP
         </React.Fragment>
     }
 
-    private handleBetUpdate() {
+    private handleBetUpdate(newBet: number) {
         this.setState({
-            bet: Number(this.input.value),
-            formDirty: true
+            bet: newBet
         });
     }
 
@@ -141,16 +141,11 @@ export default class PlaceBetForm extends React.Component<IPlaceBetFormProps, IP
             return;
         }
 
-        this.setState(Object.assign(this.state, {
-            formDirty: true
-        }), () => {
-            this.props.onBetEntered(this.state.bet);
-        });
+        this.props.onBetEntered(this.state.bet);
     }
 
     private handleVaBanqueButtonClick() {
         this.setState(Object.assign(this.state, {
-            formDirty: true,
             bet: this.props.currentPlayerMoney
         }), () => {
             this.props.onBetEntered(this.state.bet);
